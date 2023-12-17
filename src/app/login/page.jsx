@@ -8,14 +8,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
-
 export default function Login() {
 
   const [loading, setLoading] = useState(false);
 
   const { push } = useRouter();
-
-  const notify = () => toast();
+  const loginSuccess = () => toast.success("Logged in Sucessfully");
+  const loginFailure = () => toast.error("Couldn't login.");
 
   const { status } = useSession()
 
@@ -29,23 +28,21 @@ export default function Login() {
   const handleSubmit = async (values) => {
     setLoading(true)
     const { email, password } = values;
-    let res = await signIn("credentials", {
-      email,
-      password,
-      callbackUrl: process.env.NEXTAUTH_URL,
-      redirect: false,
-    });
-    setLoading(false)
-    notify("Logged in successfully.")
 
-    if (res?.ok) {
-      console.log("success");
-      return;
-    } else {
+    try {
+      let res = await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: process.env.NEXTAUTH_URL,
+        redirect: false,
+      });
+      loginSuccess();
+      setLoading(false)
+    } catch (err) {
+      loginFailure()
       setLoading(false)
       console.log("Failed", res);
     }
-    return res;
   }
 
   return (

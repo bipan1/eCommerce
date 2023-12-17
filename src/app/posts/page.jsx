@@ -1,6 +1,6 @@
 'use client'
-import { catergories, exclude, states } from "@/utils";
-import { Button, Card, Form, Input, Select, Upload } from "antd";
+import { catergories, states } from "@/utils";
+import { Button, Card, Checkbox, Form, Input, Select, Upload } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -11,6 +11,9 @@ import { useState } from "react";
 export default function CreatePost() {
 
     const [loading, setLoading] = useState(false);
+    const [includeAddress, setIncludeAddress] = useState(false);
+
+    const createPostSucess = () => toast.success("Post created Sucessfully");
 
     const beforeUpload = (file) => {
         return false;
@@ -47,6 +50,7 @@ export default function CreatePost() {
                 }
             });
             setLoading(false)
+            createPostSucess()
         } catch (error) {
             console.log(error)
             setLoading(false)
@@ -54,10 +58,10 @@ export default function CreatePost() {
     }
 
     return <div className="p-4">
-        <h2 className="m-3">Create  a Post</h2>
-        <div className="flex space-between gap-4">
+        <h2 className="m-3 text-3xl">Create  a Post</h2>
+        <div className="flex space-between w-1/2 gap-2">
             <Card className="w-2/3 shadow-lg p-4s">
-                <Form encType="multipart/form-data" name="create-post" layout="vertical" onFinish={handleCreatePost}>
+                <Form name="create-post" layout="vertical" onFinish={handleCreatePost}>
                     <div className="grid lg:grid-cols-2 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 ">
                         <Form.Item
                             name="title"
@@ -121,8 +125,13 @@ export default function CreatePost() {
                         </Upload>
                     </Form.Item>
 
-                    <h2>Address</h2>
-                    <div className="shadow-lg p-4 grid lg:grid-cols-2 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4">
+                    <Form.Item>
+                        <Checkbox checked={includeAddress} onChange={(event) => setIncludeAddress(event.target.checked)}>
+                            Include physical address
+                        </Checkbox>
+                    </Form.Item>
+
+                    {includeAddress && <div className="shadow-lg p-4 grid lg:grid-cols-2 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4">
                         <Form.Item
                             name="addressLine"
                             label="Address Line"
@@ -148,6 +157,7 @@ export default function CreatePost() {
                             label="State"
                         >
                             <Select
+                                placeholder="State"
                                 options={states}
                             />
                         </Form.Item>
@@ -161,7 +171,7 @@ export default function CreatePost() {
                                 placeholder="Zip"
                             />
                         </Form.Item>
-                    </div>
+                    </div>}
 
 
                     <Form.Item>

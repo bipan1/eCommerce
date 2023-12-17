@@ -21,7 +21,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   posts         Post[]
-  Store         Store[]
+  stores        Store[]
 }
 
 model Account {
@@ -64,8 +64,9 @@ model Store {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   products    Product[]
-  description Int
+  description String
   contact     String
+  coverImage  String?
   addressLine String?
   city        String?
   state       String?
@@ -74,13 +75,13 @@ model Store {
 }
 
 model Product {
-  product_id  Int    @id @default(autoincrement())
+  product_id  Int      @id @default(autoincrement())
   name        String
   price       Float
   description String
-  image       String
+  image       String[]
   storeId     Int
-  store       Store  @relation(fields: [storeId], references: [store_id])
+  store       Store    @relation(fields: [storeId], references: [store_id])
 }
 
 enum Role {
