@@ -2,7 +2,7 @@
 import { Button, Checkbox, Form, Input, Modal, Space, Tag, Upload } from 'antd';
 import { useState } from "react";
 import { UploadOutlined } from '@ant-design/icons';
-import { uploadFileToS3 } from '../../../../utils/generateAwsUrl';
+import { uploadFileToS3 } from '@/utils/generateAwsUrl';
 
 const callPreSignedUrl = async (fileName, fileType) => {
     try {

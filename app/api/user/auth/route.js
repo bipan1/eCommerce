@@ -1,8 +1,7 @@
-// import prisma client
-import prisma from '../../../../database'
+import prisma from '@/database'
 import { hashPassword } from '../create/route'
 import { NextResponse } from 'next/server'
-import { exclude } from '../../../../utils'
+import { exclude } from '@/utils'
 
 export async function POST(req) {
   const data = await req.json()

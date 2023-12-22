@@ -1,8 +1,8 @@
 'use client'
-import { useAppSelector } from '../../redux/store';
+import { useAppSelector } from '@/redux/store';
 import { MdOutlineCancel } from "react-icons/md";
-import { useAppDispatch } from '../../redux/store';
-import { closeBag } from '../../redux/features/bag-slice';
+import { useAppDispatch } from '@/redux/store';
+import { closeBag } from '@/redux/features/bag-slice';
 import { Button } from 'antd';
 
 export default function Cart() {

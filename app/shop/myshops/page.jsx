@@ -5,8 +5,8 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react"
 import { FaPlus } from "react-icons/fa";
-import { useAppDispatch } from "../../../redux/store";
-import { startLoading, stopLoading } from "../../../redux/features/globalLoading-slice";
+import { useAppDispatch } from "@/redux/store";
+import { startLoading, stopLoading } from "@/redux/features/globalLoading-slice";
 
 
 export default function MyShops() {

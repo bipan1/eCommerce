@@ -1,11 +1,11 @@
 'use client'
-import { catergories, states } from "../../utils";
+import { catergories, states } from "@/utils";
 import { Button, Card, Checkbox, Form, Input, Select, Upload } from "antd";
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSession } from 'next-auth/react'
-import { uploadFileToS3 } from '../../utils/generateAwsUrl'
+import { uploadFileToS3 } from '@/utils/generateAwsUrl'
 import { useState } from "react";
 
 export default function CreatePost() {

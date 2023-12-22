@@ -1,6 +1,6 @@
 'use client'
 import { Button, Card, Carousel } from 'antd';
-import { catergories } from '../utils';
+import { catergories } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import { FaArrowAltCircleLeft } from "react-icons/fa";

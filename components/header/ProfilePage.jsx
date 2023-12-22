@@ -4,7 +4,7 @@ import { BsTelephoneOutbound } from 'react-icons/bs'
 import { FiSettings } from 'react-icons/fi'
 import { TbLogout } from 'react-icons/tb'
 import { signOut } from 'next-auth/react'
-import { getInitials } from '../../utils';
+import { getInitials } from '@/utils';
 import { useRouter } from 'next/navigation';
 import { CiShop } from "react-icons/ci";
 

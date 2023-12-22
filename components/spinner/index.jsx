@@ -1,6 +1,6 @@
 'use client'
 
-import { useAppSelector } from "../../redux/store";
+import { useAppSelector } from "@/redux/store";
 
 export default function Spinner() {
     const loading = useAppSelector((state) => state.loading.loading);

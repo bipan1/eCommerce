@@ -12,8 +12,8 @@ import { BiMessageDetail } from 'react-icons/bi';
 import { MdNotificationsNone } from 'react-icons/md'
 import { GiShoppingCart } from "react-icons/gi";
 import Profilepage from './ProfilePage';
-import { useAppSelector, useAppDispatch } from '../../redux/store';
-import { openBag } from '../../redux/features/bag-slice';
+import { useAppSelector, useAppDispatch } from '@/redux/store';
+import { openBag } from '@/redux/features/bag-slice';
 
 
 export default function Header() {

@@ -1,6 +1,5 @@
 import { SHA256 as sha256 } from 'crypto-js'
-import prisma from '../../../../database'
-// import { Prisma } from '@prisma/client'
+import prisma from '@/database'
 import { NextResponse } from 'next/server'
 
 export const hashPassword = (string) => {

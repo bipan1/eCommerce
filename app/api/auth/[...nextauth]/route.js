@@ -2,7 +2,6 @@ import GoogleProvider from 'next-auth/providers/google'
 import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { prisma } from '../../../../database'
 import { PrismaClient } from '@prisma/client'
 import axios from 'axios'
 
