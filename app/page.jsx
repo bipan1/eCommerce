@@ -12,7 +12,7 @@ const SampleNextArrow = props => {
     <div
       className={className}
       style={{
-        ...style,
+        display: "block",
         color: 'gray',
         fontSize: '15px',
         lineHeight: '1.5715'

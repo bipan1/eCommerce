@@ -19,11 +19,12 @@ export async function POST(req) {
 
 export async function GET(req) {
   const url = new URL(req.url)
-  const { userId } = url.searchParams
+  const userId = url.searchParams.get('userId')
+
   try {
     const stores = await prisma.store.findMany({
       where: {
-        userId: userId,
+        userId: parseInt(userId),
       },
     })
     return NextResponse.json({ stores }, { status: 200 })

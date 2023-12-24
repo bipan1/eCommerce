@@ -70,7 +70,7 @@ export default function Header() {
               <MdNotificationsNone className='cursor-pointer' size={30} />
             </div>}
 
-            {session && <div onClick={() => dispatch(openBag())} className="relative">
+            {session && <div onClick={() => dispatch(openBag())} className="relative ml-4">
               <GiShoppingCart className="cursor-pointer" size={30} />
               {numberOfItems > 0 && (
                 <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
@@ -79,11 +79,11 @@ export default function Header() {
               )}
             </div>}
 
-            <div className='ml-10 flex gap-4 items-center'>
-              {session ? <div className="ml-4 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
+            <div className='gap-4 items-center w-full'>
+              {session ? <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
                 <Button className='border border-black' onClick={() => router.push('/posts')} type='secondary'><FaPlus className='inline' /><span className='ml-4'>Create Post</span></Button>
                 <Popover content={() => <Profilepage profileinfo={session} />}>
-                  <Button style={{ color: "white", backgroundColor: "black" }} size='large' shape="circle">BC</Button>
+                  <Button className='ml-6' style={{ color: "white", backgroundColor: "black" }} size='large' shape="circle">BC</Button>
                 </Popover>
               </div> :
                 <div className="flex items-center justify-end pr-16 lg:pr-0">

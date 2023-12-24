@@ -1,8 +1,8 @@
 
 'use client'
-import { useAppDispatch } from "../../../redux/store";
+import { useAppDispatch } from "@/redux/store";
 import { useEffect, useState } from "react"
-import { startLoading, stopLoading } from "../../../redux/features/globalLoading-slice";
+import { startLoading, stopLoading } from "@/redux/features/globalLoading-slice";
 import axios from "axios";
 
 export default function Jobs() {

@@ -40,7 +40,6 @@ export default function Login() {
     } catch (err) {
       loginFailure()
       setLoading(false)
-      console.log('Failed', res)
     }
   }
 
