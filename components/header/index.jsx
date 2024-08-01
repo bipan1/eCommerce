@@ -81,7 +81,6 @@ export default function Header() {
 
             <div className='gap-4 items-center w-full'>
               {session ? <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
-                <Button className='border border-black' onClick={() => router.push('/posts')} type='secondary'><FaPlus className='inline' /><span className='ml-4'>Create Post</span></Button>
                 <Popover content={() => <Profilepage profileinfo={session} />}>
                   <Button className='ml-6' style={{ color: "white", backgroundColor: "black" }} size='large' shape="circle">BC</Button>
                 </Popover>

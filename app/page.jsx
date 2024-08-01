@@ -54,13 +54,6 @@ export default function Home() {
 
 
   return <div>
-    <div className='mt-20 flex w-full h-12 p-4 bg-gray-200 z-[1000] shadow-lg'>
-      <ul className='flex w-full space-between items-center justify-center'>
-        {catergories.map(category => <li onClick={() => router.push(`/posts/${category.label.toLocaleLowerCase()}`)} className='mx-8 hover:text-blue-400 hover:cursor-pointer' key={category.label}>
-          {category.label}
-        </li>)}
-      </ul>
-    </div>
     <div className='relative z-[10] overflow-hidden px-20 mx-20'>
       <Carousel autoplay arrows {...settings}>
         <div>

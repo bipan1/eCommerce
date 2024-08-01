@@ -40,6 +40,10 @@ export default function Profilepage({ profileinfo }) {
                 <FiSettings size={20} />
                 Settings
             </div>
+            <div onClick={() => router.push('/admin')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
+                <TbLogout size={20} />
+                Admin
+            </div>
             <div onClick={() => signOut()} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
                 <TbLogout size={20} />
                 Logout

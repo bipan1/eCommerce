@@ -20,8 +20,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
-  posts         Post[]
-  stores        Store[]
+  Review        Review[]
+  cart          Cart      @relation(fields: [cartId], references: [id])
+  cartId        Int       @unique
+  address       Address?  @relation(fields: [addressId], references: [id])
+  addressId     Int?
+  Order         Order[]
 }
 
 model Account {
@@ -42,59 +46,112 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
-model Post {
-  post_id     Int      @id @default(autoincrement())
-  userId      Int
-  createdAt   DateTime @default(now())
-  title       String
-  description String
-  category    Category @default(COMMUNITY)
-  images      String[]
-  addressLine String?
-  city        String?
-  state       String?
-  zipCode     String?
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Store {
-  store_id    Int       @id @default(autoincrement())
-  name        String    @unique
-  userId      Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  products    Product[]
-  description String
-  contact     String
-  coverImage  String?
-  addressLine String?
-  city        String?
-  state       String?
-  zipCode     String?
-  user        User      @relation(fields: [userId], references: [id])
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
 }
 
 model Product {
-  product_id  Int      @id @default(autoincrement())
-  name        String
-  price       Float
-  description String
-  image       String[]
-  storeId     Int
-  store       Store    @relation(fields: [storeId], references: [store_id])
+  id           Int            @id @default(autoincrement())
+  name         String         @unique
+  description  String
+  price        Decimal
+  images       String[]
+  category     Category       @relation(fields: [categoryId], references: [id])
+  categoryId   Int
+  reviews      Review[]
+  inventory    Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  CartItem     CartItem[]
+  OrderProduct OrderProduct[]
 }
 
-enum Role {
-  USER
-  ADMIN
+model Review {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum Category {
-  JOBS
-  ROOMS
-  HOUSEHOLD
-  CARS
-  FOODS
-  COMMUNITY
-  EVENTS
+model Cart {
+  id        Int        @id @default(autoincrement())
+  user      User?
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+  price     Decimal
+}
+
+model Address {
+  id                      Int      @id @default(autoincrement())
+  users                   User[]
+  addressLine1            String
+  addressLine2            String
+  city                    String
+  state                   String
+  zipCode                 String
+  country                 String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  ordersAsShippingAddress Order[]  @relation("ShippingAddress")
+  ordersAsBillingAddress  Order[]  @relation("BillingAddress")
+}
+
+model Order {
+  id                Int            @id @default(autoincrement())
+  user              User           @relation(fields: [userId], references: [id])
+  userId            Int
+  products          OrderProduct[]
+  total             Decimal
+  shippingAddress   Address        @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId Int
+  billingAddress    Address        @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  Int
+  payment           Payment        @relation(fields: [paymentId], references: [id])
+  paymentId         Int            @unique
+  status            OrderStatus
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model OrderProduct {
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int
+  price     Decimal
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  order         Order?
+  method        String
+  transactionId String
+  amount        Decimal
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
 }

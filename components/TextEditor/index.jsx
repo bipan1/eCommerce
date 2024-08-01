@@ -2,8 +2,7 @@ import React from 'react';
 import ReactQuill from 'react-quill';
 import 'quill/dist/quill.snow.css';
 
-export default function MyEditor() {
-    const [value, setValue] = React.useState('');
+export default function MyEditor({ value, onChange }) {
 
     const modules = {
         toolbar: [
@@ -30,17 +29,17 @@ export default function MyEditor() {
         'color',
         'background',
         'align',
-        'link',
-        'image',
+        'link'
     ];
 
     return (
         <ReactQuill
             value={value}
-            onChange={setValue}
+            onChange={onChange}
             modules={modules}
             formats={formats}
             theme="snow"
+            footer={[]}
         />
     );
 }
