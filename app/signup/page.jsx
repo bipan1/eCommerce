@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Card, Input } from 'antd'
 import { useState } from 'react'
 
 export default function Login() {
@@ -29,8 +29,8 @@ export default function Login() {
 
   return (
     <div className="h-screen flex items-center justify-center">
-      <div className="w-1/5">
-        <h3 className="pb-3">Sign Up and start Learning</h3>
+      <Card className="w-1/4 shadow-lg p-4">
+        <h3 className="pb-3">Sign Up to create an account.</h3>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="name"
@@ -86,7 +86,7 @@ export default function Login() {
         </Form>
 
         <p className='text-center'>Already have an account? <a href='/login' className='text-blue-500 underline'>Log in</a></p>
-      </div>
+      </Card>
     </div>
   )
 }

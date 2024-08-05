@@ -16,14 +16,14 @@ export default function AdminPageLayout({ children }) {
                     defaultSelectedKeys={['1']}
                     style={{ height: '100%', borderRight: 0 }}
                 >
-                    <Menu.Item key="1" icon={<DashboardOutlined />}>
-                        <Link href="/admin">Dashboard</Link>
-                    </Menu.Item>
                     <Menu.Item key="2" icon={<UserOutlined />}>
                         <Link href="/admin/category">Category</Link>
                     </Menu.Item>
                     <Menu.Item key="3" icon={<FileTextOutlined />}>
                         <Link href="/admin/products">Products</Link>
+                    </Menu.Item>
+                    <Menu.Item key="1" icon={<DashboardOutlined />}>
+                        <Link href="/admin/notices">Notices</Link>
                     </Menu.Item>
                 </Menu>
             </Sider>

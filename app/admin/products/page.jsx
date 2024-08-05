@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Card, Dropdown } from "antd";
+import { Button } from "antd";
 import axios from "axios";
 import AdminPageLayout from "components/adminLayout";
 import ProductForm from "components/productForm";
 import { useEffect, useState } from "react";
-import { FaEllipsisH, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import ProductCard from "components/products/productCard";
 
 
@@ -27,9 +27,10 @@ export default function Products() {
     }, [])
 
     const editProduct = (productId) => {
-        const product = products.filter(item => item.id === productId)
-        console.log(product)
-        setSelectedProduct(product[0])
+        const product = products.find(item => item.id === productId)
+        const images = product.images.map((newitem, i) => ({ uid: i, url: newitem }));
+        const productToEdit = { ...product, images }
+        setSelectedProduct(productToEdit)
         setIsCreate(true);
     }
 
@@ -44,24 +45,22 @@ export default function Products() {
             setLoading(false)
             console.log(err)
         }
-
     }
-
 
     return (
         <AdminPageLayout>
             {!isCreate ? (
                 <>
-                    <div>
-                        <Button onClick={() => setIsCreate(true)} className='float-right border border-black' type='secondary'><FaPlus className='inline' /><span className='ml-4'>Create Product</span></Button>
+                    <Button onClick={() => setIsCreate(true)} className='float-right border border-black' type='secondary'><FaPlus className='inline' /><span className='ml-4'>Create Product</span></Button>
+                    <div className="flex gap-4 flex-wrap" >
+                        {products.map((item, i) =>
+                            <div onClick={() => { }} key={item.id}>
+                                <ProductCard item={item} deleteProduct={deleteProduct} editProduct={editProduct} />
+                            </div>
+                        )}
                     </div>
-                    {products.map((item, i) =>
-                        <div key={item.id}>
-                            <ProductCard item={item} deleteProduct={deleteProduct} editProduct={editProduct} />
-                        </div>
 
-                    )}
-                </>) : (<ProductForm setIsCreate={setIsCreate} selectedProduct={selectedProduct} />)}
+                </>) : (<ProductForm setIsCreate={setIsCreate} selectedProduct={selectedProduct} setSelectedProduct={setSelectedProduct} />)}
         </AdminPageLayout>
     )
 }

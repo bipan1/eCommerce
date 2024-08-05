@@ -1,18 +1,20 @@
 'use client';
 
 import axios from 'axios';
-import { Button, Card, Checkbox, ColorPicker, Form, Input, Select, Space, Tag, Upload } from 'antd';
+import { Button, Card, Form, Input, Select, Upload } from 'antd';
 import { useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import MyEditor from '@/components/TextEditor';
 import { useForm } from 'antd/es/form/Form';
 import { LeftOutlined } from '@ant-design/icons';
 
-export default function ProductForm({ setIsCreate, selectedProduct }) {
+export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
     const [categories, setCategories] = useState([]);
     const [description, setDescription] = useState('');
+    const [fileList, setFileList] = useState([]);
     const [form] = useForm();
+
 
     useEffect(() => {
         const fetchingCategories = async () => {
@@ -30,7 +32,13 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
 
     useEffect(() => {
         form.setFieldsValue(selectedProduct)
+        setFileList(selectedProduct?.images)
     }, [selectedProduct])
+
+    const handleFileChange = (fileList) => {
+        console.log(fileList.fileList)
+        setFileList(fileList.fileList)
+    }
 
     const beforeUpload = () => {
         return false
@@ -41,32 +49,64 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
     }
 
     const handleCreateProduct = async (values) => {
+        let newValues = values;
+        if (selectedProduct) {
+            const oldImages = [];
+            const newImages = [];
+
+            values.images.fileList.forEach(item => {
+                if (item.url) {
+                    oldImages.push(item.url)
+                } else {
+                    newImages.push(item);
+                }
+            })
+
+            newValues = { ...values, images: { fileList: newImages }, oldImages: oldImages }
+        }
+
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(newValues)) {
+            if (key === 'images') {
+                value.fileList.map(image => {
+                    formData.append('files', image.originFileObj)
+                })
+            } else {
+                formData.append([key], value)
+            }
+        }
+
+        if (selectedProduct) {
+            formData.append('id', selectedProduct.id);
+        }
+
+
         setLoading(true);
         try {
-            const formData = new FormData();
-            for (const [key, value] of Object.entries(values)) {
-                if (key === 'images') {
-                    value.fileList.map(image => {
-                        formData.append('files', image.originFileObj)
-                    })
-                } else {
-                    formData.append([key], value)
-                }
+            if (selectedProduct) {
+                const response = await axios.put('http://localhost:3000/api/product', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+            } else {
+                const response = await axios.post('http://localhost:3000/api/product', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
             }
-
-            const response = await axios.post('http://localhost:3000/api/product', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            console.log(response)
             setLoading(false)
-            createPostSucess()
         } catch (error) {
             console.log(error)
             setLoading(false)
         }
+    }
+
+    const goBack = () => {
+        setIsCreate(false);
+        form.resetFields();
+        setSelectedProduct()
     }
 
     const handleDescriptionChange = (val) => {
@@ -75,7 +115,7 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
 
     return (
         <>
-            <Button onClick={() => setIsCreate(false)} type="link" className="flex items-center mb-4">
+            <Button onClick={() => goBack()} type="link" className="flex items-center mb-4">
                 <LeftOutlined />
                 <span className="ml-2">Back</span>
             </Button >
@@ -171,6 +211,8 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                                 listType="picture"
                                 beforeUpload={beforeUpload}
                                 multiple={true}
+                                fileList={fileList}
+                                onChange={handleFileChange}
 
                             >
                                 <Button icon={<UploadOutlined />}>Upload</Button>
@@ -178,12 +220,13 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                         </Form.Item>
                     </div>
 
+
                     <Button
                         loading={loading}
                         htmlType='submit'
                         className="float-right bg-blue-400 border border-blue"
                     >
-                        Submit
+                        {selectedProduct ? 'Update' : 'Submit'}
                     </Button>
                 </Form>
             </Card>

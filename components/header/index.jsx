@@ -6,10 +6,7 @@ import { Button, Input, Popover } from 'antd'
 import React from 'react';
 import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react'
-import { FaPlus } from "react-icons/fa6";
 import { SearchOutlined } from '@ant-design/icons'
-import { BiMessageDetail } from 'react-icons/bi';
-import { MdNotificationsNone } from 'react-icons/md'
 import { GiShoppingCart } from "react-icons/gi";
 import Profilepage from './ProfilePage';
 import { useAppSelector, useAppDispatch } from '@/redux/store';
@@ -18,7 +15,6 @@ import { openBag } from '@/redux/features/bag-slice';
 
 export default function Header() {
   const [sticky, setSticky] = useState(false)
-  const [navbarOpen, setNavbarOpen] = useState(false)
 
   const router = useRouter();
 
@@ -43,7 +39,7 @@ export default function Header() {
       <header
         className={`bg-white top-0 h-20 border-b border-black-600 left-0 z-[1000] flex w-full items-center
      ${sticky
-            ? '!fixed !z-[10000] !bg-white !bg-opacity-80 shadow-sticky backdrop:blur-sm !transition'
+            ? '!fixed !z-[10000] !bg-white shadow-sticky backdrop:blur-sm !transition'
             : 'absolute'
           }
     `}
@@ -65,24 +61,18 @@ export default function Header() {
               <Input style={{ width: '40vw' }} size="large" prefix={<SearchOutlined />} placeholder='Search for everything' />
             </div>
 
-            {session && <div className="ml-10 flex gap-8 w-full space-between">
-              <BiMessageDetail className='cursor-pointer' size={30} />
-              <MdNotificationsNone className='cursor-pointer' size={30} />
-            </div>}
-
-            {session && <div onClick={() => dispatch(openBag())} className="relative ml-4">
-              <GiShoppingCart className="cursor-pointer" size={30} />
-              {numberOfItems > 0 && (
-                <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
-                  {numberOfItems}
-                </span>
-              )}
-            </div>}
-
             <div className='gap-4 items-center w-full'>
               {session ? <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
+                <div onClick={() => dispatch(openBag())} className="relative">
+                  <GiShoppingCart className="cursor-pointer" size={30} />
+                  {numberOfItems > 0 && (
+                    <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
+                      {numberOfItems}
+                    </span>
+                  )}
+                </div>
                 <Popover content={() => <Profilepage profileinfo={session} />}>
-                  <Button className='ml-6' style={{ color: "white", backgroundColor: "black" }} size='large' shape="circle">BC</Button>
+                  <Button className='ml-6' style={{ color: "white", backgroundColor: "purple" }} size='large' shape="circle">BC</Button>
                 </Popover>
               </div> :
                 <div className="flex items-center justify-end pr-16 lg:pr-0">

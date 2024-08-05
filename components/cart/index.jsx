@@ -15,7 +15,6 @@ export default function Cart() {
 
     return (
         <>
-
             {isBagOpen ?
                 <div className='fixed top-20 right-0 h-full w-1/4 bg-white shadow-lg z-[100000000] transition duration-300 ease-in-out transform p-5'>
                     <div className='flex'>
