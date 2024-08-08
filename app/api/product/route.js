@@ -5,18 +5,18 @@ import { uploadToS3 } from 'utils/uploadToS3'
 export async function POST(req) {
   const formadata = await req.formData()
   let data = {}
-  const images = []
-  let imageUrls = []
+  let image
+  let imageUrl = ''
   for (const [key, value] of formadata.entries()) {
     if (key === 'files') {
-      images.push(value)
+      image = value
     } else {
       data[key] = value
     }
   }
 
   try {
-    imageUrls = await uploadToS3(images)
+    imageUrl = await uploadToS3(image)
   } catch (err) {
     console.log(err)
     NextResponse.json(
@@ -26,18 +26,18 @@ export async function POST(req) {
   }
 
   data = {
-    ...data,
-    images: imageUrls,
-    categoryId: parseInt(data.categoryId),
+    name: data.name,
+    description: data.description,
+    image: imageUrl,
+    subcategoryId: parseInt(data.subcategoryId),
     price: parseFloat(data.price),
-    inventory: parseInt(data.inventory),
   }
 
   try {
     const product = await prisma.product.create({
       data,
     })
-    return NextResponse.json({ product }, { status: 400 })
+    return NextResponse.json({ product }, { status: 200 })
   } catch (err) {
     console.log(err)
     return NextResponse.json(
@@ -49,8 +49,20 @@ export async function POST(req) {
 
 export async function GET() {
   try {
-    const products = await prisma.product.findMany()
-    return NextResponse.json({ products }, { status: 200 })
+    const products = await prisma.product.findMany({
+      include: {
+        subcategory: {
+          select: {
+            categoryId: true,
+          },
+        },
+      },
+    })
+    const flattenProducts = products.map((product) => {
+      const { subcategory, ...rest } = product
+      return { ...rest, categoryId: subcategory.categoryId }
+    })
+    return NextResponse.json({ flattenProducts }, { status: 200 })
   } catch (err) {
     console.log(err)
     return NextResponse.json({ message: err.message, status: 500 })
@@ -77,36 +89,35 @@ export async function DELETE(req) {
 export async function PUT(req) {
   const formadata = await req.formData()
   let data = {}
-  const images = []
-  let imageUrls = []
-  let oldImages = []
+  let image
+  let imageUrl
   for (const [key, value] of formadata.entries()) {
     if (key === 'files') {
-      images.push(value)
-    } else if (key === 'oldImages') {
-      oldImages.push(value)
+      image = value
     } else {
       data[key] = value
     }
   }
 
   try {
-    imageUrls = await uploadToS3(images)
+    if (image) {
+      imageUrl = await uploadToS3(image)
+    }
   } catch (err) {
     console.log(err)
-    NextResponse.json(
+    return NextResponse.json(
       { message: 'Error uploading image to s3' },
       { status: 500 },
     )
   }
 
   data = {
-    ...data,
+    name: data.name,
+    description: data.description,
     id: parseInt(data.id),
-    images: [...imageUrls, ...oldImages],
-    categoryId: parseInt(data.categoryId),
+    image: imageUrl ? imageUrl : data.image,
+    subcategoryId: parseInt(data.subcategoryId),
     price: parseFloat(data.price),
-    inventory: parseInt(data.inventory),
   }
 
   try {
@@ -114,7 +125,7 @@ export async function PUT(req) {
       where: { id: data.id },
       data,
     })
-    return NextResponse.json({ product }, { status: 400 })
+    return NextResponse.json({ product }, { status: 200 })
   } catch (err) {
     console.log(err)
     return NextResponse.json(

@@ -1,44 +1,33 @@
 'use client';
 
 import axios from 'axios';
+import { toast } from 'react-toastify'
 import { Button, Card, Form, Input, Select, Upload } from 'antd';
 import { useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import MyEditor from '@/components/TextEditor';
 import { useForm } from 'antd/es/form/Form';
 import { LeftOutlined } from '@ant-design/icons';
+import TextArea from 'antd/es/input/TextArea';
+import { useSelector, useDispatch } from 'react-redux';
+import { addProduct, editProduct } from '@/redux/features/products-slice';
 
 export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [description, setDescription] = useState('');
-    const [fileList, setFileList] = useState([]);
+    const createSuccess = () => toast.success('Product Created Sucessfully.')
+
     const [form] = useForm();
+    const [subCategories, setSubCategories] = useState();
+    const { data: categories, loading: load, error } = useSelector((state) => state.category);
 
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchingCategories = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/api/category');
-                const categoryOptions = response.data.category.map(item => ({ label: item.name, value: item.id }));
-                setCategories(categoryOptions);
-            } catch (err) {
-                console.log(err);
-            }
+        if (selectedProduct) {
+            form.setFieldsValue(selectedProduct)
+            const filteredSubCatgories = categories.find(subCat => subCat.id === selectedProduct.categoryId).subcategories;
+            setSubCategories(filteredSubCatgories)
         }
-        fetchingCategories();
-
-    }, [])
-
-    useEffect(() => {
-        form.setFieldsValue(selectedProduct)
-        setFileList(selectedProduct?.images)
     }, [selectedProduct])
-
-    const handleFileChange = (fileList) => {
-        console.log(fileList.fileList)
-        setFileList(fileList.fileList)
-    }
 
     const beforeUpload = () => {
         return false
@@ -46,31 +35,19 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
 
     const onCategoryChange = (value) => {
         form.setFieldValue({ categoryId: value })
+        const filteredSubCatgories = categories.find(subCat => subCat.id === value).subcategories;
+        setSubCategories(filteredSubCatgories)
     }
 
     const handleCreateProduct = async (values) => {
-        let newValues = values;
-        if (selectedProduct) {
-            const oldImages = [];
-            const newImages = [];
-
-            values.images.fileList.forEach(item => {
-                if (item.url) {
-                    oldImages.push(item.url)
-                } else {
-                    newImages.push(item);
-                }
-            })
-
-            newValues = { ...values, images: { fileList: newImages }, oldImages: oldImages }
-        }
-
+        const categoryId = values.categoryId;
+        delete values.categoryId
         const formData = new FormData();
-        for (const [key, value] of Object.entries(newValues)) {
+        for (const [key, value] of Object.entries(values)) {
             if (key === 'images') {
-                value.fileList.map(image => {
-                    formData.append('files', image.originFileObj)
-                })
+                if (value) {
+                    formData.append('files', value.fileList[0].originFileObj)
+                }
             } else {
                 formData.append([key], value)
             }
@@ -80,23 +57,27 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
             formData.append('id', selectedProduct.id);
         }
 
-
+        let response;
         setLoading(true);
         try {
             if (selectedProduct) {
-                const response = await axios.put('http://localhost:3000/api/product', formData, {
+                response = await axios.put('http://localhost:3000/api/product', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+                dispatch(editProduct({ ...response.data.product, categoryId }))
             } else {
-                const response = await axios.post('http://localhost:3000/api/product', formData, {
+                response = await axios.post('http://localhost:3000/api/product', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
+                dispatch(addProduct({ ...response.data.product, categoryId }))
+                form.resetFields();
             }
             setLoading(false)
+            createSuccess();
         } catch (error) {
             console.log(error)
             setLoading(false)
@@ -107,10 +88,6 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
         setIsCreate(false);
         form.resetFields();
         setSelectedProduct()
-    }
-
-    const handleDescriptionChange = (val) => {
-        setDescription(val);
     }
 
     return (
@@ -155,6 +132,20 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                             </Form.Item>
                         </div>
 
+                        <Form.Item
+                            name="description"
+                            label="Description"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please Enter the description',
+                                },
+                            ]}
+                            className='mt-5'
+                        >
+                            <TextArea />
+                        </Form.Item>
+
                         <div className="grid lg:grid-cols-2 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 ">
                             <Form.Item
                                 name="categoryId"
@@ -167,6 +158,7 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                                 ]}
                             >
                                 <Select
+                                    fieldNames={{ label: 'name', value: 'id' }}
                                     placeholder="Category"
                                     onChange={onCategoryChange}
                                     options={categories}
@@ -174,32 +166,24 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                             </Form.Item>
 
                             <Form.Item
-                                name="inventory"
-                                label="Inventory"
+                                name="subcategoryId"
+                                label="Sub Category"
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Enter Inventory Amount"
-                                    }
+                                        message: 'Please select a category',
+                                    },
                                 ]}
                             >
-                                <Input type='number' placeholder='Inventory' />
+                                <Select
+                                    fieldNames={{ label: 'name', value: 'id' }}
+                                    placeholder="Category"
+                                    options={subCategories}
+                                />
                             </Form.Item>
                         </div>
 
-                        <Form.Item
-                            name="description"
-                            label="Description"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please Enter the description',
-                                },
-                            ]}
-                            className='mt-5'
-                        >
-                            <MyEditor value={description} onChange={handleDescriptionChange} />
-                        </Form.Item>
+
                     </div>
 
                     <div>
@@ -208,18 +192,16 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                             label="Images"
                         >
                             <Upload
+                                maxCount={1}
                                 listType="picture"
                                 beforeUpload={beforeUpload}
-                                multiple={true}
-                                fileList={fileList}
-                                onChange={handleFileChange}
-
+                                multiple={false}
+                                defaultFileList={selectedProduct ? [selectedProduct.image] : []}
                             >
                                 <Button icon={<UploadOutlined />}>Upload</Button>
                             </Upload>
                         </Form.Item>
                     </div>
-
 
                     <Button
                         loading={loading}
@@ -233,111 +215,3 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
         </>
     )
 }
-
-// const handleAddSize = () => {
-//     if (currentSize && !sizes.includes(currentSize)) {
-//         setSizes([...sizes, currentSize]);
-//         setCurrentSize('');
-//     }
-// };
-
-// const handleRemoveSize = (sizeToRemove) => {
-//     setSizes(sizes.filter((size) => size !== sizeToRemove));
-// };
-
-// const handleAddColor = () => {
-//     if (currentColor && !colors.includes(currentColor)) {
-//         setColors([...colors, currentColor]);
-//         setCurrentColor('');
-//     }
-// }
-
-// const handleRemoveColor = (colorToRemove) => {
-//     setColors(colors.filter((color) => color !== colorToRemove));
-// }
-
-{/* <Form.Item>
-                    <Checkbox checked={includeSize} onChange={(event) => setIncludeSize(event.target.checked)}>
-                        Include size property
-                    </Checkbox>
-                </Form.Item>
-
-                {includeSize ?
-                    <>{sizes.length > 0 ? <Form.Item label="Sizes">
-                        <Space>
-                            {sizes.map((size) => (
-                                <Tag
-                                    key={size}
-                                    closable
-                                    onClose={() => handleRemoveSize(size)}
-                                >
-                                    {size}
-                                </Tag>
-                            ))}
-                        </Space>
-                    </Form.Item> : null}
-                        <Form.Item>
-                            <Input
-                                value={currentSize}
-                                onChange={(e) => setCurrentSize(e.target.value)}
-                                placeholder="Enter size"
-                                style={{ width: 150, marginRight: 8 }}
-                            />
-                            <Button onClick={handleAddSize}>Add Size</Button>
-                        </Form.Item>
-                    </> : null}
-
-
-                <Form.Item>
-                    <Checkbox checked={includeColor} onChange={(event) => { setIncludeColor(event.target.checked); setCurrentColor('#2E078C') }}>
-                        Include color property
-                    </Checkbox>
-                </Form.Item> */}
-
-{/* {includeColor ?
-                    <>{colors.length > 0 ? <Form.Item label="Colors">
-                        <Space>
-                            {colors.map((color) => (
-                                <Tag
-                                    color={color}
-                                    key={color}
-                                    closable
-                                    onClose={() => handleRemoveColor(color)}
-                                >
-                                    <span className='mr-1'>{color}</span>
-                                </Tag>
-                            ))}
-                        </Space>
-                    </Form.Item> : null}
-                        <Form.Item>
-                            <ColorPicker
-                                panelRender={(panel) => (
-                                    <div className="custom-panel">
-                                        <div
-                                            style={{
-                                                fontSize: 12,
-                                                color: 'rgba(0, 0, 0, 0.88)',
-                                                lineHeight: '20px',
-                                                marginBottom: 8,
-                                            }}
-                                        >
-                                            Color Picker
-                                        </div>
-                                        {panel}
-                                    </div>
-                                )}
-                                onChange={(_, value) => setCurrentColor(value)}
-                                value={currentColor}
-                                format='hex'
-                                defaultFormat='hex'
-                                className='mt-1'
-                            />
-                            <Button size='small' className="ml-2 border border-black" type="default" onClick={() => handleAddColor()}><FaPlus className='inline' /></Button>
-                        </Form.Item>
-                    </> : null} */}
-
-// const [includeColor, setIncludeColor] = useState(false);
-// const [colors, setColors] = useState([])
-// const [currentColor, setCurrentColor] = useState('#2E078C')
-// const [includeSize, setIncludeSize] = useState(false);
-// const [sizes, setSizes] = useState([])

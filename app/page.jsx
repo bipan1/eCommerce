@@ -1,14 +1,16 @@
 'use client'
-
-import { useRouter } from 'next/navigation';
-import { FaArrowAltCircleRight } from "react-icons/fa";
-import { FaArrowAltCircleLeft } from "react-icons/fa";
-
+import { fetchProducts } from "@/redux/features/products-slice";
+import { fetchCategories } from "@/redux/features/category-slice";
+import { useEffect } from "react";
+import { useDispatch } from 'react-redux';
 
 export default function Home() {
+  const dispatch = useDispatch();
 
-  const router = useRouter();
-
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+  }, [])
 
   return <div>
     <div className='relative z-[10] overflow-hidden px-20 mx-20'>

@@ -1,5 +1,5 @@
 'use client';
-import { EditOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card } from 'antd';
 
 export default function ProductCard({ item, deleteProduct, editProduct }) {
@@ -11,10 +11,10 @@ export default function ProductCard({ item, deleteProduct, editProduct }) {
                 style={{ width: 300 }}
                 cover={
                     <img
-                        className='h-48'
-                        style={{ borderBottom: '1px solid #DCDCDC' }}
+                        className='object-cover'
+                        style={{ width: '100%', height: 175, borderBottom: '1px solid #DCDCDC', aspectRatio: 'auto' }}
                         alt="example"
-                        src={item.images[0]}
+                        src={item.image}
                     />
                 }
                 actions={[
@@ -23,7 +23,7 @@ export default function ProductCard({ item, deleteProduct, editProduct }) {
                 ]}
             >
                 <h3 style={{ fontSize: 18, fontWeight: 500 }}>{item.name}</h3>
-                <div className='mt-2' style={{ color: 'orange', fontSize: '20px' }}>$ {item.price}.00</div>
+                <div className='mt-1' style={{ color: 'orange', fontSize: '20px' }}>$ {item.price}</div>
             </Card>
         </div>
     )

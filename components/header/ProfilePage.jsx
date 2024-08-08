@@ -4,6 +4,8 @@ import { BsTelephoneOutbound } from 'react-icons/bs'
 import { TbLogout } from 'react-icons/tb'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation';
+import { RiAccountCircleLine } from "react-icons/ri";
+
 
 export default function Profilepage({ profileinfo }) {
 
@@ -26,8 +28,8 @@ export default function Profilepage({ profileinfo }) {
                 <BsTelephoneOutbound size={20} />
                 Contact Support
             </div>
-            <div onClick={() => router.push('/admin')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
-                <TbLogout size={20} />
+            <div onClick={() => router.push('/admin/category')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
+                <RiAccountCircleLine size={20} />
                 Admin
             </div>
             <div onClick={() => signOut()} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>

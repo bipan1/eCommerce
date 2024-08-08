@@ -14,7 +14,11 @@ export default function RootLayout({ children }) {
         <main>
           <ReduxProvider>
             <NextAuthProvider>
-              <ToastContainer autoClose={3000} hideProgressBar={true} />
+              <ToastContainer
+                position="bottom-right"
+                autoClose={1500}
+                hideProgressBar={true}
+              />
               <Header />
               <Spinner />
               <div className="mt-20">{children}</div>

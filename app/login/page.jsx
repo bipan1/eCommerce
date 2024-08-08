@@ -2,7 +2,6 @@
 
 import { Button, Card, Checkbox, Form, Input } from 'antd'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
-import { FcGoogle } from 'react-icons/fc'
 import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -47,13 +46,6 @@ export default function Login() {
     <div className="h-screen flex items-center justify-center">
       <Card className="w-1/4 shadow-lg p-4">
         <h3 className="pb-3">Log in to your account</h3>
-        <button
-          onClick={() => signIn('google')}
-          className="w-full pl-2 h-12 text-left hover:bg-gray-300 border border-gray mb-3"
-        >
-          <FcGoogle className="inline" size={30} />
-          <span className="ml-3">Continue With Google</span>
-        </button>
         <Form name="login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="email"

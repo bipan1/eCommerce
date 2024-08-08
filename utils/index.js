@@ -1,34 +1,3 @@
-export const catergories = [
-  {
-    value: 'JOBS',
-    label: 'Jobs',
-  },
-  {
-    value: 'ROOMS',
-    label: 'Rooms',
-  },
-  {
-    value: 'HOUSEHOLD',
-    label: 'Household',
-  },
-  {
-    value: 'CARS',
-    label: 'Cars',
-  },
-  {
-    value: 'COMMUNITY',
-    label: 'Community',
-  },
-  {
-    value: 'FOODS',
-    label: 'Foods',
-  },
-  {
-    value: 'EVENTS',
-    label: 'Events',
-  },
-]
-
 export const states = [
   {
     label: 'VIC',
