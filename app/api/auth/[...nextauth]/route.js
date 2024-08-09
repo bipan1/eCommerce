@@ -1,4 +1,3 @@
-import GoogleProvider from 'next-auth/providers/google'
 import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
@@ -9,10 +8,6 @@ const client = new PrismaClient()
 
 const authOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
@@ -33,6 +28,7 @@ const authOptions = {
           )
 
           if (res) {
+            console.log(res)
             const user = res.data
             return user
           } else {

@@ -30,7 +30,7 @@ export default function Login() {
   return (
     <div className="h-screen flex items-center justify-center">
       <Card className="w-1/4 shadow-lg p-4">
-        <h3 className="pb-3">Sign Up to create an account.</h3>
+        <h3 className="pb-3 flex">Sign Up to create an account.</h3>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="name"

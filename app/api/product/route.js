@@ -31,6 +31,9 @@ export async function POST(req) {
     image: imageUrl,
     subcategoryId: parseInt(data.subcategoryId),
     price: parseFloat(data.price),
+    isSpecial: data.isSpecial === 'true',
+    outofStock: data.outofStock === 'true',
+    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
   }
 
   try {
@@ -118,6 +121,9 @@ export async function PUT(req) {
     image: imageUrl ? imageUrl : data.image,
     subcategoryId: parseInt(data.subcategoryId),
     price: parseFloat(data.price),
+    isSpecial: data.isSpecial === 'true',
+    outofStock: data.outofStock === 'true',
+    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
   }
 
   try {

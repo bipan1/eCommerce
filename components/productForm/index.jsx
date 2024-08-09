@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 import { toast } from 'react-toastify'
-import { Button, Card, Form, Input, Select, Upload } from 'antd';
+import { Button, Card, Form, Input, Select, Switch, Upload } from 'antd';
 import { useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/es/form/Form';
@@ -14,6 +14,7 @@ import { addProduct, editProduct } from '@/redux/features/products-slice';
 export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
     const createSuccess = () => toast.success('Product Created Sucessfully.')
+    const [showSpecialPrice, setShowSpecialPrice] = useState()
 
     const [form] = useForm();
     const [subCategories, setSubCategories] = useState();
@@ -26,6 +27,9 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
             form.setFieldsValue(selectedProduct)
             const filteredSubCatgories = categories.find(subCat => subCat.id === selectedProduct.categoryId).subcategories;
             setSubCategories(filteredSubCatgories)
+            if (selectedProduct.isSpecial) {
+                setShowSpecialPrice(true)
+            }
         }
     }, [selectedProduct])
 
@@ -39,7 +43,12 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
         setSubCategories(filteredSubCatgories)
     }
 
+    const handleIsSpecialChange = (value) => {
+        setShowSpecialPrice(value)
+    }
+
     const handleCreateProduct = async (values) => {
+        console.log(values);
         const categoryId = values.categoryId;
         delete values.categoryId
         const formData = new FormData();
@@ -182,8 +191,6 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                                 />
                             </Form.Item>
                         </div>
-
-
                     </div>
 
                     <div>
@@ -201,6 +208,25 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                                 <Button icon={<UploadOutlined />}>Upload</Button>
                             </Upload>
                         </Form.Item>
+                    </div>
+
+                    <div className="flex space-between">
+
+                        <Form.Item name="outofStock" label="Out of Stock?" valuePropName="checked">
+                            <Switch className='bg-gray-400' />
+                        </Form.Item>
+
+                        <Form.Item className='ml-10' name="isSpecial" label="Is special?" valuePropName="checked">
+                            <Switch onChange={handleIsSpecialChange} className='bg-gray-400' />
+                        </Form.Item>
+
+                        {showSpecialPrice && <Form.Item
+                            name="specialPrice"
+                            label="Special price"
+                            className='ml-10 w-1/3'
+                        >
+                            <Input type='float' placeholder='Enter Special Price.' />
+                        </Form.Item>}
                     </div>
 
                     <Button

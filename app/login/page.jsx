@@ -49,7 +49,7 @@ export default function Login() {
         <Form name="login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="email"
-            label="email"
+            label="Email"
             rules={[
               {
                 required: true,

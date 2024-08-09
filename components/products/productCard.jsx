@@ -12,7 +12,7 @@ export default function ProductCard({ item, deleteProduct, editProduct }) {
                 cover={
                     <img
                         className='object-cover'
-                        style={{ width: '100%', height: 175, borderBottom: '1px solid #DCDCDC', aspectRatio: 'auto' }}
+                        style={{ width: '100%', height: 170, borderBottom: '1px solid #DCDCDC', aspectRatio: 'auto' }}
                         alt="example"
                         src={item.image}
                     />
@@ -22,7 +22,7 @@ export default function ProductCard({ item, deleteProduct, editProduct }) {
                     <DeleteOutlined onClick={() => deleteProduct(item.id)} style={{ fontSize: '20px' }} key="delete" />,
                 ]}
             >
-                <h3 style={{ fontSize: 18, fontWeight: 500 }}>{item.name}</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 500 }}>{item.name}</h3>
                 <div className='mt-1' style={{ color: 'orange', fontSize: '20px' }}>$ {item.price}</div>
             </Card>
         </div>
