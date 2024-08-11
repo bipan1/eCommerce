@@ -8,19 +8,19 @@ import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react'
 import { FaSearch } from "react-icons/fa";
 import Profilepage from './ProfilePage';
-import { useAppSelector, useAppDispatch } from '@/redux/store';
-import { openBag } from '@/redux/features/bag-slice';
+import { openBag, closeBag } from '@/redux/features/bag-slice';
 import { GoPerson } from "react-icons/go";
 import { IoBagOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Header() {
   const [sticky, setSticky] = useState(false)
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { data: session } = useSession()
-  const dispatch = useAppDispatch();
-  const bag = useAppSelector((state) => state.bag);
-  const { numberOfItems } = bag;
+  const bag = useSelector((state) => state.bag);
+  const { numberOfItems, isBagOpen } = bag;
 
   const handleStickyNavbar = () => {
     if (window.scrollY > 80) {
@@ -28,6 +28,14 @@ export default function Header() {
     }
     else {
       setSticky(false)
+    }
+  }
+
+  const handleBagClick = () => {
+    if (isBagOpen) {
+      dispatch(closeBag())
+    } else {
+      dispatch(openBag())
     }
   }
 
@@ -47,9 +55,7 @@ export default function Header() {
           <div className="relative -mx-4 flex items-center justify-between">
             <div className="w-60 max-w-full px-4 xl:mr-12">
               <Link
-                className={`text-[30px] font-extrabold cursor-pointer block w-full
-                ${sticky ? 'py-5 lg:py-2' : 'py-8'}
-                `}
+                className={`text-[30px] font-extrabold cursor-pointer block w-full ${sticky ? 'py-5 lg:py-2' : 'py-8'}`}
                 href={'/'}
               >
                 NepMart
@@ -62,7 +68,7 @@ export default function Header() {
 
             <div className='gap-4 items-center w-full'>
               <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
-                <div onClick={() => dispatch(openBag())} className="relative mr-3">
+                <div onClick={handleBagClick} className="relative mr-3">
                   <IoBagOutline className="cursor-pointer" size={30} />
                   {numberOfItems > 0 && (
                     <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
