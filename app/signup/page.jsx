@@ -1,12 +1,12 @@
 'use client'
-
+import { toast } from 'react-toastify'
 import { Button, Form, Card, Input } from 'antd'
 import { useState } from 'react'
 
-export default function Login() {
+export default function Signup() {
 
   const [loading, setLoading] = useState(false)
-
+  const createSuccess = () => toast.success('Account created sucessfully.');
 
   const handleSubmit = async (values) => {
 
@@ -19,6 +19,7 @@ export default function Login() {
       body: JSON.stringify(values)
     })
     setLoading(false)
+    createSuccess();
 
     if (res.ok) {
       const data = await res.json();
@@ -30,7 +31,7 @@ export default function Login() {
   return (
     <div className="h-screen flex items-center justify-center">
       <Card className="w-1/4 shadow-lg p-4">
-        <h3 className="pb-3 flex">Sign Up to create an account.</h3>
+        <h3 className="pb-3 flex items-center">Sign Up to create an account.</h3>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="name"

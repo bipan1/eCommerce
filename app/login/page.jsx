@@ -25,7 +25,6 @@ export default function Login() {
   const handleSubmit = async (values) => {
     setLoading(true)
     const { email, password } = values
-    console.log(values);
 
     try {
       let res = await signIn('credentials', {

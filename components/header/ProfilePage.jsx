@@ -8,8 +8,7 @@ import { RiAccountCircleLine } from "react-icons/ri";
 
 
 export default function Profilepage({ profileinfo }) {
-
-    const router = useRouter();
+    const router = useRouter()
 
     return <div className='w-64 p-0'>
 
@@ -28,10 +27,10 @@ export default function Profilepage({ profileinfo }) {
                 <BsTelephoneOutbound size={20} />
                 Contact Support
             </div>
-            <div onClick={() => router.push('/admin/category')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
+            {profileinfo.user.isAdmin && <div onClick={() => router.push('/admin/category')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
                 <RiAccountCircleLine size={20} />
                 Admin
-            </div>
+            </div>}
             <div onClick={() => signOut()} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
                 <TbLogout size={20} />
                 Logout

@@ -6,6 +6,16 @@
   padding: 0 !important;
 }
 
+.mainsearch {
+  .ant-input-affix-wrapper input {
+    background-color: rgb(76 175 80);
+    color: white;
+  }
+
+}
+
+
+
 /* .StripeElement {
   display: block;
   box-sizing: border-box;

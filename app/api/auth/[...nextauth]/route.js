@@ -11,7 +11,7 @@ const authOptions = {
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const userCredentials = {
           email: credentials.email,
           password: credentials.password,
@@ -28,7 +28,6 @@ const authOptions = {
           )
 
           if (res) {
-            console.log(res)
             const user = res.data
             return user
           } else {
@@ -58,12 +57,14 @@ const authOptions = {
   callbacks: {
     async session({ session, token, user }) {
       session.user.id = token.user_id
+      session.user.isAdmin = token.isAdmin
       return await session
     },
 
     async jwt({ token, user }) {
       if (user) {
         token.user_id = user.id
+        token.isAdmin = user.isAdmin
       }
       return await token
     },
