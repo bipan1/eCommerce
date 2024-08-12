@@ -47,8 +47,8 @@ export default function Header() {
     <div>
       <header
         style={{ backgroundColor: '#4CAF50' }}
-        className={` text-white top-0 border-b border-black-600 left-0 z-[1000] flex w-full items-center
-          ${sticky ? '!fixed !z-[10000] shadow-sticky backdrop:blur-sm !transition !duration-700' : 'absolute'}
+        className={` text-white border-b border-black-600 left-0 z-[1000] flex w-full items-center
+          ${sticky ? '!fixed top-0 !z-[10000] shadow-sticky backdrop:blur-sm !transition !duration-700' : ''}
     `}
       >
         <div className="container">

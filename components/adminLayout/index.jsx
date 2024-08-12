@@ -37,34 +37,36 @@ export default function AdminPageLayout({ children }) {
 
     return (
         <AdminPrivateRoute>
-            <Layout style={{ minHeight: '100vh' }}>
-                <Sider width={200} className="site-layout-background">
-                    <Menu
-                        mode="inline"
-                        defaultSelectedKeys={[selectedKey]}
-                        selectedKeys={[selectedKey]}
-                        style={{ height: '100%', borderRight: 0 }}
-                    >
-                        <Menu.Item key="1" icon={<UserOutlined />}>
-                            <Link href="/admin/category">Category</Link>
-                        </Menu.Item>
-                        <Menu.Item key="2" icon={<FileTextOutlined />}>
-                            <Link href="/admin/products">Products</Link>
-                        </Menu.Item>
-                        <Menu.Item key="3" icon={<DashboardOutlined />}>
-                            <Link href="/admin/orders">Orders</Link>
-                        </Menu.Item>
-                        <Menu.Item key="4" icon={<DashboardOutlined />}>
-                            <Link href="/admin/notices">Notices</Link>
-                        </Menu.Item>
-                    </Menu>
-                </Sider>
-                <Layout style={{ padding: '0 24px', minHeight: 280 }}>
-                    <Content style={{ padding: 24, margin: 0, minHeight: 280 }}>
-                        {children}
-                    </Content>
+            <div>
+                <Layout style={{ minHeight: '100vh' }}>
+                    <Sider width={200} className="site-layout-background">
+                        <Menu
+                            mode="inline"
+                            defaultSelectedKeys={[selectedKey]}
+                            selectedKeys={[selectedKey]}
+                            style={{ height: '100%', borderRight: 0 }}
+                        >
+                            <Menu.Item key="1" icon={<UserOutlined />}>
+                                <Link href="/admin/category">Category</Link>
+                            </Menu.Item>
+                            <Menu.Item key="2" icon={<FileTextOutlined />}>
+                                <Link href="/admin/products">Products</Link>
+                            </Menu.Item>
+                            <Menu.Item key="3" icon={<DashboardOutlined />}>
+                                <Link href="/admin/orders">Orders</Link>
+                            </Menu.Item>
+                            <Menu.Item key="4" icon={<DashboardOutlined />}>
+                                <Link href="/admin/notices">Notices</Link>
+                            </Menu.Item>
+                        </Menu>
+                    </Sider>
+                    <Layout style={{ padding: '0 24px', minHeight: 280 }}>
+                        <Content style={{ padding: 24, margin: 0, minHeight: 280 }}>
+                            {children}
+                        </Content>
+                    </Layout>
                 </Layout>
-            </Layout>
+            </div>
         </AdminPrivateRoute>
     )
 }

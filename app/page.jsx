@@ -16,9 +16,9 @@ export default function Home() {
   }, [])
 
   return <div>
-    <div className='relative z-[10] overflow-hidden px-20 mx-20'>
+    <div className='mt-10 relative z-[10] overflow-hidden px-20 mx-20'>
       <div>
-        <div className="mt-10 mx-auto flex gap-4 flex-wrap">
+        <div className="mx-auto flex gap-4 flex-wrap">
           {products.map(product => {
             return <div>
               <ProductDisplay product={product} />

@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
                 />
                 <Header />
                 <Spinner />
-                <div className="mt-20">{children}</div>
+                <div>{children}</div>
                 <Cart />
               </NextAuthProvider>
             </ReduxProvider>

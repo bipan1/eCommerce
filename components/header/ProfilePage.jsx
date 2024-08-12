@@ -12,7 +12,7 @@ export default function Profilepage({ profileinfo }) {
 
     return <div className='w-64 p-0'>
 
-        <div onClick={() => router.push('/account/contact')} className='border-b p-2 border-gray-400 cursor-pointer'>
+        <div onClick={() => router.push('/account')} className='border-b p-2 border-gray-400 cursor-pointer'>
             <div className='hover:bg-gray-300 hover:rounded-md flex p-2'>
 
                 <div className='ml-5 items-center'>

@@ -69,12 +69,12 @@ export default function CheckoutForm({ clientSecret }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-4 w-1/3">
+        <div className="bg-white">
             <form id="payment-form" onSubmit={handleSubmit}>
-                <label className="mb-2">Full Name</label>
-                <Input type="text" placeholder="Enter Full Name" className="mb-2" />
-                <PaymentElement id="payment-element" options={paymentElementOptions} />
-                <Button htmlType="submit" className="text-white bg-blue-600 mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
+                <label className="">Full name</label>
+                <Input size="large" type="text" placeholder="Card holder name" className="mb-3" />
+                <PaymentElement className="mt-2" id="payment-element" options={paymentElementOptions} />
+                <Button size="large" htmlType="submit" className="!bg-green-500 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
                     Pay Now
                 </Button>
                 {message && <div id="payment-message">{message}</div>}

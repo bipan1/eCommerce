@@ -3,11 +3,15 @@ import { closeBag } from '@/redux/features/bag-slice';
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from './CartItem';
 import { useEffect, useState } from 'react';
+import { Button } from 'antd';
+import { useRouter } from 'next/navigation';
+
 
 export default function Cart() {
     const [subTotal, setSubTotal] = useState(0);
 
     const dispatch = useDispatch()
+    const router = useRouter()
 
 
     const bag = useSelector((state) => state.bag);
@@ -22,13 +26,16 @@ export default function Cart() {
         setSubTotal(iTotal);
     }, [bag])
 
+    const handleChekout = () => {
+        handleCancel();
+        router.push('/checkout')
+    }
+
 
 
     return <>
         {isBagOpen && <div class="relative z-[100000]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
             <div class="fixed inset-0 overflow-hidden">
                 <div class="absolute inset-0 overflow-hidden">
                     <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
@@ -63,9 +70,8 @@ export default function Cart() {
                                         <p>${subTotal}</p>
                                     </div>
                                     <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                                    <div class="mt-6">
-                                        <a href="#" class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700">Checkout</a>
-                                    </div>
+                                    <Button size='large' onClick={handleChekout} className="!bg-green-500 w-full mt-5 !text-white">Checkout</Button>
+
                                     <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
                                         <p>
                                             or
@@ -81,6 +87,6 @@ export default function Cart() {
                     </div>
                 </div>
             </div>
-        </div>}
+        </div >}
     </>
 }

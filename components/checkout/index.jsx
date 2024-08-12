@@ -12,7 +12,6 @@ export default function Checkout() {
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
-
         async function makePaymentIntent() {
             const { data } = await axios.post('http://localhost:3000/api/stripe', {
                 amount: 100
