@@ -78,7 +78,7 @@ export default function AddressForm() {
     };
 
     return (
-        <div className="mb-8">
+        <div className="mb-2">
             <input onChange={handleChange} name="addressLine" value={places ? places.addressLine : ''} className="border w-full h-10 rounded-md px-4 mb-4 text-lg focus:outline-none focus:ring-1 focus:ring-blue-500" ref={inputRef} type="text" />
             <div className="grid lg:grid-cols-3 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-4">
                 <Input
@@ -90,7 +90,6 @@ export default function AddressForm() {
                     value={places ? places.suburb : ''}
                 />
                 <Input onChange={handleChange} name="state" value={places ? places.state : ''} size="large" type='text' placeholder="State" />
-
 
                 <Input onChange={handleChange} name="postcode" value={places ? places.postcode : ''} size="large" type='text' placeholder='Post code' />
             </div>

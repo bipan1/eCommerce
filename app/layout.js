@@ -11,7 +11,7 @@ import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-gray-100">
+      <body style={{ backgroundColor: '#fbfaf7' }}>
         <main>
           <AntdStyledComponentsRegistry>
             <ReduxProvider>

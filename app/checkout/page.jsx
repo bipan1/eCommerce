@@ -2,19 +2,34 @@
 import Checkout from "components/checkout"
 import { useDispatch, useSelector } from 'react-redux';
 import AddressForm from "components/address/addressForm";
-import { Form, Input, Radio } from "antd";
-import { useState } from "react";
-import { useSession } from 'next-auth/react'
+import { Input, Radio, Checkbox } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import { useSession } from 'next-auth/react';
 
 
 export default function CheckoutPage() {
-    const [ship, setShip] = useState('delivery')
+    const [shippingMethod, setShippingMethod] = useState('delivery');
+    const [useAddress, setUseAddress] = useState(false);
+
+    useEffect(() => {
+
+    }, [useAddress])
 
     const { data: session } = useSession()
 
+    const handleShippingChange = (e) => {
+        setShippingMethod(e.target.value)
+    }
+
 
     const bag = useSelector((state) => state.bag);
-    const { isBagOpen, items } = bag;
+    const { items } = bag;
+
+    const subTotal = useMemo(() => {
+        return items.reduce((total, item) => total + item.quantity * item.price, 0);
+    }, [bag]);
+
+    console.log(subTotal);
 
     return <div className="">
         <div className="flex w-full lg:flex lg:items-start lg:gap-12">
@@ -28,7 +43,7 @@ export default function CheckoutPage() {
                         <Input className="" placeholder="Enter email" size="large" />
                     </div>}
                     <p class="text-xl mt-8 font-medium">Shipping Method</p>
-                    <Radio.Group>
+                    <Radio.Group onChange={handleShippingChange} value={shippingMethod}>
                         <Radio className="text-gray-400" value="delivery"> Delivery </Radio>
                         <Radio className="text-gray-400" value="pickup"> Pick Up </Radio>
                     </Radio.Group>
@@ -42,13 +57,14 @@ export default function CheckoutPage() {
                         />
                     </div>
                     <AddressForm />
-                    <p class="text-xl mt-3 font-medium">Payment Details</p>
+                    <Checkbox onChange={(e) => setUseAddress(e.target.checked)}>Use saved address</Checkbox>
+                    <p class="text-xl mt-8 font-medium">Payment Details</p>
                     <p class="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
                     <Checkout />
                 </div>
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 mb-10">
                 <h1 className="mt-2 text-lg">Order Summary</h1>
                 <div class="flow-root">
                     <ul role="list" class="-my-2 w-1/2 mt-5">
@@ -78,7 +94,7 @@ export default function CheckoutPage() {
                         <div class="mt-6 border-t border-b py-2">
                             <div class="flex items-center justify-between">
                                 <p class="text-sm font-medium text-gray-900">Subtotal</p>
-                                <p class="font-semibold text-gray-900">$399.00</p>
+                                <p class="font-semibold text-gray-900">{subTotal}</p>
                             </div>
                             <div class="flex items-center justify-between">
                                 <p class="text-sm font-medium text-gray-900">Shipping</p>
@@ -87,7 +103,7 @@ export default function CheckoutPage() {
                         </div>
                         <div class="mt-6 flex items-center justify-between">
                             <p class="text-sm font-medium text-gray-900">Total</p>
-                            <p class="text-2xl font-semibold text-gray-900">$408.00</p>
+                            <p class="text-2xl font-semibold text-gray-900">{subTotal + 8.00}</p>
                         </div>
                     </div>
                 </div>
