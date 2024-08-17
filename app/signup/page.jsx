@@ -29,9 +29,9 @@ export default function Signup() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center">
+    <div className="mt-10 flex items-center justify-center">
       <Card className="w-1/4 shadow-lg p-4">
-        <h3 className="pb-3 flex items-center">Sign Up to create an account.</h3>
+        <h2 className="pb-3 text-lg text-center">Sign Up to create an account.</h2>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="name"
@@ -80,7 +80,7 @@ export default function Signup() {
           </Form.Item>
 
           <Form.Item>
-            <Button loading={loading} htmlType='submit' className="w-full h-12 bg-blue-400 border border-blue mb-3">
+            <Button loading={loading} htmlType='submit' className="w-full h-12 !bg-green-600 !text-white  mb-3">
               <span className="ml-3">Sign Up</span>
             </Button>
           </Form.Item>

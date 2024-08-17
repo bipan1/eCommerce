@@ -6,20 +6,32 @@ import { FaMinus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
 import { addItem } from '@/redux/features/bag-slice';
 import { useDispatch } from 'react-redux';
+import { convertToFloat } from "utils";
+import { useRouter } from "next/navigation";
 
 export default function ProductDisplay({ product }) {
     const [count, setCount] = useState(1);
 
+    const router = useRouter();
+
     const dispatch = useDispatch();
 
-    const handleDecreaseCount = () => {
+    const handleDecreaseCount = (e) => {
+        e.stopPropagation();
+
         if (count <= 1) {
             return;
         }
         setCount(count - 1);
     }
 
-    const handleAddToBag = () => {
+    const handleIncreaseCount = (e) => {
+        e.stopPropagation();
+        setCount(count + 1);
+    }
+
+    const handleAddToBag = (e) => {
+        e.stopPropagation();
         dispatch(addItem({
             productId: product.id,
             quantity: count,
@@ -29,28 +41,33 @@ export default function ProductDisplay({ product }) {
         }));
     }
 
-    return <div style={{ width: 300 }} className="relative w-full flex max-w-xs flex-col overflow-hidden rounded-lg border hover:shadow-2xl border-gray-100 bg-white shadow-md">
-        <a className="relative flex h-60 overflow-hidden" href="#">
-            <img style={{ aspectRatio: 'auto', width: '100%' }} className=" object-cover" src={product.image} alt="product image" />
-            {product.isSpecial && <span class="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Special</span>}
+    const handleCardClick = (e) => {
+        e.preventDefault();
+        router.push(`/products/${product.id}`)
+    }
+
+    return <div className="relative w-full flex max-w-xs flex-col overflow-hidden rounded-lg border hover:shadow-2xl border-gray-100 bg-gray-50 shadow-md">
+        <a onClick={handleCardClick} className="relative flex overflow-hidden" href="#">
+            <img style={{ aspectRatio: 'auto', width: '100%', maxHeight: '16vh' }} className=" object-cover" src={product.image} alt="product image" />
+            {product.isSpecial && <span class="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Special Offer</span>}
             {product.outofStock && <span class="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Out of stock</span>}
         </a>
         <div class="mt-3 px-5 pb-5">
-            <a href="#">
-                <h5 class="text-xl tracking-tight text-slate-900">{product.name}</h5>
+            <a onClick={handleCardClick} href="#">
+                <p class="tracking-tight maintain font-medium text-gray-600">{product.name}</p>
             </a>
             <div className="mt-2 mb-3 flex items-center justify-between">
                 <p>
-                    <span className="text-3xl font-bold text-slate-900">${product.isSpecial ? product.specialPrice : product.price}</span>
-                    {product.isSpecial && <span className="ml-2 text-md text-slate-900 line-through">${product.price}</span>}
+                    <span className="italic text-2xl font-bold text-green-600">${product.isSpecial ? convertToFloat(product.specialPrice) : convertToFloat(product.price)}</span>
+                    {product.isSpecial && <span className="italic ml-2 text-md text-green-600 line-through">${convertToFloat(product.price)}</span>}
                 </p>
             </div>
             <div className="flex items-center justify-between mb-2">
-                <Button onClick={() => setCount(count + 1)} icon={<FaPlus />} size='large' shape="circle" className="!flex !items-center !justify-center !border-black" />
+                <Button onClick={handleIncreaseCount} icon={<FaPlus />} shape="circle" className="!flex !items-center !justify-center !border-black" />
                 <span className="text-xl">{count}</span>
-                <Button onClick={handleDecreaseCount} size='large' icon={<FaMinus />} shape="circle" className="!flex !items-center !justify-center !border-black" />
+                <Button onClick={handleDecreaseCount} icon={<FaMinus />} shape="circle" className="!flex !items-center !justify-center !border-black" />
             </div>
-            <Button onClick={handleAddToBag} className="!border-black w-full" size="large" icon={<LuShoppingCart size={18} />} >Add to cart</Button>
+            <Button onClick={handleAddToBag} className="!border-black w-full" icon={<LuShoppingCart size={16} />} >Add to cart</Button>
         </div>
     </div>
 }

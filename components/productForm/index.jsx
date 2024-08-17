@@ -106,7 +106,7 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
                 <span className="ml-2">Back</span>
             </Button >
             <Card className="w-2/3 shadow-lg p-4s">
-                <h1>Create a product</h1>
+                <h2 className='text-lg mb-2 text-medium'>Create a product</h2>
                 <Form form={form} name="create-product" layout="vertical" onFinish={handleCreateProduct}>
 
                     <div>

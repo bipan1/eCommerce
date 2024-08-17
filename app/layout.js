@@ -7,6 +7,10 @@ import 'react-toastify/dist/ReactToastify.css'
 import Cart from '../components/cart'
 import Spinner from '../components/spinner'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
+import Footer from 'components/footer'
+import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loader
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
 export default function RootLayout({ children }) {
   return (
@@ -23,7 +27,8 @@ export default function RootLayout({ children }) {
                 />
                 <Header />
                 <Spinner />
-                <div>{children}</div>
+                <div className="pt-16">{children}</div>
+                <Footer />
                 <Cart />
               </NextAuthProvider>
             </ReduxProvider>

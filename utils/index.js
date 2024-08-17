@@ -47,3 +47,9 @@ export const exclude = (target, keys) => {
   }
   return target
 }
+
+export const convertToFloat = (price_string) => {
+  const float_price = parseFloat(price_string)
+  const rounded_price = float_price.toFixed(2)
+  return rounded_price.toString()
+}

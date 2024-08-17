@@ -91,7 +91,7 @@ export default function Category() {
 
     return (
         <AdminPageLayout>
-            <Button onClick={() => setCreateModel(true)} className='mb-5 bg-blue-400' type='primary'><FaPlus className='inline' /><span className='ml-4'>Create Category</span></Button>
+            <Button onClick={() => setCreateModel(true)} className='mb-5 !bg-green-600' type='primary'><FaPlus className='inline' /><span className='ml-4'>Create Category</span></Button>
             {categories.map((item, i) =>
                 <CategoryItems categories={categories} item={item} handleCategoryDelete={handleCategoryDelete} handleCategoryEdit={handleCategoryEdit} />
             )}

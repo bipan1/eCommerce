@@ -1,10 +1,11 @@
 'use client'
 import Checkout from "components/checkout"
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import AddressForm from "components/address/addressForm";
 import { Input, Radio, Checkbox } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from 'next-auth/react';
+import { convertToFloat } from "utils";
 
 
 export default function CheckoutPage() {
@@ -94,7 +95,7 @@ export default function CheckoutPage() {
                         <div class="mt-6 border-t border-b py-2">
                             <div class="flex items-center justify-between">
                                 <p class="text-sm font-medium text-gray-900">Subtotal</p>
-                                <p class="font-semibold text-gray-900">{subTotal}</p>
+                                <p class="font-semibold text-gray-900">${convertToFloat(subTotal)}</p>
                             </div>
                             <div class="flex items-center justify-between">
                                 <p class="text-sm font-medium text-gray-900">Shipping</p>
@@ -103,7 +104,7 @@ export default function CheckoutPage() {
                         </div>
                         <div class="mt-6 flex items-center justify-between">
                             <p class="text-sm font-medium text-gray-900">Total</p>
-                            <p class="text-2xl font-semibold text-gray-900">{subTotal + 8.00}</p>
+                            <p class="text-2xl font-semibold text-gray-900">${convertToFloat(subTotal + 8.00)}</p>
                         </div>
                     </div>
                 </div>

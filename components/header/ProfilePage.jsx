@@ -1,10 +1,10 @@
 
 'use client';
-import { BsTelephoneOutbound } from 'react-icons/bs'
 import { TbLogout } from 'react-icons/tb'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation';
 import { RiAccountCircleLine } from "react-icons/ri";
+import { SlNotebook } from "react-icons/sl";
 
 
 export default function Profilepage({ profileinfo }) {
@@ -23,9 +23,9 @@ export default function Profilepage({ profileinfo }) {
         </div>
 
         <div className='p-4'>
-            <div className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
-                <BsTelephoneOutbound size={20} />
-                Contact Support
+            <div onClick={() => router.push('/myorders')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
+                <SlNotebook size={20} />
+                My Orders
             </div>
             {profileinfo.user.isAdmin && <div onClick={() => router.push('/admin/category')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
                 <RiAccountCircleLine size={20} />

@@ -7,7 +7,9 @@ export const fetchProducts = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get('http://localhost:3000/api/product')
-      return response.data.flattenProducts
+      const products = response.data.flattenProducts
+      const specials = products.filter((product) => product.isSpecial)
+      return { products, specials }
     } catch (error) {
       throw error
     }
@@ -18,6 +20,7 @@ const initialState = {
   loading: false,
   error: null,
   data: [],
+  specials: [],
 }
 
 export const products = createSlice({
@@ -48,8 +51,10 @@ export const products = createSlice({
       state.loading = true
     })
     builder.addCase(fetchProducts.fulfilled, (state, action) => {
+      const { specials, products } = action.payload
       state.loading = false
-      state.data = action.payload
+      state.data = products
+      state.specials = specials
     })
     builder.addCase(fetchProducts.rejected, (state) => {
       state.loading = false

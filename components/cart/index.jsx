@@ -5,6 +5,7 @@ import CartItem from './CartItem';
 import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
+import { convertToFloat } from 'utils';
 
 
 export default function Cart() {
@@ -55,19 +56,25 @@ export default function Cart() {
                                         </div>
                                     </div>
 
-                                    <div class="mt-8">
+                                    {items.length > 0 ? <div class="mt-8">
                                         <div class="flow-root">
                                             <ul role="list" class="-my-6 divide-y divide-gray-200">
                                                 {items.map(item => <CartItem item={item} />)}
                                             </ul>
                                         </div>
-                                    </div>
+                                    </div> :
+                                        <div className='text-gray-500 flex flex-col items-center justify-center'>
+                                            <img src="/emptycart.png" className='mt-10 w-60 h-50 mb-4' alt="Empty cart" />
+                                            <p className='text-center mb-4'>Your cart is currently empty.</p>
+                                            <p className='text-center mb-6'>Before heading to checkout, you must add some items to your cart.</p>
+                                        </div>
+                                    }
                                 </div>
 
                                 <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
                                     <div class="flex justify-between text-base font-medium text-gray-900">
                                         <p>Subtotal</p>
-                                        <p>${subTotal}</p>
+                                        <p>${convertToFloat(subTotal)}</p>
                                     </div>
                                     <p class="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                                     <Button size='large' onClick={handleChekout} className="!bg-green-500 w-full mt-5 !text-white">Checkout</Button>

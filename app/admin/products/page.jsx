@@ -41,7 +41,7 @@ export default function Products() {
         <AdminPageLayout>
             {!isCreate ? (
                 <>
-                    <Button onClick={() => setIsCreate(true)} className='mb-5 bg-blue-400' type='primary'><FaPlus className='inline' /><span className='ml-4'>Create Product</span></Button>
+                    <Button onClick={() => setIsCreate(true)} className='mb-5 !bg-green-600' type='primary'><FaPlus className='inline' /><span className='ml-4'>Create Product</span></Button>
                     <div className="flex gap-4 flex-wrap" >
                         {products.map((item, i) =>
                             <div onClick={() => { }} key={item.id}>

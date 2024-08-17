@@ -42,9 +42,9 @@ export default function Login() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center">
+    <div className="mt-10 flex items-center justify-center">
       <Card className="w-1/4 shadow-lg p-4">
-        <h3 className="pb-3">Log in to your account</h3>
+        <h2 className="text-lg text-center pb-3">Log in to your account</h2>
         <Form name="login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="email"
@@ -92,7 +92,7 @@ export default function Login() {
             <Button
               htmlType="submit"
               loading={loading}
-              className="w-full h-12 bg-blue-400 border border-blue mb-3"
+              className="w-full h-12 !bg-green-600 !text-white mb-3"
             >
               <span className="ml-3">Login</span>
             </Button>
