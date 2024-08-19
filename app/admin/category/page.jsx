@@ -2,13 +2,13 @@
 
 import { toast } from 'react-toastify'
 import { Button, Form, Input, Modal } from "antd";
-import axios from "axios";
 import AdminPageLayout from "components/adminLayout";
 import { useState } from "react";
 import CategoryItems from "components/categoryItems";
 import { FaPlus } from "react-icons/fa"
 import { useSelector, useDispatch } from 'react-redux';
 import { removeCategory, addCategory, editCategory } from '@/redux/features/category-slice';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function Category() {
     const [createModel, setCreateModel] = useState(false);
@@ -33,11 +33,7 @@ export default function Category() {
 
         if (isEdit) {
             try {
-                const response = await axios.put('http://localhost:3000/api/category', { name, id: selectedCategory.id }, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axiosApiCall('/category', 'PUT', { name, id: selectedCategory.id })
                 const updatedCategory = response.data.category
                 dispatch(editCategory(updatedCategory));
                 setModelLoading(false)
@@ -49,11 +45,7 @@ export default function Category() {
             }
         } else {
             try {
-                const response = await axios.post('http://localhost:3000/api/category', { name }, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axiosApiCall('/category', 'POST', { name });
                 const createdCategory = { ...response.data.category, subcategories: [] }
                 dispatch(addCategory(createdCategory))
                 setModelLoading(false)
@@ -67,7 +59,7 @@ export default function Category() {
 
     const handleCategoryDelete = async (id) => {
         try {
-            await axios.delete(`http://localhost:3000/api/category`, { data: { id } });
+            await axiosApiCall('/category', 'DELETE', { data: { id } })
             dispatch(removeCategory(id))
             deleteSuccess();
         } catch (err) {

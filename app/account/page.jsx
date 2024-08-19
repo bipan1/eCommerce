@@ -1,9 +1,9 @@
 'use client';
 import { Button, Card, Form, Input } from "antd";
-import axios from "axios";
 import AddressForm from "components/address/addressForm";
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from "react";
+import { axiosApiCall } from "utils/axiosApiCall";
 
 export default function Account() {
     const [places, setPlaces] = useState({})
@@ -11,12 +11,7 @@ export default function Account() {
 
     const handleAddressSubmit = async () => {
         try {
-            await axios.post('http://localhost:3000/api/address', places, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
+            await axiosApiCall(`/address`, 'POST', places);
         } catch (error) {
             console.log(error)
         }
@@ -24,11 +19,11 @@ export default function Account() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const response = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+            const response = await axiosApiCall(`/user/${session.user.id}`);
             const user = response.data.user;
 
             if (user.addressId) {
-                const response = await axios.get(`http://localhost:3000/api/address/${user.addressId}`);
+                const response = await axiosApiCall(`/address/${user.addressId}`);
                 const address = response.data.address;
                 setPlaces({
                     addressLine: address.addressLine,

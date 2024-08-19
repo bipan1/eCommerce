@@ -2,7 +2,6 @@
 
 import { toast } from 'react-toastify'
 import { Button } from "antd";
-import axios from "axios";
 import AdminPageLayout from "components/adminLayout";
 import ProductForm from "components/productForm";
 import { useState } from "react";
@@ -10,6 +9,7 @@ import { FaPlus } from "react-icons/fa";
 import ProductCard from "components/products/productCard";
 import { useSelector, useDispatch } from 'react-redux';
 import { removeProduct } from '@/redux/features/products-slice';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function Products() {
     const deleteSuccess = () => toast.success('Product Deleted Sucessfully.')
@@ -29,7 +29,7 @@ export default function Products() {
 
     const deleteProduct = async (productId) => {
         try {
-            await axios.delete(`http://localhost:3000/api/product`, { data: { id: productId } });
+            await axiosApiCall('/product', 'DELETE', { data: { id: productId } })
             dispatch(removeProduct(productId))
             deleteSuccess();
         } catch (err) {

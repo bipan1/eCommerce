@@ -1,6 +1,6 @@
 'use client';
 import { Input } from "antd";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useLoadScript } from "@react-google-maps/api";
 
 const libraries = ["places"];
@@ -11,7 +11,7 @@ export default function AddressForm({ places, setPlaces }) {
 
 
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: 'AIzaSyDNvvirt8vBCPSUzMoaLisNkjdPEzptIcE',
+        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
         libraries,
     });
 

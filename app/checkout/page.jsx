@@ -6,11 +6,11 @@ import { Input, Radio } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from 'next-auth/react';
 import { convertToFloat } from "utils";
-import axios from "axios";
+import { axiosApiCall } from "utils/axiosApiCall";
 
 
 export default function CheckoutPage() {
-    const [shippingMethod, setShippingMethod] = useState('delivery');
+    // const [shippingMethod, setShippingMethod] = useState('delivery');
     const [places, setPlaces] = useState({});
     const [fullName, setFullName] = useState();
     const [email, setEmail] = useState();
@@ -18,17 +18,17 @@ export default function CheckoutPage() {
 
     const { data: session } = useSession()
 
-    const handleShippingChange = (e) => {
-        setShippingMethod(e.target.value)
-    }
+    // const handleShippingChange = (e) => {
+    //     setShippingMethod(e.target.value)
+    // }
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const response = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+            const response = await axiosApiCall(`/user/${session.user.id}`)
             const user = response.data.user;
 
             if (user.addressId) {
-                const response = await axios.get(`http://localhost:3000/api/address/${user.addressId}`);
+                const response = await axiosApiCall(`/address/${user.addressId}`);
                 const address = response.data.address;
                 setPlaces({
                     addressLine: address.addressLine,
@@ -64,11 +64,13 @@ export default function CheckoutPage() {
                         <p class="text-xl font-medium">Contact</p>
                         <Input required value={email} onChange={(e) => setEmail(e.target.value)} className="" placeholder="Enter email" size="large" />
                     </div>}
-                    <p class="text-xl mt-8 font-medium">Shipping Method</p>
+
+                    {/* <p class="text-xl mt-8 font-medium">Shipping Method</p>
                     <Radio.Group onChange={handleShippingChange} value={shippingMethod}>
                         <Radio className="text-gray-400" value="delivery"> Delivery </Radio>
                         <Radio className="text-gray-400" value="pickup"> Pick Up </Radio>
-                    </Radio.Group>
+                    </Radio.Group> */}
+
                     <p class="text-xl mt-8 font-medium">Delivery Details</p>
                     <p class="text-gray-400 text-sm mb-3">Address where product is delivered.</p>
                     <div className="mb-2">
@@ -87,7 +89,7 @@ export default function CheckoutPage() {
                     />
                     <p class="text-xl mt-8 font-medium">Payment Details</p>
                     <p class="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
-                    <Payment places={places} email={email} fullName={fullName} shippingMethod={shippingMethod} phoneNumber={phoneNumber} />
+                    <Payment places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
                 </div>
             </div>
 

@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Table, } from 'antd';
+import { axiosApiCall } from "utils/axiosApiCall";
 
 export default function Myorders() {
     const [orders, setOrders] = useState([]);
@@ -27,7 +28,7 @@ export default function Myorders() {
 
     useEffect(() => {
         const fetchOrders = async () => {
-            const response = await axios.get(`http://localhost:3000/api/order/myorders`)
+            const response = await axiosApiCall('/order/myorders');
             setOrders(response.data.orders)
         }
         fetchOrders()

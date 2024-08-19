@@ -10,6 +10,7 @@ import { LeftOutlined } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProduct, editProduct } from '@/redux/features/products-slice';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
@@ -70,18 +71,10 @@ export default function ProductForm({ setIsCreate, selectedProduct, setSelectedP
         setLoading(true);
         try {
             if (selectedProduct) {
-                response = await axios.put('http://localhost:3000/api/product', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+                response = await axiosApiCall('/product', 'PUT', formData);
                 dispatch(editProduct({ ...response.data.product, categoryId }))
             } else {
-                response = await axios.post('http://localhost:3000/api/product', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
+                response = await axiosApiCall('/product', 'POST', formData)
                 dispatch(addProduct({ ...response.data.product, categoryId }))
                 form.resetFields();
             }

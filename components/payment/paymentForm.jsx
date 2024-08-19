@@ -5,14 +5,15 @@ import {
     useElements
 } from "@stripe/react-stripe-js";
 import { Button, Input } from "antd";
-import axios from "axios";
 import { useSelector } from 'react-redux';
 import { useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
+import { axiosApiCall } from "utils/axiosApiCall";
 
-export default function PaymentForm({ clientSecret, places, email, fullName, shippingMethod, phoneNumber }) {
+export default function PaymentForm({ clientSecret, places, email, fullName, phoneNumber }) {
     const stripe = useStripe();
     const elements = useElements();
-
+    const router = useRouter();
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const bag = useSelector((state) => state.bag);
@@ -57,10 +58,9 @@ export default function PaymentForm({ clientSecret, places, email, fullName, shi
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                // return_url: "http://localhost:3000",
+                // return_url: omitted
             },
             redirect: 'if_required',
-
 
         });
 
@@ -74,11 +74,11 @@ export default function PaymentForm({ clientSecret, places, email, fullName, shi
         } else if (paymentIntent.status === "succeeded") {
 
             if (session) {
-                const userRes = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+                const userRes = await axiosApiCall(`/user/${session.user.id}`);
                 addressId = userRes.data.user.addressId;
             }
 
-            const order = await axios.post('http://localhost:3000/api/order', {
+            const order = await axiosApiCall('/order', 'POST', {
                 products: items,
                 shippingAddressId: addressId,
                 addressData: places,
@@ -90,14 +90,11 @@ export default function PaymentForm({ clientSecret, places, email, fullName, shi
                     email,
                     phoneNumber
                 }
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
             })
-            console.log(order)
             setIsLoading(false);
         };
+
+        router.push('/paymentsuccess')
     }
 
     const paymentElementOptions = {

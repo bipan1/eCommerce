@@ -4,9 +4,9 @@ import { Button, Dropdown, Input } from "antd"
 import { RiDeleteBin5Line } from "react-icons/ri";
 import SubCategoryItem from "./subCategoryItem";
 import { useState } from "react";
-import axios from "axios";
 import { addSubcategory, removeSubcategory } from '@/redux/features/category-slice';
 import { useDispatch } from 'react-redux';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function CategoryItems({ item, handleCategoryEdit, handleCategoryDelete }) {
 
@@ -20,11 +20,7 @@ export default function CategoryItems({ item, handleCategoryEdit, handleCategory
     const dispatch = useDispatch();
     const addNewSubCategory = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/api/subcategory', { name, categoryId: item.id }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axiosApiCall('/subcategory', 'POST', { name, categoryId: item.id });
             setName('');
             const createdSubCategory = response.data.category
             dispatch(addSubcategory(createdSubCategory))
@@ -37,11 +33,7 @@ export default function CategoryItems({ item, handleCategoryEdit, handleCategory
     const handleDeleteSubcategory = async (subCatId) => {
 
         try {
-            await axios.delete('http://localhost:3000/api/subcategory', { data: { id: subCatId } }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            await axiosApiCall('/subcategory', 'DELETE', { data: { id: subCatId } })
             const data = { categoryId: item.id, subcategoryId: subCatId }
             dispatch(removeSubcategory(data))
             deleteSuccess();

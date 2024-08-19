@@ -4,22 +4,16 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
 import PaymentForm from "./paymentForm";
-import axios from "axios";
+import { axiosApiCall } from "utils/axiosApiCall";
 
-const stripePromise = loadStripe("pk_test_51PlgamJvA4hfRcuyShCcicm4A4SDjYC0C3R8SufXceA12DB3lkCnSkZ9TvWRQJifkm6Of0WUWDY9fvJPoP7UlNUH00XUj4odDn");
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_PUBLISHABLE_KEY);
 
-export default function Payment({ places, email, fullName, shippingMethod, phoneNumber }) {
+export default function Payment({ places, email, fullName, phoneNumber }) {
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
         async function makePaymentIntent() {
-            const { data } = await axios.post('http://localhost:3000/api/stripe', {
-                amount: 100
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const { data } = await axiosApiCall('/stripe', 'POST', { amount: 100 });
             setClientSecret(data.client_secret)
         }
         makePaymentIntent();
@@ -37,7 +31,7 @@ export default function Payment({ places, email, fullName, shippingMethod, phone
         <div className="App">
             {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                    <PaymentForm phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} shippingMethod={shippingMethod} clientSecret={clientSecret} />
+                    <PaymentForm phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} clientSecret={clientSecret} />
                 </Elements>
             )}
         </div>

@@ -2,6 +2,7 @@
 import { toast } from 'react-toastify'
 import { Button, Form, Card, Input } from 'antd'
 import { useState } from 'react'
+import { axiosApiCall } from 'utils/axiosApiCall'
 
 export default function Signup() {
 
@@ -11,13 +12,7 @@ export default function Signup() {
   const handleSubmit = async (values) => {
 
     setLoading(true);
-    const res = await fetch("/api/user/create", {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      body: JSON.stringify(values)
-    })
+    const res = await axiosApiCall('/user/create', 'POST', values);
     setLoading(false)
     createSuccess();
 
