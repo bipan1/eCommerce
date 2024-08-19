@@ -6,12 +6,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import ProductDisplay from "components/products/productDisplay";
 import { Carousel } from 'react-responsive-carousel';
 import Slider from "react-slick";
+import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const dispatch = useDispatch();
   const { data: products, specials } = useSelector((state) => state.products);
   const { data: categories } = useSelector((state) => state.category);
 
+  const router = useRouter();
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -79,8 +82,9 @@ export default function Home() {
               <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
             </h2>
           </div>
-          <div className="float-right text-blue-600">
-            See all
+          <div onClick={() => router.push(`/specials`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+            <p className="mr-2">See all</p>
+            <FaArrowRight />
           </div>
         </div>
 
@@ -107,8 +111,9 @@ export default function Home() {
                       <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
                     </h2>
                   </div>
-                  <div className="float-right text-blue-600">
-                    See all
+                  <div onClick={() => router.push(`/products/categories/${cat.id}`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+                    <p className="mr-2">See all</p>
+                    <FaArrowRight />
                   </div>
 
                 </div>

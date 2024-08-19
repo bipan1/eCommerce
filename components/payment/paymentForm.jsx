@@ -5,13 +5,19 @@ import {
     useElements
 } from "@stripe/react-stripe-js";
 import { Button, Input } from "antd";
+import axios from "axios";
+import { useSelector } from 'react-redux';
+import { useSession } from 'next-auth/react';
 
-export default function CheckoutForm({ clientSecret }) {
+export default function PaymentForm({ clientSecret, places, email, fullName, shippingMethod, phoneNumber }) {
     const stripe = useStripe();
     const elements = useElements();
 
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const bag = useSelector((state) => state.bag);
+    const { items } = bag;
+    const { data: session } = useSession()
 
     useEffect(() => {
         if (!stripe) {
@@ -48,21 +54,51 @@ export default function CheckoutForm({ clientSecret }) {
         }
         setIsLoading(true);
 
-        const { error } = await stripe.confirmPayment({
+        const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: "http://localhost:3000",
+                // return_url: "http://localhost:3000",
             },
+            redirect: 'if_required',
+
+
         });
 
-        if (error.type === "card_error" || error.type === "validation_error") {
-            setMessage(error.message);
-        } else {
-            setMessage("An unexpected error occurred.");
-        }
+        let addressId;
+        if (error) {
+            if (error.type === "card_error" || error.type === "validation_error") {
+                setMessage(error.message);
+            } else {
+                setMessage("An unexpected error occurred.");
+            }
+        } else if (paymentIntent.status === "succeeded") {
 
-        setIsLoading(false);
-    };
+            if (session) {
+                const userRes = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+                addressId = userRes.data.user.addressId;
+            }
+
+            const order = await axios.post('http://localhost:3000/api/order', {
+                products: items,
+                shippingAddressId: addressId,
+                addressData: places,
+                paymentId: paymentIntent.id,
+                paymentMethod: paymentIntent.payment_method,
+                amount: paymentIntent.amount,
+                guestData: {
+                    name: fullName,
+                    email,
+                    phoneNumber
+                }
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            console.log(order)
+            setIsLoading(false);
+        };
+    }
 
     const paymentElementOptions = {
         layout: "tabs",
@@ -74,7 +110,7 @@ export default function CheckoutForm({ clientSecret }) {
                 <label className="">Full name</label>
                 <Input size="large" type="text" placeholder="Card holder name" className="mb-3" />
                 <PaymentElement className="mt-2" id="payment-element" options={paymentElementOptions} />
-                <Button size="large" htmlType="submit" className="!bg-green-500 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
+                <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-500 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
                     Pay Now
                 </Button>
                 {message && <div id="payment-message">{message}</div>}

@@ -104,6 +104,8 @@ model Order {
   id                Int            @id @default(autoincrement())
   user              User?          @relation(fields: [userId], references: [id])
   userId            Int?
+  Guest             Guest?         @relation(fields: [guestId], references: [id])
+  guestId           Int?
   products          OrderProduct[]
   total             Decimal
   shippingAddress   Address        @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
@@ -113,8 +115,6 @@ model Order {
   status            OrderStatus
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
-  Guest             Guest?         @relation(fields: [guestId], references: [id])
-  guestId           Int?
 }
 
 model OrderProduct {

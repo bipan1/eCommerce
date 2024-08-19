@@ -8,7 +8,7 @@ export const getCategoryById = createSelector(
   selectedCategories,
   getCategoryId,
   (categories, categoryId) => {
-    return categories.filter((category) => category.id == categoryId)[0].name
+    return categories.filter((category) => category.id == categoryId)[0]?.name
   },
 )
 

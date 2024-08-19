@@ -1,26 +1,49 @@
 'use client'
-import Checkout from "components/checkout"
+import Payment from "@/components/payment"
 import { useSelector } from 'react-redux';
 import AddressForm from "components/address/addressForm";
-import { Input, Radio, Checkbox } from "antd";
+import { Input, Radio } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from 'next-auth/react';
 import { convertToFloat } from "utils";
+import axios from "axios";
 
 
 export default function CheckoutPage() {
     const [shippingMethod, setShippingMethod] = useState('delivery');
-    const [useAddress, setUseAddress] = useState(false);
-
-    useEffect(() => {
-
-    }, [useAddress])
+    const [places, setPlaces] = useState({});
+    const [fullName, setFullName] = useState();
+    const [email, setEmail] = useState();
+    const [phoneNumber, setPhoneNumber] = useState()
 
     const { data: session } = useSession()
 
     const handleShippingChange = (e) => {
         setShippingMethod(e.target.value)
     }
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const response = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+            const user = response.data.user;
+
+            if (user.addressId) {
+                const response = await axios.get(`http://localhost:3000/api/address/${user.addressId}`);
+                const address = response.data.address;
+                setPlaces({
+                    addressLine: address.addressLine,
+                    suburb: address.suburb,
+                    state: address.state,
+                    postcode: address.postcode
+                })
+            }
+        }
+
+        if (session) {
+            setFullName(session.user.name);
+            fetchUserData();
+        }
+    }, []);
 
 
     const bag = useSelector((state) => state.bag);
@@ -29,8 +52,6 @@ export default function CheckoutPage() {
     const subTotal = useMemo(() => {
         return items.reduce((total, item) => total + item.quantity * item.price, 0);
     }, [bag]);
-
-    console.log(subTotal);
 
     return <div className="">
         <div className="flex w-full lg:flex lg:items-start lg:gap-12">
@@ -41,7 +62,7 @@ export default function CheckoutPage() {
                         <p class="text-gray-400 text-sm">{session.user.email}</p>
                     </div> : <div>
                         <p class="text-xl font-medium">Contact</p>
-                        <Input className="" placeholder="Enter email" size="large" />
+                        <Input required value={email} onChange={(e) => setEmail(e.target.value)} className="" placeholder="Enter email" size="large" />
                     </div>}
                     <p class="text-xl mt-8 font-medium">Shipping Method</p>
                     <Radio.Group onChange={handleShippingChange} value={shippingMethod}>
@@ -55,13 +76,18 @@ export default function CheckoutPage() {
                             type="text"
                             placeholder="Full name"
                             size="large"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
                         />
                     </div>
-                    <AddressForm />
-                    <Checkbox onChange={(e) => setUseAddress(e.target.checked)}>Use saved address</Checkbox>
+                    <AddressForm places={places} setPlaces={setPlaces} />
+                    <Input className="my-2" size="large" type='text' placeholder='Phone number' value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
                     <p class="text-xl mt-8 font-medium">Payment Details</p>
                     <p class="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
-                    <Checkout />
+                    <Payment places={places} email={email} fullName={fullName} shippingMethod={shippingMethod} phoneNumber={phoneNumber} />
                 </div>
             </div>
 

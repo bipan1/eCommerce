@@ -18,6 +18,8 @@ export const auth = createSlice({
           isAuth: true,
           username: action.username,
           email: action.email,
+          id: action.id,
+          addressId: action.addressId,
         },
       }
     },

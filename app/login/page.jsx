@@ -27,13 +27,14 @@ export default function Login() {
     const { email, password } = values
 
     try {
-      let res = await signIn('credentials', {
+      await signIn('credentials', {
         email,
         password,
         callbackUrl: process.env.NEXTAUTH_URL,
         redirect: false,
       })
-      loginSuccess()
+      loginSuccess();
+
       setLoading(false)
     } catch (err) {
       loginFailure()

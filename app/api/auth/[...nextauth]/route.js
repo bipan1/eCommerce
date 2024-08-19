@@ -6,7 +6,7 @@ import axios from 'axios'
 
 const client = new PrismaClient()
 
-const authOptions = {
+export const authOptions = {
   providers: [
     CredentialsProvider({
       id: 'credentials',

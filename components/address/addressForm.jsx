@@ -5,9 +5,8 @@ import { useLoadScript } from "@react-google-maps/api";
 
 const libraries = ["places"];
 
-export default function AddressForm() {
+export default function AddressForm({ places, setPlaces }) {
 
-    const [places, setPlaces] = useState({})
     const inputRef = useRef(null);
 
 
@@ -93,7 +92,6 @@ export default function AddressForm() {
 
                 <Input onChange={handleChange} name="postcode" value={places ? places.postcode : ''} size="large" type='text' placeholder='Post code' />
             </div>
-            <Input size="large" type='text' placeholder='Phone number' />
         </div>
     )
 }

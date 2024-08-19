@@ -41,25 +41,25 @@ export default function ProductDetails({ params }) {
         <div className="flex-1  flex justify-end">
             <div className="w-3/5">
                 <section className="bg-black/[0.075] flex items-center justify-center h-[400px] md:h-[500px] md:w-[500px]">
-                    <img src={product.image} />
+                    <img src={product?.image} />
                 </section>
             </div>
         </div>
         <div className="flex-1">
             <div className="w-2/3 mb-6">
                 <Card>
-                    <h1 className="font-bold text-2xl">{product.name}</h1>
+                    <h1 className="font-bold text-2xl">{product?.name}</h1>
                     <div className=" border-b border-blue-600 mb-2">
                         <p className="mt-3 text-lg text-blue-500 ">Description</p>
                     </div>
 
-                    <p className="text-gray-600 text-base">{product.description}</p>
+                    <p className="text-gray-600 text-base">{product?.description}</p>
 
                     <div className=" border-b border-blue-600 mb-2 mt-2">
                         <p className="mt-3 text-lg text-blue-500 ">About Product</p>
                     </div>
                     <p className="text-gray-500">Category: <span className="ml-2 text-lg text-black">{categoryName}</span></p>
-                    <p className="text-gray-500 mt-2">Price: <span className="italic text-lg  ml-2 !text-green-600">${product.price}</span></p>
+                    <p className="text-gray-500 mt-2">Price: <span className="italic text-lg  ml-2 !text-green-600">${product?.price}</span></p>
 
                     <div className="flex items-center justify-between mt-10 mb-2">
                         <Button onClick={() => setCount(count + 1)} icon={<FaPlus />} shape="circle" className="!flex !items-center !justify-center !border-black" />

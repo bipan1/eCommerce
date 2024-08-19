@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
-import CheckoutForm from "./checkoutForm";
+import PaymentForm from "./paymentForm";
 import axios from "axios";
 
 const stripePromise = loadStripe("pk_test_51PlgamJvA4hfRcuyShCcicm4A4SDjYC0C3R8SufXceA12DB3lkCnSkZ9TvWRQJifkm6Of0WUWDY9fvJPoP7UlNUH00XUj4odDn");
 
-export default function Checkout() {
+export default function Payment({ places, email, fullName, shippingMethod, phoneNumber }) {
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function Checkout() {
         <div className="App">
             {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                    <CheckoutForm clientSecret={clientSecret} />
+                    <PaymentForm phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} shippingMethod={shippingMethod} clientSecret={clientSecret} />
                 </Elements>
             )}
         </div>

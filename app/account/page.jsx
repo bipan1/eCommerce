@@ -1,10 +1,45 @@
 'use client';
 import { Button, Card, Form, Input } from "antd";
+import axios from "axios";
 import AddressForm from "components/address/addressForm";
 import { useSession } from 'next-auth/react'
+import { useEffect, useState } from "react";
 
 export default function Account() {
+    const [places, setPlaces] = useState({})
     const { data: session } = useSession();
+
+    const handleAddressSubmit = async () => {
+        try {
+            await axios.post('http://localhost:3000/api/address', places, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const response = await axios.get(`http://localhost:3000/api/user/${session.user.id}`)
+            const user = response.data.user;
+
+            if (user.addressId) {
+                const response = await axios.get(`http://localhost:3000/api/address/${user.addressId}`);
+                const address = response.data.address;
+                setPlaces({
+                    addressLine: address.addressLine,
+                    suburb: address.suburb,
+                    state: address.state,
+                    postcode: address.postcode
+                })
+            }
+        }
+        fetchUserData();
+    }, []);
 
     return (
         <div className="flex mt-10 w-full lg:flex lg:items-start lg:gap-2">
@@ -78,8 +113,8 @@ export default function Account() {
 
                 <div className="w-2/3">
                     <Card title="Edit your address">
-                        <AddressForm />
-                        <Button className="!bg-green-400 float-right !text-white">
+                        <AddressForm places={places} setPlaces={setPlaces} />
+                        <Button onClick={handleAddressSubmit} className="!bg-green-400 float-right !text-white">
                             Update
                         </Button>
                     </Card>
