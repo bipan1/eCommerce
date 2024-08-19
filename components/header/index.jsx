@@ -1,95 +1,84 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import { Button, Input, Popover } from 'antd'
+import { useMemo } from 'react'
+import { Button, Divider, Dropdown, Input, Popover, Space } from 'antd'
 import React from 'react';
 import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react'
-import { FaPlus } from "react-icons/fa6";
-import { SearchOutlined } from '@ant-design/icons'
-import { BiMessageDetail } from 'react-icons/bi';
-import { MdNotificationsNone } from 'react-icons/md'
-import { GiShoppingCart } from "react-icons/gi";
+import { FaSearch } from "react-icons/fa";
 import Profilepage from './ProfilePage';
-import { useAppSelector, useAppDispatch } from '@/redux/store';
-import { openBag } from '@/redux/features/bag-slice';
-
+import { openBag, closeBag } from '@/redux/features/bag-slice';
+import { GoPerson } from "react-icons/go";
+import { IoBagOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
+import { IoIosArrowDown } from "react-icons/io";
+import PopOverContent from './popOverContent';
+import { getInitials } from 'utils';
 
 export default function Header() {
-  const [sticky, setSticky] = useState(false)
-  const [navbarOpen, setNavbarOpen] = useState(false)
-
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const { data: session } = useSession()
-  console.log(session)
-  const dispatch = useAppDispatch();
+  const bag = useSelector((state) => state.bag);
+  const { numberOfItems, isBagOpen } = bag;
 
-  const bag = useAppSelector((state) => state.bag);
-  const { numberOfItems } = bag;
-
-  const handleStickyNavbar = () => {
-    if (window.screenY >= 80) setSticky(true)
-    else setSticky(false)
+  const handleBagClick = () => {
+    if (isBagOpen) {
+      dispatch(closeBag())
+    } else {
+      dispatch(openBag())
+    }
   }
 
-  useEffect(() => {
-    window.addEventListener('scroll', handleStickyNavbar)
-  })
+  const initials = useMemo(() => {
+    return session ? getInitials(session.user.name) : null;
+  }, [session?.user])
 
   return (
     <div>
       <header
-        className={`bg-white top-0 h-20 border-b border-black-600 left-0 z-[1000] flex w-full items-center
-     ${sticky
-            ? '!fixed !z-[10000] !bg-white !bg-opacity-80 shadow-sticky backdrop:blur-sm !transition'
-            : 'absolute'
-          }
-    `}
+        style={{ backgroundColor: '#4CAF50' }}
+        className={`!fixed top-0 shadow-lg text-white left-0 z-[1000] flex w-full items-center`}
       >
-        <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-60 max-w-full px-4 xl:mr-12">
+        <div className="container !mx-auto">
+          <div className="relative flex items-center justify-between">
+            <div className="w-40 max-w-full xl:mr-12">
               <Link
-                className={`text-[30px] font-extrabold cursor-pointer block w-full
-                ${sticky ? 'py-5 lg:py-2' : 'py-8'}
-                `}
+                className={`text-[30px] font-extrabold cursor-pointer block p-2`}
                 href={'/'}
               >
                 NepMart
               </Link>
             </div>
 
+            <Popover content={() => <PopOverContent />} placement='bottom'>
+              <div className='w-full flex ml-6 text-lg font-bold hover:cursor-pointer'><p>Shop by Department</p> <IoIosArrowDown className='ml-1 my-auto' /></div>
+            </Popover>
+
             <div className='flex w-full px-4 justify-between'>
-              <Input style={{ width: '40vw' }} size="large" prefix={<SearchOutlined />} placeholder='Search for everything' />
+              <Input placeholder='Search for products' type='text' className=' !rounded-lg' style={{ width: '35vw' }} size="large" suffix={<FaSearch className='mr-2' />} />
             </div>
 
-            {session && <div className="ml-10 flex gap-8 w-full space-between">
-              <BiMessageDetail className='cursor-pointer' size={30} />
-              <MdNotificationsNone className='cursor-pointer' size={30} />
-            </div>}
-
-            {session && <div onClick={() => dispatch(openBag())} className="relative ml-4">
-              <GiShoppingCart className="cursor-pointer" size={30} />
-              {numberOfItems > 0 && (
-                <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
-                  {numberOfItems}
-                </span>
-              )}
-            </div>}
-
             <div className='gap-4 items-center w-full'>
-              {session ? <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
-                <Popover content={() => <Profilepage profileinfo={session} />}>
-                  <Button className='ml-6' style={{ color: "white", backgroundColor: "black" }} size='large' shape="circle">BC</Button>
-                </Popover>
-              </div> :
-                <div className="flex items-center justify-end pr-16 lg:pr-0">
-                  <Button type='default' onClick={() => router.push('/login')}>Login</Button>
-                  <Button className='ml-5' type='default' onClick={() => router.push('/signup')}>Signup</Button>
+              <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
+                <div onClick={handleBagClick} className="relative mr-3">
+                  <IoBagOutline className="cursor-pointer" size={30} />
+                  {numberOfItems > 0 && (
+                    <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
+                      {numberOfItems}
+                    </span>
+                  )}
                 </div>
-              }
+                {session ? <Popover content={() => <Profilepage profileinfo={session} />}>
+                  <Button className='ml-3' style={{ color: "white", backgroundColor: '#4CAF50' }} size='large' shape="circle">{initials}</Button>
+                </Popover> :
+                  <Button onClick={() => router.push('/login')} style={{ backgroundColor: '#4CAF50' }} className=' !border-white !text-white !rounded-2xl' size='large' type='primary'>
+                    <GoPerson className='inline' />
+                    <span className='ml-4'>Login</span>
+                  </Button>}
+              </div>
             </div>
           </div>
         </div>
@@ -97,3 +86,4 @@ export default function Header() {
     </div>
   )
 }
+getInitials

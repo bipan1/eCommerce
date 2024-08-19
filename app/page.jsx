@@ -1,91 +1,133 @@
 'use client'
-import { Button, Card, Carousel } from 'antd';
-import { catergories } from '@/utils';
-import { useRouter } from 'next/navigation';
-import { FaArrowAltCircleRight } from "react-icons/fa";
-import { FaArrowAltCircleLeft } from "react-icons/fa";
-
-
-const SampleNextArrow = props => {
-  const { className, style, onClick } = props
-  return (
-    <div
-      className={className}
-      style={{
-        display: "block",
-        color: 'gray',
-        fontSize: '15px',
-        lineHeight: '1.5715'
-      }}
-      onClick={onClick}
-    >
-      <FaArrowAltCircleRight size={20} />
-    </div>
-  )
-}
-
-const SamplePrevArrow = props => {
-  const { className, style, onClick } = props
-  return (
-    <div
-      className={className}
-      style={{
-        ...style,
-        color: 'gray',
-        fontSize: '15px',
-        lineHeight: '1.5715'
-      }}
-      onClick={onClick}
-    >
-      <FaArrowAltCircleLeft size={20} />
-    </div>
-  )
-}
-
-const settings = {
-  nextArrow: <SampleNextArrow />,
-  prevArrow: <SamplePrevArrow />
-}
-
+import { fetchProducts } from "@/redux/features/products-slice";
+import { fetchCategories } from "@/redux/features/category-slice";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from 'react-redux';
+import ProductDisplay from "components/products/productDisplay";
+import { Carousel } from 'react-responsive-carousel';
+import Slider from "react-slick";
+import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const { data: products, specials } = useSelector((state) => state.products);
+  const { data: categories } = useSelector((state) => state.category);
 
   const router = useRouter();
 
+  useEffect(() => {
+    dispatch(fetchProducts());
+    dispatch(fetchCategories());
+  }, [])
+
+  const categoryProductsMap = categories.reduce((acc, category) => {
+    acc[category.id] = products.filter(product => product.categoryId === category.id);
+    return acc;
+  }, {});
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    arrows: false,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    autoplay: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 3,
+          infinite: true,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          initialSlide: 2
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
+
 
   return <div>
-    <div className='relative z-[10] overflow-hidden px-20 mx-20'>
-      <Carousel autoplay arrows {...settings}>
-        <div>
-          <div className='h-100 w-100 relative'>
-            <img className='h-full-max w-full object-cover' src={`/carosuel1.png`} />
-            <div className='shadow-lg absolute top-40 left-40 w-96 h-24'>
-              <Card>
-                <h2 className='mb-2 text-xl font-bold'>Everything Nepalese</h2>
-                <p>Get access to everything nepalese. Business to community all in one place.</p>
-                <Button className='mt-4 bg-blue-400 border border-blue' type="primary">Explore</Button>
-              </Card>
-            </div>
+    <Carousel infiniteLoop={true} showThumbs={false} transitionTime={500} className="custom-carousel" autoPlay={true}>
+      <div className="image-container">
+        <img src="new1.png" className="carousel-image" />
+      </div>
+      <div className="image-container">
+        <img src="new3.jpeg" className="carousel-image" />
+      </div>
+      <div className="image-container" >
+        <img src="new2.webp" className="carousel-image" />
+      </div>
+    </Carousel>
+    <div className='mt-10 relative z-[10] overflow-hidden lg:px-20 lg:mx-20 md:px-10 md:mx-10 sm:px-5 sm:mx-5'>
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="float-left">
+            <h2 className="text-2xl font-bold relative">
+              Our Specials
+              <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
+            </h2>
+          </div>
+          <div onClick={() => router.push(`/specials`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+            <p className="mr-2">See all</p>
+            <FaArrowRight />
           </div>
         </div>
 
-        <div>
-          <div className='h-100 w-100 relative'>
-            <img className='h-full-max w-full object-cover' src={`/carosuel.png`} />
-            <div className='shadow-lg absolute top-40 left-40 w-96 h-24'>
-              <Card>
-                <h2 className='mb-2 text-xl font-bold'>Create your shop today.</h2>
-                <p>Create your shop with us and start your venture today. We will take care of everything.</p>
-                <Button onClick={() => router.push('/shop')} className='mt-4 bg-blue-400 border border-blue' type="primary">Create Shop</Button>
-              </Card>
-            </div>
-          </div>
+        <div className="mb-10 mx-auto">
+          <Slider {...settings} >
+            {specials.map(product => {
+              return <div>
+                <ProductDisplay product={product} />
+              </div>
+            })}
+          </Slider>
         </div>
-      </Carousel>
-    </div>
+      </div>
 
-    <div className='block pt-5 text-gray-600 mt-10 font-medium  bg-gray-200 h-40 w-full'>
-      <p className='text-center'>Trusted by many nepalses businesses around the world.</p>
+      <div>
+        {categories.map(cat => (
+          <>
+            {
+              categoryProductsMap[cat.id].length > 0 && <>
+                <div className="flex mt-5 items-center justify-between">
+                  <div className="float-left">
+                    <h2 className="text-2xl font-bold relative">
+                      {cat.name}
+                      <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
+                    </h2>
+                  </div>
+                  <div onClick={() => router.push(`/products/categories/${cat.id}`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+                    <p className="mr-2">See all</p>
+                    <FaArrowRight />
+                  </div>
+
+                </div>
+                <div className="mx-auto lg:gap-6 grid items-center py-4 grid-cols-2 sm:gap-2 md:gap-3 lg:grid-cols-5">
+                  {categoryProductsMap[cat.id].map(product => {
+                    return <div>
+                      <ProductDisplay product={product} />
+                    </div>
+                  })}
+                </div>
+              </>}
+          </>
+        ))}
+      </div>
     </div>
-  </div>
+  </div >
 }

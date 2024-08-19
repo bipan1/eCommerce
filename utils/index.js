@@ -1,34 +1,3 @@
-export const catergories = [
-  {
-    value: 'JOBS',
-    label: 'Jobs',
-  },
-  {
-    value: 'ROOMS',
-    label: 'Rooms',
-  },
-  {
-    value: 'HOUSEHOLD',
-    label: 'Household',
-  },
-  {
-    value: 'CARS',
-    label: 'Cars',
-  },
-  {
-    value: 'COMMUNITY',
-    label: 'Community',
-  },
-  {
-    value: 'FOODS',
-    label: 'Foods',
-  },
-  {
-    value: 'EVENTS',
-    label: 'Events',
-  },
-]
-
 export const states = [
   {
     label: 'VIC',
@@ -77,4 +46,10 @@ export const exclude = (target, keys) => {
     delete target[key]
   }
   return target
+}
+
+export const convertToFloat = (price_string) => {
+  const float_price = parseFloat(price_string)
+  const rounded_price = float_price.toFixed(2)
+  return rounded_price.toString()
 }

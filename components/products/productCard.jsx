@@ -1,27 +1,29 @@
 'use client';
-import { EditOutlined, SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Card } from 'antd';
 
 export default function ProductCard({ item, deleteProduct, editProduct }) {
     return (
         <div key={item.id}>
             <Card
-                className="hover:shadow-lg"
+                className="hover:shadow-lg rounded-lg"
                 hoverable
                 style={{ width: 300 }}
                 cover={
                     <img
+                        className='object-cover'
+                        style={{ width: '100%', height: 170, borderBottom: '1px solid #DCDCDC', aspectRatio: 'auto' }}
                         alt="example"
-                        src={item.images[0]}
+                        src={item.image}
                     />
                 }
                 actions={[
-                    <EditOutlined onClick={() => editProduct(item.id)} style={{ color: 'black' }} key="edit" />,
-                    <DeleteOutlined onClick={() => deleteProduct(item.id)} style={{ color: 'black' }} key="delete" />,
+                    <EditOutlined onClick={() => editProduct(item.id)} style={{ fontSize: '20px' }} key="edit" />,
+                    <DeleteOutlined onClick={() => deleteProduct(item.id)} style={{ fontSize: '20px' }} key="delete" />,
                 ]}
             >
-                <div>{item.name}</div>
-                <div className='mt-4' style={{ color: 'orange', fontSize: '20px' }}>$ {item.price}.00</div>
+                <h3 style={{ fontSize: 16, fontWeight: 500 }}>{item.name}</h3>
+                <div className='mt-1' style={{ color: 'orange', fontSize: '20px' }}>$ {item.price}</div>
             </Card>
         </div>
     )

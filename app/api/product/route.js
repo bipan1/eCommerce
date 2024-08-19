@@ -1,47 +1,22 @@
 import prisma from '@/database'
 import { NextResponse } from 'next/server'
-import { S3Client } from '@aws-sdk/client-s3'
-import { Readable } from 'stream'
-import { Upload } from '@aws-sdk/lib-storage'
-
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-})
+import { uploadToS3 } from 'utils/uploadToS3'
 
 export async function POST(req) {
   const formadata = await req.formData()
   let data = {}
-  const images = []
-  let imageUrls = []
+  let image
+  let imageUrl = ''
   for (const [key, value] of formadata.entries()) {
     if (key === 'files') {
-      images.push(value)
+      image = value
     } else {
       data[key] = value
     }
   }
 
   try {
-    imageUrls = await Promise.all(
-      images.map(async (file) => {
-        const fileStream = Readable.from(file.stream())
-
-        const uploadTos3 = new Upload({
-          client: s3Client,
-          params: {
-            Bucket: process.env.BUCKET_NAME,
-            Key: `images/${Date.now()}-${file.name}`,
-            Body: fileStream,
-          },
-        })
-        const res = await uploadTos3.done()
-        return res.Location
-      }),
-    )
+    imageUrl = await uploadToS3(image)
   } catch (err) {
     console.log(err)
     NextResponse.json(
@@ -51,18 +26,21 @@ export async function POST(req) {
   }
 
   data = {
-    ...data,
-    images: imageUrls,
-    categoryId: parseInt(data.categoryId),
+    name: data.name,
+    description: data.description,
+    image: imageUrl,
+    subcategoryId: parseInt(data.subcategoryId),
     price: parseFloat(data.price),
-    inventory: parseInt(data.inventory),
+    isSpecial: data.isSpecial === 'true',
+    outofStock: data.outofStock === 'true',
+    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
   }
 
   try {
     const product = await prisma.product.create({
       data,
     })
-    return NextResponse.json({ product }, { status: 400 })
+    return NextResponse.json({ product }, { status: 200 })
   } catch (err) {
     console.log(err)
     return NextResponse.json(
@@ -74,8 +52,20 @@ export async function POST(req) {
 
 export async function GET() {
   try {
-    const products = await prisma.product.findMany()
-    return NextResponse.json({ products }, { status: 200 })
+    const products = await prisma.product.findMany({
+      include: {
+        subcategory: {
+          select: {
+            categoryId: true,
+          },
+        },
+      },
+    })
+    const flattenProducts = products.map((product) => {
+      const { subcategory, ...rest } = product
+      return { ...rest, categoryId: subcategory.categoryId }
+    })
+    return NextResponse.json({ flattenProducts }, { status: 200 })
   } catch (err) {
     console.log(err)
     return NextResponse.json({ message: err.message, status: 500 })
@@ -94,6 +84,58 @@ export async function DELETE(req) {
     console.log(err)
     return NextResponse.json(
       { message: 'Error Deleting Product' },
+      { status: 500 },
+    )
+  }
+}
+
+export async function PUT(req) {
+  const formadata = await req.formData()
+  let data = {}
+  let image
+  let imageUrl
+  for (const [key, value] of formadata.entries()) {
+    if (key === 'files') {
+      image = value
+    } else {
+      data[key] = value
+    }
+  }
+
+  try {
+    if (image) {
+      imageUrl = await uploadToS3(image)
+    }
+  } catch (err) {
+    console.log(err)
+    return NextResponse.json(
+      { message: 'Error uploading image to s3' },
+      { status: 500 },
+    )
+  }
+
+  data = {
+    name: data.name,
+    description: data.description,
+    id: parseInt(data.id),
+    image: imageUrl ? imageUrl : data.image,
+    subcategoryId: parseInt(data.subcategoryId),
+    price: parseFloat(data.price),
+    isSpecial: data.isSpecial === 'true',
+    outofStock: data.outofStock === 'true',
+    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
+  }
+
+  try {
+    const product = await prisma.product.update({
+      where: { id: data.id },
+      data,
+    })
+    return NextResponse.json({ product }, { status: 200 })
+  } catch (err) {
+    console.log(err)
+    return NextResponse.json(
+      { message: 'Error uploading image to s3' },
       { status: 500 },
     )
   }

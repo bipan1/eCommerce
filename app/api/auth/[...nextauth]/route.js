@@ -1,4 +1,3 @@
-import GoogleProvider from 'next-auth/providers/google'
 import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
@@ -7,16 +6,12 @@ import axios from 'axios'
 
 const client = new PrismaClient()
 
-const authOptions = {
+export const authOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const userCredentials = {
           email: credentials.email,
           password: credentials.password,
@@ -62,12 +57,14 @@ const authOptions = {
   callbacks: {
     async session({ session, token, user }) {
       session.user.id = token.user_id
+      session.user.isAdmin = token.isAdmin
       return await session
     },
 
     async jwt({ token, user }) {
       if (user) {
         token.user_id = user.id
+        token.isAdmin = user.isAdmin
       }
       return await token
     },

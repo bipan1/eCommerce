@@ -1,35 +1,37 @@
 'use client';
 
 import axios from 'axios';
-import { Button, Card, Checkbox, ColorPicker, Form, Input, Select, Space, Tag, Upload } from 'antd';
+import { toast } from 'react-toastify'
+import { Button, Card, Form, Input, Select, Switch, Upload } from 'antd';
 import { useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
-import MyEditor from '@/components/TextEditor';
 import { useForm } from 'antd/es/form/Form';
 import { LeftOutlined } from '@ant-design/icons';
+import TextArea from 'antd/es/input/TextArea';
+import { useSelector, useDispatch } from 'react-redux';
+import { addProduct, editProduct } from '@/redux/features/products-slice';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
-export default function ProductForm({ setIsCreate, selectedProduct }) {
+export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [description, setDescription] = useState('');
+    const createSuccess = () => toast.success('Product Created Sucessfully.')
+    const [showSpecialPrice, setShowSpecialPrice] = useState()
+
     const [form] = useForm();
+    const [subCategories, setSubCategories] = useState();
+    const { data: categories, loading: load, error } = useSelector((state) => state.category);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        const fetchingCategories = async () => {
-            try {
-                const response = await axios.get('http://localhost:3000/api/category');
-                const categoryOptions = response.data.category.map(item => ({ label: item.name, value: item.id }));
-                setCategories(categoryOptions);
-            } catch (err) {
-                console.log(err);
+        if (selectedProduct) {
+            form.setFieldsValue(selectedProduct)
+            const filteredSubCatgories = categories.find(subCat => subCat.id === selectedProduct.categoryId).subcategories;
+            setSubCategories(filteredSubCatgories)
+            if (selectedProduct.isSpecial) {
+                setShowSpecialPrice(true)
             }
         }
-        fetchingCategories();
-
-    }, [])
-
-    useEffect(() => {
-        form.setFieldsValue(selectedProduct)
     }, [selectedProduct])
 
     const beforeUpload = () => {
@@ -38,49 +40,66 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
 
     const onCategoryChange = (value) => {
         form.setFieldValue({ categoryId: value })
+        const filteredSubCatgories = categories.find(subCat => subCat.id === value).subcategories;
+        setSubCategories(filteredSubCatgories)
+    }
+
+    const handleIsSpecialChange = (value) => {
+        setShowSpecialPrice(value)
     }
 
     const handleCreateProduct = async (values) => {
+        console.log(values);
+        const categoryId = values.categoryId;
+        delete values.categoryId
+        const formData = new FormData();
+        for (const [key, value] of Object.entries(values)) {
+            if (key === 'images') {
+                if (value) {
+                    formData.append('files', value.fileList[0].originFileObj)
+                }
+            } else {
+                formData.append([key], value)
+            }
+        }
+
+        if (selectedProduct) {
+            formData.append('id', selectedProduct.id);
+        }
+
+        let response;
         setLoading(true);
         try {
-            const formData = new FormData();
-            for (const [key, value] of Object.entries(values)) {
-                if (key === 'images') {
-                    value.fileList.map(image => {
-                        formData.append('files', image.originFileObj)
-                    })
-                } else {
-                    formData.append([key], value)
-                }
+            if (selectedProduct) {
+                response = await axiosApiCall('/product', 'PUT', formData);
+                dispatch(editProduct({ ...response.data.product, categoryId }))
+            } else {
+                response = await axiosApiCall('/product', 'POST', formData)
+                dispatch(addProduct({ ...response.data.product, categoryId }))
+                form.resetFields();
             }
-
-            const response = await axios.post('http://localhost:3000/api/product', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            console.log(response)
             setLoading(false)
-            createPostSucess()
+            createSuccess();
         } catch (error) {
             console.log(error)
             setLoading(false)
         }
     }
 
-    const handleDescriptionChange = (val) => {
-        setDescription(val);
+    const goBack = () => {
+        setIsCreate(false);
+        form.resetFields();
+        setSelectedProduct()
     }
 
     return (
         <>
-            <Button onClick={() => setIsCreate(false)} type="link" className="flex items-center mb-4">
+            <Button onClick={() => goBack()} type="link" className="flex items-center mb-4">
                 <LeftOutlined />
                 <span className="ml-2">Back</span>
             </Button >
             <Card className="w-2/3 shadow-lg p-4s">
-                <h1>Create a product</h1>
+                <h2 className='text-lg mb-2 text-medium'>Create a product</h2>
                 <Form form={form} name="create-product" layout="vertical" onFinish={handleCreateProduct}>
 
                     <div>
@@ -115,6 +134,20 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                             </Form.Item>
                         </div>
 
+                        <Form.Item
+                            name="description"
+                            label="Description"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please Enter the description',
+                                },
+                            ]}
+                            className='mt-5'
+                        >
+                            <TextArea />
+                        </Form.Item>
+
                         <div className="grid lg:grid-cols-2 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 ">
                             <Form.Item
                                 name="categoryId"
@@ -127,6 +160,7 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                                 ]}
                             >
                                 <Select
+                                    fieldNames={{ label: 'name', value: 'id' }}
                                     placeholder="Category"
                                     onChange={onCategoryChange}
                                     options={categories}
@@ -134,32 +168,22 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                             </Form.Item>
 
                             <Form.Item
-                                name="inventory"
-                                label="Inventory"
+                                name="subcategoryId"
+                                label="Sub Category"
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Enter Inventory Amount"
-                                    }
+                                        message: 'Please select a category',
+                                    },
                                 ]}
                             >
-                                <Input type='number' placeholder='Inventory' />
+                                <Select
+                                    fieldNames={{ label: 'name', value: 'id' }}
+                                    placeholder="Category"
+                                    options={subCategories}
+                                />
                             </Form.Item>
                         </div>
-
-                        <Form.Item
-                            name="description"
-                            label="Description"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please Enter the description',
-                                },
-                            ]}
-                            className='mt-5'
-                        >
-                            <MyEditor value={description} onChange={handleDescriptionChange} />
-                        </Form.Item>
                     </div>
 
                     <div>
@@ -168,14 +192,34 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                             label="Images"
                         >
                             <Upload
+                                maxCount={1}
                                 listType="picture"
                                 beforeUpload={beforeUpload}
-                                multiple={true}
-
+                                multiple={false}
+                                defaultFileList={selectedProduct ? [selectedProduct.image] : []}
                             >
                                 <Button icon={<UploadOutlined />}>Upload</Button>
                             </Upload>
                         </Form.Item>
+                    </div>
+
+                    <div className="flex space-between">
+
+                        <Form.Item name="outofStock" label="Out of Stock?" valuePropName="checked">
+                            <Switch className='bg-gray-400' />
+                        </Form.Item>
+
+                        <Form.Item className='ml-10' name="isSpecial" label="Is special?" valuePropName="checked">
+                            <Switch onChange={handleIsSpecialChange} className='bg-gray-400' />
+                        </Form.Item>
+
+                        {showSpecialPrice && <Form.Item
+                            name="specialPrice"
+                            label="Special price"
+                            className='ml-10 w-1/3'
+                        >
+                            <Input type='float' placeholder='Enter Special Price.' />
+                        </Form.Item>}
                     </div>
 
                     <Button
@@ -183,118 +227,10 @@ export default function ProductForm({ setIsCreate, selectedProduct }) {
                         htmlType='submit'
                         className="float-right bg-blue-400 border border-blue"
                     >
-                        Submit
+                        {selectedProduct ? 'Update' : 'Submit'}
                     </Button>
                 </Form>
             </Card>
         </>
     )
 }
-
-// const handleAddSize = () => {
-//     if (currentSize && !sizes.includes(currentSize)) {
-//         setSizes([...sizes, currentSize]);
-//         setCurrentSize('');
-//     }
-// };
-
-// const handleRemoveSize = (sizeToRemove) => {
-//     setSizes(sizes.filter((size) => size !== sizeToRemove));
-// };
-
-// const handleAddColor = () => {
-//     if (currentColor && !colors.includes(currentColor)) {
-//         setColors([...colors, currentColor]);
-//         setCurrentColor('');
-//     }
-// }
-
-// const handleRemoveColor = (colorToRemove) => {
-//     setColors(colors.filter((color) => color !== colorToRemove));
-// }
-
-{/* <Form.Item>
-                    <Checkbox checked={includeSize} onChange={(event) => setIncludeSize(event.target.checked)}>
-                        Include size property
-                    </Checkbox>
-                </Form.Item>
-
-                {includeSize ?
-                    <>{sizes.length > 0 ? <Form.Item label="Sizes">
-                        <Space>
-                            {sizes.map((size) => (
-                                <Tag
-                                    key={size}
-                                    closable
-                                    onClose={() => handleRemoveSize(size)}
-                                >
-                                    {size}
-                                </Tag>
-                            ))}
-                        </Space>
-                    </Form.Item> : null}
-                        <Form.Item>
-                            <Input
-                                value={currentSize}
-                                onChange={(e) => setCurrentSize(e.target.value)}
-                                placeholder="Enter size"
-                                style={{ width: 150, marginRight: 8 }}
-                            />
-                            <Button onClick={handleAddSize}>Add Size</Button>
-                        </Form.Item>
-                    </> : null}
-
-
-                <Form.Item>
-                    <Checkbox checked={includeColor} onChange={(event) => { setIncludeColor(event.target.checked); setCurrentColor('#2E078C') }}>
-                        Include color property
-                    </Checkbox>
-                </Form.Item> */}
-
-{/* {includeColor ?
-                    <>{colors.length > 0 ? <Form.Item label="Colors">
-                        <Space>
-                            {colors.map((color) => (
-                                <Tag
-                                    color={color}
-                                    key={color}
-                                    closable
-                                    onClose={() => handleRemoveColor(color)}
-                                >
-                                    <span className='mr-1'>{color}</span>
-                                </Tag>
-                            ))}
-                        </Space>
-                    </Form.Item> : null}
-                        <Form.Item>
-                            <ColorPicker
-                                panelRender={(panel) => (
-                                    <div className="custom-panel">
-                                        <div
-                                            style={{
-                                                fontSize: 12,
-                                                color: 'rgba(0, 0, 0, 0.88)',
-                                                lineHeight: '20px',
-                                                marginBottom: 8,
-                                            }}
-                                        >
-                                            Color Picker
-                                        </div>
-                                        {panel}
-                                    </div>
-                                )}
-                                onChange={(_, value) => setCurrentColor(value)}
-                                value={currentColor}
-                                format='hex'
-                                defaultFormat='hex'
-                                className='mt-1'
-                            />
-                            <Button size='small' className="ml-2 border border-black" type="default" onClick={() => handleAddColor()}><FaPlus className='inline' /></Button>
-                        </Form.Item>
-                    </> : null} */}
-
-// const [includeColor, setIncludeColor] = useState(false);
-// const [colors, setColors] = useState([])
-// const [currentColor, setCurrentColor] = useState('#2E078C')
-// const [includeSize, setIncludeSize] = useState(false);
-// const [sizes, setSizes] = useState([])

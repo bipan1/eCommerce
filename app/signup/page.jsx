@@ -1,24 +1,20 @@
 'use client'
-
-import { Button, Form, Input } from 'antd'
+import { toast } from 'react-toastify'
+import { Button, Form, Card, Input } from 'antd'
 import { useState } from 'react'
+import { axiosApiCall } from 'utils/axiosApiCall'
 
-export default function Login() {
+export default function Signup() {
 
   const [loading, setLoading] = useState(false)
-
+  const createSuccess = () => toast.success('Account created sucessfully.');
 
   const handleSubmit = async (values) => {
 
     setLoading(true);
-    const res = await fetch("/api/user/create", {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST",
-      body: JSON.stringify(values)
-    })
+    const res = await axiosApiCall('/user/create', 'POST', values);
     setLoading(false)
+    createSuccess();
 
     if (res.ok) {
       const data = await res.json();
@@ -28,9 +24,9 @@ export default function Login() {
   }
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <div className="w-1/5">
-        <h3 className="pb-3">Sign Up and start Learning</h3>
+    <div className="mt-10 flex items-center justify-center">
+      <Card className="w-1/4 shadow-lg p-4">
+        <h2 className="pb-3 text-lg text-center">Sign Up to create an account.</h2>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="name"
@@ -79,14 +75,14 @@ export default function Login() {
           </Form.Item>
 
           <Form.Item>
-            <Button loading={loading} htmlType='submit' className="w-full h-12 bg-blue-400 border border-blue mb-3">
+            <Button loading={loading} htmlType='submit' className="w-full h-12 !bg-green-600 !text-white  mb-3">
               <span className="ml-3">Sign Up</span>
             </Button>
           </Form.Item>
         </Form>
 
         <p className='text-center'>Already have an account? <a href='/login' className='text-blue-500 underline'>Log in</a></p>
-      </div>
+      </Card>
     </div>
   )
 }

@@ -19,6 +19,7 @@ export async function POST(req) {
         name: true,
         email: true,
         password: true,
+        isAdmin: true,
       },
     })
 
@@ -26,12 +27,11 @@ export async function POST(req) {
       return NextResponse.json(exclude(user, ['password']), { status: 200 })
     } else {
       return NextResponse.json(
-        { message: 'invalid credentials' },
+        { message: 'Invalid credentials' },
         { status: 401 },
       )
     }
   } catch (e) {
     console.log(e)
-    // throw new Error(e)
   }
 }

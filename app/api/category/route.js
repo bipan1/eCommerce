@@ -23,10 +23,13 @@ export async function POST(req) {
 
 export async function GET() {
   try {
-    const category = await prisma.category.findMany()
+    const category = await prisma.category.findMany({
+      include: {
+        subcategories: true,
+      },
+    })
     return NextResponse.json({ category }, { status: 200 })
   } catch (err) {
-    console.log(err)
     return NextResponse.json(
       { message: 'Error Fetching category' },
       { status: 500 },
@@ -37,13 +40,19 @@ export async function GET() {
 export async function DELETE(req) {
   const { id } = await req.json()
   try {
-    const category = await prisma.category.delete({ where: { id } })
+    await prisma.category.delete({ where: { id } })
     return NextResponse.json(
       { message: 'Category deleted Sucessfully' },
       { status: 200 },
     )
   } catch (err) {
     console.log(err)
+    if (err.code === 'P2003') {
+      return NextResponse.json(
+        { message: 'Category should be empty to be deleted.' },
+        { status: 500 },
+      )
+    }
     return NextResponse.json(
       { message: 'Error Deleting Category' },
       { status: 500 },
