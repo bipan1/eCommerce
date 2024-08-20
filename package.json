@@ -43,7 +43,7 @@
     "autoprefixer": "^10",
     "postcss": "^8",
     "prettier": "^3.0.3",
-    "tailwindcss": "^3",
+    "tailwindcss": "^3.4.10",
     "typescript": "5.3.2"
   }
 }
