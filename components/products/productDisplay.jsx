@@ -49,12 +49,12 @@ export default function ProductDisplay({ product }) {
     return <div className="relative w-full flex max-w-xs flex-col overflow-hidden rounded-lg border hover:shadow-2xl border-gray-100 bg-gray-50 shadow-md">
         <a onClick={handleCardClick} className="relative flex overflow-hidden" href="#">
             <img style={{ aspectRatio: 'auto', width: '100%', maxHeight: '16vh' }} className=" object-cover" src={product.image} alt="product image" />
-            {product.isSpecial && <span class="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Special Offer</span>}
-            {product.outofStock && <span class="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Out of stock</span>}
+            {product.isSpecial && <span className="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Special Offer</span>}
+            {product.outofStock && <span className="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Out of stock</span>}
         </a>
-        <div class="mt-3 px-5 pb-5">
+        <div className="mt-3 px-5 pb-5">
             <a onClick={handleCardClick} href="#">
-                <p class="tracking-tight maintain font-medium text-gray-600">{product.name}</p>
+                <p className="tracking-tight maintain font-medium text-gray-600">{product.name}</p>
             </a>
             <div className="mt-2 mb-3 flex items-center justify-between">
                 <p>
