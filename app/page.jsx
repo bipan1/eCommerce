@@ -63,9 +63,9 @@ export default function Home() {
 
   return <div>
     <Carousel infiniteLoop={true} showThumbs={false} transitionTime={500} className="custom-carousel" autoPlay={true}>
-      <div className="image-container">
+      {/* <div className="image-container">
         <img src="new1.png" className="carousel-image" />
-      </div>
+      </div> */}
       <div className="image-container">
         <img src="new3.jpeg" className="carousel-image" />
       </div>

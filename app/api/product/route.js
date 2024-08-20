@@ -19,7 +19,7 @@ export async function POST(req) {
     imageUrl = await uploadToS3(image)
   } catch (err) {
     console.log(err)
-    NextResponse.json(
+    return NextResponse.json(
       { message: 'Error uploading image to s3' },
       { status: 500 },
     )
