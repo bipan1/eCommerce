@@ -30,7 +30,6 @@ export default function Login() {
       await signIn('credentials', {
         email,
         password,
-        callbackUrl: process.env.NEXTAUTH_URL,
         redirect: false,
       })
       loginSuccess();

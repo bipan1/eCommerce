@@ -2,9 +2,15 @@ import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
-import axios from 'axios'
+import prisma from '@/database'
+import { exclude } from '@/utils'
+import { SHA256 as sha256 } from 'crypto-js'
 
 const client = new PrismaClient()
+
+export const hashPassword = (string) => {
+  return sha256(string).toString()
+}
 
 export const authOptions = {
   providers: [
@@ -12,24 +18,21 @@ export const authOptions = {
       id: 'credentials',
       name: 'Credentials',
       async authorize(credentials) {
-        const userCredentials = {
-          email: credentials.email,
-          password: credentials.password,
-        }
+        const { email, password } = credentials
         try {
-          const res = await axios.post(
-            `${process.env.NEXT_BASE_API}`,
-            userCredentials,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              },
+          const user = await prisma.user.findUnique({
+            where: { email: email },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              password: true,
+              isAdmin: true,
             },
-          )
+          })
 
-          if (res) {
-            const user = res.data
-            return user
+          if (user && user.password === hashPassword(password)) {
+            return exclude(user, ['password'])
           } else {
             return null
           }
