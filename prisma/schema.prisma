@@ -16,7 +16,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   password      String
-  phoneNumber   String    @default("")
+  phoneNumber   String?
   isAdmin       Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
