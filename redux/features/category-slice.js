@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { axiosApiCall } from 'utils/axiosApiCall'
 
 export const fetchCategories = createAsyncThunk(
   'data/fetchCategories',
   async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/category')
+      const response = await axiosApiCall('/category')
       return response.data.category
     } catch (error) {
       throw error

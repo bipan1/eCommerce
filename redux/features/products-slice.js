@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { axiosApiCall } from 'utils/axiosApiCall'
 
 export const fetchProducts = createAsyncThunk(
   'data/fetchProducts',
   async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/product')
+      const response = await axiosApiCall('/product')
       const products = response.data.flattenProducts
       const specials = products.filter((product) => product.isSpecial)
       return { products, specials }
