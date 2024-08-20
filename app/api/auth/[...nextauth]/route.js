@@ -18,7 +18,7 @@ export const authOptions = {
         }
         try {
           const res = await axios.post(
-            'http://localhost:3000/api/user/auth',
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/auth`,
             userCredentials,
             {
               headers: {
