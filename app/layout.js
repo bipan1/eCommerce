@@ -5,7 +5,6 @@ import ReduxProvider from '../providers/redux-providers'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Cart from '../components/cart'
-import Spinner from '../components/spinner'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
 import Footer from 'components/footer'
 import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loader
@@ -26,7 +25,6 @@ export default function RootLayout({ children }) {
                   hideProgressBar={true}
                 />
                 <Header />
-                <Spinner />
                 <div className="pt-16">{children}</div>
                 <Footer />
                 <Cart />

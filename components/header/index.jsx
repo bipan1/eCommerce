@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
-import { Button, Divider, Dropdown, Input, Popover, Space } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { Button, Input, Popover } from 'antd'
 import React from 'react';
 import { useRouter } from "next/navigation";
 import { useSession } from 'next-auth/react'
@@ -15,10 +15,55 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IoIosArrowDown } from "react-icons/io";
 import PopOverContent from './popOverContent';
 import { getInitials } from 'utils';
+import { fetchProducts } from "@/redux/features/products-slice";
+import { fetchCategories } from "@/redux/features/category-slice";
+import { fetchSearchProducts } from "@/redux/features/searchproducts-slice";
+import { getSuggestions } from '@/utils/fuse';
+import { IoMdCloseCircleOutline } from "react-icons/io";
+
 
 export default function Header() {
+  const [searchInput, setSearchInput] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const { data: products } = useSelector((state) => state.products);
+
+  useEffect(() => {
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+      dispatch(fetchCategories());
+    }
+  }, [])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchInput) {
+        const results = getSuggestions(searchInput, products);
+        setSuggestions(results);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchInput]);
+
+  const handleSearch = () => {
+    dispatch(fetchSearchProducts(searchInput));
+    closeSuggestion();
+    router.push('/search')
+  }
+
+  const closeSuggestion = () => {
+    setSearchInput('')
+    setSuggestions([]);
+  }
+
+  const handleEnterKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  }
 
   const { data: session } = useSession()
   const bag = useSelector((state) => state.bag);
@@ -35,6 +80,11 @@ export default function Header() {
   const initials = useMemo(() => {
     return session ? getInitials(session.user.name) : null;
   }, [session?.user])
+
+
+  const handleMouseLeave = () => {
+    closeSuggestion()
+  }
 
   return (
     <div>
@@ -57,9 +107,36 @@ export default function Header() {
               <div className='w-full flex ml-6 text-lg font-bold hover:cursor-pointer'><p>Shop by Department</p> <IoIosArrowDown className='ml-1 my-auto' /></div>
             </Popover>
 
+
             <div className='flex w-full px-4 justify-between'>
-              <Input placeholder='Search for products' type='text' className=' !rounded-lg' style={{ width: '35vw' }} size="large" suffix={<FaSearch className='mr-2' />} />
+              <div className='relative w-full' onMouseLeave={handleMouseLeave}>
+                <Input
+                  onKeyDown={handleEnterKeyPress}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder='Search for products'
+                  type='text'
+                  className='!rounded-lg'
+                  style={{ width: '35vw' }}
+                  size="large"
+                  suffix={searchInput.length > 0 ? <IoMdCloseCircleOutline onClick={closeSuggestion} size={20} className="mr-2" /> : <FaSearch className='mr-2' />}
+                />
+                {suggestions.length > 0 && (
+                  <div className="absolute bg-white border text-gray-800 border-gray-300 shadow-lg w-full z-10">
+                    {suggestions.map((suggestion) => (
+                      <div
+                        key={suggestion.item.id}
+                        className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                        onClick={handleSearch}
+                      >
+                        {suggestion.item.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+
 
             <div className='gap-4 items-center w-full'>
               <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">

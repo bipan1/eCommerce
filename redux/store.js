@@ -4,6 +4,7 @@ import bagReducer from './features/bag-slice'
 import loadingReducer from './features/globalLoading-slice'
 import productsReducer from './features/products-slice'
 import categotyReducer from './features/category-slice'
+import searchproductsReducer from './features/searchproducts-slice'
 import { useDispatch, useSelector } from 'react-redux'
 import { thunk } from 'redux-thunk'
 
@@ -14,6 +15,7 @@ export const store = configureStore({
     loading: loadingReducer,
     products: productsReducer,
     category: categotyReducer,
+    searchProducts: searchproductsReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
   devTools: true,

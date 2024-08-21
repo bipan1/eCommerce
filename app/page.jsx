@@ -1,8 +1,6 @@
 'use client'
-import { fetchProducts } from "@/redux/features/products-slice";
-import { fetchCategories } from "@/redux/features/category-slice";
-import { useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux';
+
+import { useSelector } from 'react-redux';
 import ProductDisplay from "components/products/productDisplay";
 import { Carousel } from 'react-responsive-carousel';
 import Slider from "react-slick";
@@ -10,16 +8,10 @@ import { FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const dispatch = useDispatch();
   const { data: products, specials } = useSelector((state) => state.products);
   const { data: categories } = useSelector((state) => state.category);
 
   const router = useRouter();
-
-  useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchCategories());
-  }, [])
 
   const categoryProductsMap = categories.reduce((acc, category) => {
     acc[category.id] = products.filter(product => product.categoryId === category.id);

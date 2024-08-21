@@ -18,6 +18,16 @@ html {
   /* 6 */
 }
 
+.suggestions {
+  /* Position the suggestions below the input */
+  @apply absolute top-full left-0 bg-white shadow-md rounded-md max-h-60 overflow-y-auto hidden;
+}
+
+.suggestions li {
+  /* Style each suggestion list item */
+  @apply p-2 hover:bg-gray-100;
+}
+
 .ant-popover-inner {
   padding: 0 !important;
 }

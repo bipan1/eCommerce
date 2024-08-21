@@ -12,7 +12,7 @@ export default function Login() {
 
   const { push } = useRouter()
   const loginSuccess = () => toast.success('Logged in Sucessfully')
-  const loginFailure = () => toast.error("Couldn't login.")
+  const loginFailure = () => toast.error("Invalid Ceredentials")
 
   const { status } = useSession()
 
@@ -27,13 +27,20 @@ export default function Login() {
     const { email, password } = values
 
     try {
-      await signIn('credentials', {
+      const res = await signIn('credentials', {
         email,
         password,
         redirect: false,
       })
-      loginSuccess();
 
+      if (res.error) {
+        if (res.status === 401) {
+          loginFailure();
+        }
+      } else {
+        loginSuccess();
+
+      }
       setLoading(false)
     } catch (err) {
       loginFailure()
