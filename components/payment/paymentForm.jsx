@@ -10,7 +10,9 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from "next/navigation";
 import { axiosApiCall } from "utils/axiosApiCall";
 
-export default function PaymentForm({ clientSecret, places, email, fullName, phoneNumber }) {
+const isEmpty = (value) => value === "";
+
+export default function PaymentForm({ setError, clientSecret, places, email, fullName, phoneNumber }) {
     const stripe = useStripe();
     const elements = useElements();
     const router = useRouter();
@@ -21,6 +23,7 @@ export default function PaymentForm({ clientSecret, places, email, fullName, pho
     const { data: session } = useSession()
 
     useEffect(() => {
+
         if (!stripe) {
             return;
         }
@@ -50,6 +53,36 @@ export default function PaymentForm({ clientSecret, places, email, fullName, pho
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        let checkError = {};
+
+        if (isEmpty(fullName)) {
+            checkError = { fullName: "Name should be provided." }
+        }
+        if (isEmpty(email)) {
+            checkError = { ...checkError, email: "Email is required" }
+        }
+        if (isEmpty(phoneNumber) && phoneNumber.length < 8) {
+            checkError = { ...checkError, phoneNumber: "Enter a valid phone number" }
+        }
+        if (!places.addressLine) {
+            checkError = { ...checkError, addressLine: "Required" }
+        }
+        if (!places.suburb) {
+            checkError = { ...checkError, suburb: "Required" }
+        }
+        if (!places.state) {
+            checkError = { ...checkError, state: "Required" }
+        }
+        if (!places.postcode) {
+            checkError = { ...checkError, postcode: "Required" }
+        }
+
+        if (Object.keys(checkError).length > 0) {
+            setError(checkError);
+            return;
+        }
+
+
         if (!stripe || !elements) {
             return;
         }
@@ -64,6 +97,8 @@ export default function PaymentForm({ clientSecret, places, email, fullName, pho
 
         });
 
+
+
         let addressId;
         if (error) {
             if (error.type === "card_error" || error.type === "validation_error") {
@@ -77,6 +112,7 @@ export default function PaymentForm({ clientSecret, places, email, fullName, pho
                 const userRes = await axiosApiCall(`/user/${session.user.id}`);
                 addressId = userRes.data.user.addressId;
             }
+
 
             const order = await axiosApiCall('/order', 'POST', {
                 products: items,
@@ -94,7 +130,7 @@ export default function PaymentForm({ clientSecret, places, email, fullName, pho
             setIsLoading(false);
         };
 
-        router.push('/paymentsuccess')
+        // router.push('/paymentsuccess')
     }
 
     const paymentElementOptions = {

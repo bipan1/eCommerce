@@ -8,12 +8,12 @@ import { axiosApiCall } from "utils/axiosApiCall";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_PUBLISHABLE_KEY);
 
-export default function Payment({ places, email, fullName, phoneNumber }) {
+export default function Payment({ places, email, fullName, phoneNumber, subTotal, setError }) {
     const [clientSecret, setClientSecret] = useState("");
 
     useEffect(() => {
         async function makePaymentIntent() {
-            const { data } = await axiosApiCall('/stripe', 'POST', { amount: 100 });
+            const { data } = await axiosApiCall('/stripe', 'POST', { amount: subTotal });
             setClientSecret(data.client_secret)
         }
         makePaymentIntent();
@@ -31,7 +31,7 @@ export default function Payment({ places, email, fullName, phoneNumber }) {
         <div className="App">
             {clientSecret && (
                 <Elements options={options} stripe={stripePromise}>
-                    <PaymentForm phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} clientSecret={clientSecret} />
+                    <PaymentForm setError={setError} phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} clientSecret={clientSecret} />
                 </Elements>
             )}
         </div>

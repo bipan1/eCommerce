@@ -1,12 +1,14 @@
 import { toast } from 'react-toastify'
-import { FaEdit, FaEllipsisH, FaPlus } from "react-icons/fa"
+import { FaEdit, FaPlus } from "react-icons/fa"
+import { SlOptionsVertical } from "react-icons/sl";
 import { Button, Dropdown, Input } from "antd"
-import { RiDeleteBin5Line } from "react-icons/ri";
+import { MdDeleteOutline } from "react-icons/md";
 import SubCategoryItem from "./subCategoryItem";
 import { useState } from "react";
 import { addSubcategory, removeSubcategory } from '@/redux/features/category-slice';
 import { useDispatch } from 'react-redux';
 import { axiosApiCall } from 'utils/axiosApiCall';
+import { MdOutlineKeyboardArrowRight, MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 export default function CategoryItems({ item, handleCategoryEdit, handleCategoryDelete }) {
 
@@ -48,44 +50,49 @@ export default function CategoryItems({ item, handleCategoryEdit, handleCategory
             label: (
                 <lable onClick={() => handleCategoryEdit(item)}>Edit</lable>
             ),
-            icon: <FaEdit />
+            icon: <FaEdit size={15} />
         },
         {
             id: '2',
             label: (
                 <lable onClick={() => handleCategoryDelete(item.id)}> Delete</ lable>
             ),
-            icon: <RiDeleteBin5Line />
+            icon: <MdDeleteOutline size={20} />
         }
     ]
 
     return (
         <div className="w-1/2">
-            <div onClick={() => setOpenSub(!openSub)} className="bg-white shadow-md hover:shadow-lg hover:cursor-pointer rounded-lg mt-5 flex justify-between p-3" key={item.id}>
-                <div className="flex-1">
-                    <p className="font-bold text-lg">{item.name}</p>
+            <div className='bg-white shadow-md hover:shadow-lg hover:cursor-pointer rounded-lg mt-5'>
+                <div onClick={() => setOpenSub(!openSub)} className=" flex justify-between p-3" key={item.id}>
+                    <div className="flex-1 flex">
+                        {!openSub ? <MdOutlineKeyboardArrowRight size={20} /> : <MdOutlineKeyboardArrowDown size={20} />}
+                        <p className="font-bold ml-2 text-lg">{item.name}</p>
+                    </div>
+                    <div className="flex items-center">
+                        <Dropdown
+                            menu={{
+                                items,
+                            }}
+                            placement="bottomLeft"
+                        >
+                            <SlOptionsVertical className="mr-4" />
+                        </Dropdown>
+                    </div>
                 </div>
-                <div className="flex items-center">
-                    <Dropdown
-                        menu={{
-                            items,
-                        }}
-                        placement="bottomLeft"
-                    >
-                        <FaEllipsisH className="mr-4" />
-                    </Dropdown>
-                </div>
-            </div>
 
-            {openSub && <div className="flex mt-2 ml-6">
-                <Input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Add new Sub Category" />
-                <Button onClick={addNewSubCategory} className='ml-4 float-right bg-blue-400' type='primary'><FaPlus className='inline' /><span className='ml-4'>Add</span></Button>
-            </div>}
-            {openSub && item?.subcategories?.length > 0 && item?.subcategories.map(subcat => {
-                return <div>
-                    <SubCategoryItem handleDeleteSubcategory={handleDeleteSubcategory} subcat={subcat} />
-                </div>
-            })}
+                {openSub && <div className='bg-gray-200 p-3'>
+                    {openSub && <div className="flex mt-2 ml-6 mb-2">
+                        <Input value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Add new Sub Category" />
+                        <Button onClick={addNewSubCategory} className='ml-4 float-right bg-blue-400' type='primary'><FaPlus className='inline' /><span className='ml-4'>Add</span></Button>
+                    </div>}
+                    {openSub && item?.subcategories?.length > 0 && item?.subcategories.map(subcat => {
+                        return <div>
+                            <SubCategoryItem handleDeleteSubcategory={handleDeleteSubcategory} subcat={subcat} />
+                        </div>
+                    })}
+                </div>}
+            </div>
         </div>
     )
 }

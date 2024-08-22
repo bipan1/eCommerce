@@ -5,7 +5,7 @@ import { useLoadScript } from "@react-google-maps/api";
 
 const libraries = ["places"];
 
-export default function AddressForm({ places, setPlaces }) {
+export default function AddressForm({ places, setPlaces, error }) {
 
     const inputRef = useRef(null);
 
@@ -78,19 +78,32 @@ export default function AddressForm({ places, setPlaces }) {
 
     return (
         <div className="mb-2">
-            <input onChange={handleChange} name="addressLine" value={places ? places.addressLine : ''} className="border w-full h-10 rounded-md px-4 mb-4 text-lg focus:outline-none focus:ring-1 focus:ring-blue-500" ref={inputRef} type="text" />
-            <div className="grid lg:grid-cols-3 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-4">
-                <Input
-                    onChange={handleChange}
-                    name="suburb"
-                    type="text"
-                    placeholder="City name"
-                    size="large"
-                    value={places ? places.suburb : ''}
-                />
-                <Input onChange={handleChange} name="state" value={places ? places.state : ''} size="large" type='text' placeholder="State" />
+            <div className="mb-4">
+                <input onChange={handleChange} name="addressLine" value={places ? places.addressLine : ''} className="border w-full h-10 rounded-md px-4 text-lg focus:outline-none focus:ring-1 focus:ring-blue-500" ref={inputRef} type="text" />
+                {error?.addressLine && <p className="text-red-500 mb-2">{error.addressLine}</p>}
+            </div>
 
-                <Input onChange={handleChange} name="postcode" value={places ? places.postcode : ''} size="large" type='text' placeholder='Post code' />
+            <div className="grid lg:grid-cols-3 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-4">
+                <div>
+                    <Input
+                        onChange={handleChange}
+                        name="suburb"
+                        type="text"
+                        placeholder="City name"
+                        size="large"
+                        value={places ? places.suburb : ''}
+                    />
+                    {error?.suburb && <p className="mt-2 text-red-500">{error.suburb}</p>}
+                </div>
+
+                <div>
+                    <Input onChange={handleChange} name="state" value={places ? places.state : ''} size="large" type='text' placeholder="State" />
+                    {error?.state && <p className="mt-2 text-red-500">{error.state}</p>}
+                </div>
+                <div>
+                    <Input onChange={handleChange} name="postcode" value={places ? places.postcode : ''} size="large" type='text' placeholder='Post code' />
+                    {error?.postcode && <p className="mt-2 text-red-500"> {error.postcode}</p>}
+                </div>
             </div>
         </div>
     )

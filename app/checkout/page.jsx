@@ -12,15 +12,18 @@ import { axiosApiCall } from "utils/axiosApiCall";
 export default function CheckoutPage() {
     // const [shippingMethod, setShippingMethod] = useState('delivery');
     const [places, setPlaces] = useState({});
-    const [fullName, setFullName] = useState();
-    const [email, setEmail] = useState();
-    const [phoneNumber, setPhoneNumber] = useState()
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('')
+    const [error, setError] = useState({})
 
     const { data: session } = useSession()
 
     // const handleShippingChange = (e) => {
     //     setShippingMethod(e.target.value)
     // }
+
+    console.log(error)
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -63,6 +66,7 @@ export default function CheckoutPage() {
                     </div> : <div>
                         <p className="text-xl font-medium">Contact</p>
                         <Input required value={email} onChange={(e) => setEmail(e.target.value)} className="" placeholder="Enter email" size="large" />
+                        <p className="mt-2 text-red-500">{error.email && error.email}</p>
                     </div>}
 
                     {/* <p className="text-xl mt-8 font-medium">Shipping Method</p>
@@ -82,14 +86,16 @@ export default function CheckoutPage() {
                             onChange={(e) => setFullName(e.target.value)}
                             required
                         />
+                        <p className="mt-2 text-red-500">{error.fullName && error.fullName}</p>
                     </div>
-                    <AddressForm places={places} setPlaces={setPlaces} />
+                    <AddressForm error={error} places={places} setPlaces={setPlaces} />
                     <Input className="my-2" size="large" type='text' placeholder='Phone number' value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                     />
+                    {error.phoneNumber && <p className="mt-2 text-red-500">{error.phoneNumber}</p>}
                     <p className="text-xl mt-8 font-medium">Payment Details</p>
                     <p className="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
-                    <Payment places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
+                    <Payment setError={setError} subTotal={subTotal} places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
                 </div>
             </div>
 
