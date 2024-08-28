@@ -49,8 +49,8 @@ export default function Login() {
   }
 
   return (
-    <div className="mt-10 flex items-center justify-center">
-      <Card className="w-1/4 shadow-lg p-4">
+    <div className="mt-10 flex items-center px-3 justify-center">
+      <Card className="w-full max-w-md shadow-lg p-4">
         <h2 className="text-lg text-center pb-3">Log in to your account</h2>
         <Form name="login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item

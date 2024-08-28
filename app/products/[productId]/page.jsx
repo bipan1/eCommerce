@@ -37,24 +37,22 @@ export default function ProductDetails({ params }) {
     }
 
 
-    return <div className="flex mt-10 w-full lg:flex lg:items-start lg:gap-1">
-        <div className="flex-1  flex justify-end">
-            <div className="w-3/5">
+    return <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4">
+        <div className="flex-1 flex justify-center lg:justify-end">
+            <div className="w-full lg:w-3/5">
                 <section className="bg-black/[0.075] flex items-center justify-center h-[400px] md:h-[500px] md:w-[500px]">
                     <img src={product?.image} />
                 </section>
             </div>
         </div>
-        <div className="flex-1">
-            <div className="w-2/3 mb-6">
+        <div className="flex-1 w-full lg:w-2/3 mt-4 lg:mt-0">
+            <div className="mb-6">
                 <Card>
                     <h1 className="font-bold text-2xl">{product?.name}</h1>
                     <div className=" border-b border-blue-600 mb-2">
                         <p className="mt-3 text-lg text-blue-500 ">Description</p>
                     </div>
-
                     <p className="text-gray-600 text-base">{product?.description}</p>
-
                     <div className=" border-b border-blue-600 mb-2 mt-2">
                         <p className="mt-3 text-lg text-blue-500 ">About Product</p>
                     </div>

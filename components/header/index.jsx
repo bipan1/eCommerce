@@ -12,7 +12,7 @@ import { openBag, closeBag } from '@/redux/features/bag-slice';
 import { GoPerson } from "react-icons/go";
 import { IoBagOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown, IoIosMenu } from "react-icons/io";
 import PopOverContent from './popOverContent';
 import { getInitials } from 'utils';
 import { fetchProducts } from "@/redux/features/products-slice";
@@ -25,6 +25,7 @@ import { IoMdCloseCircleOutline } from "react-icons/io";
 export default function Header() {
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -36,6 +37,22 @@ export default function Header() {
       dispatch(fetchCategories());
     }
   }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -89,37 +106,134 @@ export default function Header() {
   return (
     <div>
       <header
-        style={{ backgroundColor: '#4CAF50' }}
-        className={`!fixed top-0 shadow-lg text-white left-0 z-[1000] flex w-full items-center`}
+        className="fixed top-0 left-0 z-[1000] w-full !bg-[#4CAF50] text-white shadow-lg"
       >
-        <div className="container !mx-auto">
-          <div className="relative flex items-center justify-between">
-            <div className="w-40 max-w-full xl:mr-12">
+        <div className="container mx-auto px-4 ">
+          <div className="flex items-center justify-between py-2 md:hidden">
+            <div className='flex'>
+              <button className="text-white">
+                <IoIosMenu size={40} />
+              </button>
               <Link
-                className={`text-[30px] font-extrabold cursor-pointer block p-2`}
+                className="text-[22px] font-extrabold cursor-pointer block p-2"
                 href={'/'}
               >
                 NepMart
               </Link>
             </div>
 
-            <Popover content={() => <PopOverContent />} placement='bottom'>
-              <div className='w-full flex ml-6 text-lg font-bold hover:cursor-pointer'><p>Shop by Department</p> <IoIosArrowDown className='ml-1 my-auto' /></div>
+            <div className="flex items-center space-x-4">
+              <div onClick={handleBagClick} className="relative cursor-pointer">
+                <IoBagOutline size={30} />
+                {numberOfItems > 0 && (
+                  <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
+                    {numberOfItems}
+                  </span>
+                )}
+              </div>
+              {session ? (
+                <Popover content={() => <Profilepage profileinfo={session} />}>
+                  <Button className="!text-white !bg-[#4CAF50] !font-bold" size="large" shape="circle">{initials}</Button>
+                </Popover>
+              ) : (
+                <Button
+                  onClick={() => router.push('/login')}
+                  style={{ backgroundColor: '#4CAF50' }}
+                  className=' !border-white !text-white !rounded-2xl'
+                  size="large"
+                  type="primary"
+                >
+                  <GoPerson className="inline" />
+                  <span className="ml-2">Login</span>
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Layout - Search Bar Row */}
+          {!isScrolled && <div className="flex justify-center mb-2 mt-2 md:hidden">
+
+            <div className="w-full px-1">
+              <Input
+                onKeyDown={handleEnterKeyPress}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search for products"
+                type="text"
+                className="rounded-lg w-full"
+                size="large"
+                suffix={
+                  searchInput.length > 0 ? (
+                    <IoMdCloseCircleOutline
+                      onClick={closeSuggestion}
+                      size={20}
+                      className="mr-2"
+                    />
+                  ) : (
+                    <FaSearch className="mr-2" />
+                  )
+                }
+              />
+              {suggestions.length > 0 && (
+                <div className="absolute bg-white border text-gray-800 border-gray-300 shadow-lg w-full z-10">
+                  {suggestions.map((suggestion) => (
+                    <div
+                      key={suggestion.item.id}
+                      className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                      onClick={handleSearch}
+                    >
+                      {suggestion.item.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>}
+
+
+
+          {/* Desktop Layout - Full Row */}
+          <div className="hidden md:flex items-center justify-between py-1">
+            {/* Logo */}
+            <div className="w-40 max-w-full">
+              <Link
+                className="text-[30px] font-extrabold cursor-pointer block p-2"
+                href={'/'}
+              >
+                NepMart
+              </Link>
+            </div>
+
+            {/* Categories Dropdown */}
+            <Popover content={() => <PopOverContent />} placement="bottom">
+              <div className="ml-2 text-lg font-bold cursor-pointer items-center hidden md:flex">
+                <p>Shop by Department</p>
+                <IoIosArrowDown className="ml-1 my-auto" />
+              </div>
             </Popover>
 
-
-            <div className='flex w-full px-4 justify-between'>
-              <div className='relative w-full' onMouseLeave={handleMouseLeave}>
+            {/* Search Bar */}
+            <div className="flex-grow md:flex-grow-0 md:w-[35vw] px-4">
+              <div className="relative w-full" onMouseLeave={handleMouseLeave}>
                 <Input
                   onKeyDown={handleEnterKeyPress}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder='Search for products'
-                  type='text'
-                  className='!rounded-lg'
-                  style={{ width: '35vw' }}
+                  placeholder="Search for products"
+                  type="text"
+                  className="rounded-lg w-full"
                   size="large"
-                  suffix={searchInput.length > 0 ? <IoMdCloseCircleOutline onClick={closeSuggestion} size={20} className="mr-2" /> : <FaSearch className='mr-2' />}
+                  suffix={
+                    searchInput.length > 0 ? (
+                      <IoMdCloseCircleOutline
+                        onClick={closeSuggestion}
+                        size={20}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <FaSearch className="mr-2" />
+                    )
+                  }
                 />
                 {suggestions.length > 0 && (
                   <div className="absolute bg-white border text-gray-800 border-gray-300 shadow-lg w-full z-10">
@@ -137,30 +251,40 @@ export default function Header() {
               </div>
             </div>
 
-
-            <div className='gap-4 items-center w-full'>
-              <div className="ml-10 flex gap-4 space-between items-center justify-end pr-16 lg:pr-0">
-                <div onClick={handleBagClick} className="relative mr-3">
-                  <IoBagOutline className="cursor-pointer" size={30} />
-                  {numberOfItems > 0 && (
-                    <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
-                      {numberOfItems}
-                    </span>
-                  )}
-                </div>
-                {session ? <Popover content={() => <Profilepage profileinfo={session} />}>
-                  <Button className='ml-3' style={{ color: "white", backgroundColor: '#4CAF50' }} size='large' shape="circle">{initials}</Button>
-                </Popover> :
-                  <Button onClick={() => router.push('/login')} style={{ backgroundColor: '#4CAF50' }} className=' !border-white !text-white !rounded-2xl' size='large' type='primary'>
-                    <GoPerson className='inline' />
-                    <span className='ml-4'>Login</span>
-                  </Button>}
+            {/* Cart and Profile Icons for Desktop */}
+            <div className="flex items-center space-x-4">
+              {/* Cart Icon */}
+              <div onClick={handleBagClick} className="relative cursor-pointer">
+                <IoBagOutline size={30} />
+                {numberOfItems > 0 && (
+                  <span className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center text-xs absolute -top-1 -right-1">
+                    {numberOfItems}
+                  </span>
+                )}
               </div>
+
+              {/* Profile / Login Button */}
+              {session ? (
+                <Popover content={() => <Profilepage profileinfo={session} />}>
+                  <Button className="!text-white !bg-[#4CAF50] !font-bold" size="large" shape="circle">{initials}</Button>
+                </Popover>
+              ) : (
+                <Button
+                  onClick={() => router.push('/login')}
+                  style={{ backgroundColor: '#4CAF50' }}
+                  className=' !border-white !text-white !rounded-2xl'
+                  size="large"
+                  type="primary"
+                >
+                  <GoPerson className="inline" />
+                  <span className="ml-2">Login</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
-      </header>
-    </div>
+      </header >
+    </div >
   )
 }
-getInitials
+

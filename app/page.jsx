@@ -55,9 +55,6 @@ export default function Home() {
 
   return <div>
     <Carousel infiniteLoop={true} showThumbs={false} transitionTime={500} className="custom-carousel" autoPlay={true}>
-      {/* <div className="image-container">
-        <img src="new1.png" className="carousel-image" />
-      </div> */}
       <div className="image-container">
         <img src="new3.jpeg" className="carousel-image" />
       </div>
@@ -65,7 +62,7 @@ export default function Home() {
         <img src="new2.webp" className="carousel-image" />
       </div>
     </Carousel>
-    <div className='mt-10 relative z-[10] overflow-hidden lg:px-20 lg:mx-20 md:px-10 md:mx-10 sm:px-5 sm:mx-5'>
+    <div className='mt-10 relative z-[10] overflow-hidden px-4 sm:px-8 md:px-12 lg:px-20 mx-auto'>
       <div>
         <div className="flex items-center justify-between">
           <div className="float-left">
@@ -83,7 +80,7 @@ export default function Home() {
         <div className="mb-10 mx-auto">
           <Slider {...settings} >
             {specials.map(product => {
-              return <div>
+              return <div className='ml-10'>
                 <ProductDisplay product={product} />
               </div>
             })}
@@ -93,10 +90,10 @@ export default function Home() {
 
       <div>
         {categories.map(cat => (
-          <>
+          <div>
             {
               categoryProductsMap[cat.id].length > 0 && <>
-                <div className="flex mt-5 items-center justify-between">
+                <div className="flex mt-5 items-center justify-between mb-4">
                   <div className="float-left">
                     <h2 className="text-2xl font-bold relative">
                       {cat.name}
@@ -109,7 +106,7 @@ export default function Home() {
                   </div>
 
                 </div>
-                <div className="mx-auto lg:gap-6 grid items-center py-4 grid-cols-2 sm:gap-2 md:gap-3 lg:grid-cols-5">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-5 lg:gap-6">
                   {categoryProductsMap[cat.id].map(product => {
                     return <div>
                       <ProductDisplay product={product} />
@@ -117,9 +114,9 @@ export default function Home() {
                   })}
                 </div>
               </>}
-          </>
+          </div>
         ))}
       </div>
     </div>
-  </div >
+  </div>
 }

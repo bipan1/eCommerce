@@ -24,8 +24,8 @@ export default function Signup() {
   }
 
   return (
-    <div className="mt-10 flex items-center justify-center">
-      <Card className="w-1/4 shadow-lg p-4">
+    <div className="mt-10 flex items-center px-3 justify-center">
+      <Card className="w-full max-w-md shadow-lg m-2">
         <h2 className="pb-3 text-lg text-center">Sign Up to create an account.</h2>
         <Form name="normal_login" layout="vertical" onFinish={handleSubmit}>
           <Form.Item

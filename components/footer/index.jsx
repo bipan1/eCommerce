@@ -3,12 +3,12 @@ export default function Footer() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 gap-y-8 md:gap-8 py-10 max-w-sm mx-auto sm:max-w-3xl lg:max-w-full">
                 <div className="col-span-full mb-10 lg:col-span-2 lg:mb-0">
-                    <p className={`text-[30px] font-extrabold text-gray-900 cursor-pointer block w-full`}>NEPMART</p>
+                    <p className="text-2xl text-gray-900 lg:max-w-xs text-center lg:text-left">NEPMART</p>
                     <p className="py-4 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Trusted by South asian people in Melbourne and across Australia.</p>
 
-                    <p className=" text-gray-600 text-sm font-medium">Want to talk with us?</p>
-                    <p className="text-gray-600 text-sm font-medium">Please call us on 1300 455 453</p>
-                    <a className="mt-4 py-2.5 px-5 h-9 block w-fit bg-indigo-600 rounded-full shadow-sm text-xs text-white mx-auto transition-all  duration-500 hover:bg-indigo-700 lg:mx-0">
+                    <p className="text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Want to talk with us?</p>
+                    <p className="py-1 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Please call us on 1300 455 453</p>
+                    <a className="mt-2 py-2.5 px-5 h-9 block w-fit bg-indigo-600 rounded-full shadow-sm text-xs text-white mx-auto transition-all  duration-500 hover:bg-indigo-700 lg:mx-0">
                         Contact us
                     </a>
                 </div>
