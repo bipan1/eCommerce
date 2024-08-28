@@ -56,53 +56,12 @@ export default function CheckoutPage() {
         return items.reduce((total, item) => total + item.quantity * item.price, 0);
     }, [bag]);
 
-    return <div className="">
-        <div className="flex w-full lg:flex lg:items-start lg:gap-12">
-            <div style={{ minHeight: '100vh' }} className="pl-10 flex-1 bg-white flex justify-end">
-                <div className="w-2/3 p-6 mr-3">
-                    {session ? <div>
-                        <p className="text-xl font-medium">Account</p>
-                        <p className="text-gray-400 text-sm">{session.user.email}</p>
-                    </div> : <div>
-                        <p className="text-xl font-medium">Contact</p>
-                        <Input required value={email} onChange={(e) => setEmail(e.target.value)} className="" placeholder="Enter email" size="large" />
-                        <p className="mt-2 text-red-500">{error.email && error.email}</p>
-                    </div>}
-
-                    {/* <p className="text-xl mt-8 font-medium">Shipping Method</p>
-                    <Radio.Group onChange={handleShippingChange} value={shippingMethod}>
-                        <Radio className="text-gray-400" value="delivery"> Delivery </Radio>
-                        <Radio className="text-gray-400" value="pickup"> Pick Up </Radio>
-                    </Radio.Group> */}
-
-                    <p className="text-xl mt-8 font-medium">Delivery Details</p>
-                    <p className="text-gray-400 text-sm mb-3">Address where product is delivered.</p>
-                    <div className="mb-2">
-                        <Input
-                            type="text"
-                            placeholder="Full name"
-                            size="large"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                        />
-                        <p className="mt-2 text-red-500">{error.fullName && error.fullName}</p>
-                    </div>
-                    <AddressForm error={error} places={places} setPlaces={setPlaces} />
-                    <Input className="my-2" size="large" type='text' placeholder='Phone number' value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                    />
-                    {error.phoneNumber && <p className="mt-2 text-red-500">{error.phoneNumber}</p>}
-                    <p className="text-xl mt-8 font-medium">Payment Details</p>
-                    <p className="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
-                    <Payment setError={setError} subTotal={subTotal} places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
-                </div>
-            </div>
-
-            <div className="flex-1 mb-10">
+    return <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4">
+        <div className="flex-1 flex justify-center lg:justify-end mb-10 p-4">
+            <div className="w-full lg:w-3/5">
                 <h1 className="mt-2 text-lg">Order Summary</h1>
                 <div className="flow-root">
-                    <ul role="list" className="-my-2 w-1/2 mt-5">
+                    <ul role="list" className="-my-2 mt-5">
                         {items.map(item => {
                             return <div>
                                 <li className="flex py-2">
@@ -125,7 +84,7 @@ export default function CheckoutPage() {
                             </div>
                         })}
                     </ul>
-                    <div className="mt-10 w-1/2">
+                    <div className="mt-10">
                         <div className="mt-6 border-t border-b py-2">
                             <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium text-gray-900">Subtotal</p>
@@ -145,6 +104,47 @@ export default function CheckoutPage() {
             </div>
         </div>
 
+
+        <div style={{ minHeight: '100vh' }} className="flex-1 justify-center lg:justify-start bg-white flex">
+            <div className="w-full lg:w-2/3 p-6 mr-3">
+                {session ? <div>
+                    <p className="text-xl font-medium">Account</p>
+                    <p className="text-gray-400 text-sm">{session.user.email}</p>
+                </div> : <div>
+                    <p className="text-xl font-medium">Contact</p>
+                    <Input required value={email} onChange={(e) => setEmail(e.target.value)} className="" placeholder="Enter email" size="large" />
+                    <p className="mt-2 text-red-500">{error.email && error.email}</p>
+                </div>}
+
+                {/* <p className="text-xl mt-8 font-medium">Shipping Method</p>
+                    <Radio.Group onChange={handleShippingChange} value={shippingMethod}>
+                        <Radio className="text-gray-400" value="delivery"> Delivery </Radio>
+                        <Radio className="text-gray-400" value="pickup"> Pick Up </Radio>
+                    </Radio.Group> */}
+
+                <p className="text-xl mt-8 font-medium">Delivery Details</p>
+                <p className="text-gray-400 text-sm mb-3">Address where product is delivered.</p>
+                <div className="mb-2">
+                    <Input
+                        type="text"
+                        placeholder="Full name"
+                        size="large"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                    />
+                    <p className="mt-2 text-red-500">{error.fullName && error.fullName}</p>
+                </div>
+                <AddressForm error={error} places={places} setPlaces={setPlaces} />
+                <Input className="my-2" size="large" type='text' placeholder='Phone number' value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+                {error.phoneNumber && <p className="mt-2 text-red-500">{error.phoneNumber}</p>}
+                <p className="text-xl mt-8 font-medium">Payment Details</p>
+                <p className="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
+                <Payment setError={setError} subTotal={subTotal} places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
+            </div>
+        </div>
     </div>
 
 }

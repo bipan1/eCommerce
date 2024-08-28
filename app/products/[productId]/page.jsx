@@ -45,8 +45,8 @@ export default function ProductDetails({ params }) {
                 </section>
             </div>
         </div>
-        <div className="flex-1 w-full lg:w-2/3 mt-4 lg:mt-0">
-            <div className="mb-6">
+        <div className="flex-1 flex justify-center lg:justify-start">
+            <div className="w-full lg:w-3/5">
                 <Card>
                     <h1 className="font-bold text-2xl">{product?.name}</h1>
                     <div className=" border-b border-blue-600 mb-2">

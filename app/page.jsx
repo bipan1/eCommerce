@@ -62,6 +62,8 @@ export default function Home() {
         <img src="new2.webp" className="carousel-image" />
       </div>
     </Carousel>
+
+
     <div className='mt-10 relative z-[10] overflow-hidden px-4 sm:px-8 md:px-12 lg:px-20 mx-auto'>
       <div>
         <div className="flex items-center justify-between">

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { Button, Input, Popover } from 'antd'
 import React from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from 'next-auth/react'
 import { FaSearch } from "react-icons/fa";
 import Profilepage from './ProfilePage';
@@ -21,13 +21,13 @@ import { fetchSearchProducts } from "@/redux/features/searchproducts-slice";
 import { getSuggestions } from '@/utils/fuse';
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
-
 export default function Header() {
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const pathName = usePathname();
 
   const { data: products } = useSelector((state) => state.products);
 
@@ -151,7 +151,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Layout - Search Bar Row */}
-          {!isScrolled && <div className="flex justify-center mb-2 mt-2 md:hidden">
+          {!isScrolled && pathName === "/" && < div className="flex justify-center mb-2 mt-2 md:hidden">
 
             <div className="w-full px-1">
               <Input
@@ -189,8 +189,6 @@ export default function Header() {
               )}
             </div>
           </div>}
-
-
 
           {/* Desktop Layout - Full Row */}
           <div className="hidden md:flex items-center justify-between py-1">

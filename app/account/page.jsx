@@ -37,16 +37,15 @@ export default function Account() {
     }, []);
 
     return (
-        <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4 p-2">
-            <div className="flex-1 w-full lg:w-2/3 mt-4 lg:mt-0">
-                <div className="mb-6">
-                    <Card title="Personal Information">
+        <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4 m-2">
+            <div className="flex-1 flex justify-center lg:justify-end">
+                <div className="w-full lg:w-2/3">
+                    <Card className="mb-6" title="Personal Information">
                         <p><span className="font-bold">Name:</span> {session?.user.name}</p>
                         <p><span className="font-bold">Email:</span> {session?.user.email}</p>
                     </Card>
-                </div>
 
-                <div className="">
+
                     <Card title="Edit your address">
                         <AddressForm places={places} setPlaces={setPlaces} />
                         <Button onClick={handleAddressSubmit} className="!bg-green-400 float-right !text-white">
@@ -56,7 +55,7 @@ export default function Account() {
                 </div>
             </div>
 
-            <div className="flex-1 flex justify-center lg:justify-end">
+            <div className="flex-1 flex justify-center lg:justify-start">
                 <div className="w-full lg:w-3/5">
                     <Card title="Change Password">
                         <Form name="create-product" layout="vertical">
