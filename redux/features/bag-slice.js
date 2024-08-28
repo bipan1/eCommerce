@@ -4,6 +4,7 @@ const initialState = {
   numberOfItems: 0,
   items: [],
   isBagOpen: false,
+  isSideBarOpen: false,
 }
 
 export const bag = createSlice({
@@ -40,6 +41,12 @@ export const bag = createSlice({
     closeBag: (state) => {
       state.isBagOpen = false
     },
+    openSideBar: (state) => {
+      state.isSideBarOpen = true
+    },
+    closeSideBar: (state) => {
+      state.isSideBarOpen = false
+    },
     increaseQuantity: (state, action) => {
       const index = state.items.findIndex(
         (cat) => cat.productId === action.payload,
@@ -75,5 +82,7 @@ export const {
   closeBag,
   increaseQuantity,
   decreaseQuantity,
+  openSideBar,
+  closeSideBar,
 } = bag.actions
 export default bag.reducer

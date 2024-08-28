@@ -10,6 +10,7 @@ import Footer from 'components/footer'
 import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loader
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
+import MobileSidebar from '../components/Sidebar/MobileSidebar'
 
 export default function RootLayout({ children }) {
   return (
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
                 <div className="pt-16">{children}</div>
                 <Footer />
                 <Cart />
+                <MobileSidebar />
               </NextAuthProvider>
             </ReduxProvider>
           </AntdStyledComponentsRegistry>

@@ -20,6 +20,8 @@ import { fetchCategories } from "@/redux/features/category-slice";
 import { fetchSearchProducts } from "@/redux/features/searchproducts-slice";
 import { getSuggestions } from '@/utils/fuse';
 import { IoMdCloseCircleOutline } from "react-icons/io";
+import { openSideBar } from '@/redux/features/bag-slice';
+
 
 export default function Header() {
   const [searchInput, setSearchInput] = useState('');
@@ -30,6 +32,9 @@ export default function Header() {
   const pathName = usePathname();
 
   const { data: products } = useSelector((state) => state.products);
+  const { data: session } = useSession()
+  const bag = useSelector((state) => state.bag);
+  const { numberOfItems, isBagOpen } = bag;
 
   useEffect(() => {
     if (products.length === 0) {
@@ -53,6 +58,10 @@ export default function Header() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  const handeSidebarClick = () => {
+    dispatch(openSideBar());
+  }
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -82,10 +91,6 @@ export default function Header() {
     }
   }
 
-  const { data: session } = useSession()
-  const bag = useSelector((state) => state.bag);
-  const { numberOfItems, isBagOpen } = bag;
-
   const handleBagClick = () => {
     if (isBagOpen) {
       dispatch(closeBag())
@@ -111,7 +116,7 @@ export default function Header() {
         <div className="container mx-auto px-4 ">
           <div className="flex items-center justify-between py-2 md:hidden">
             <div className='flex'>
-              <button className="text-white">
+              <button onClick={handeSidebarClick} className="text-white">
                 <IoIosMenu size={40} />
               </button>
               <Link
@@ -151,7 +156,7 @@ export default function Header() {
           </div>
 
           {/* Mobile Layout - Search Bar Row */}
-          {!isScrolled && pathName === "/" && < div className="flex justify-center mb-2 mt-2 md:hidden">
+          {!isScrolled && pathName === "/" && < div className="flex justify-center mb-2 md:hidden">
 
             <div className="w-full px-1">
               <Input
