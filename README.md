@@ -1,40 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+### Grocery Store E-Commerce Application
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Welcome to the Grocery Store E-Commerce Application! This project is a full-stack e-commerce platform built with Next.js for both the frontend and backend, utilizing AWS RDS for data storage, AWS S3 for image storage, and Redux for state management. The application is deployed on Vercel.[https://e-commerce-pi-liart-21.vercel.app/](https://e-commerce-pi-liart-21.vercel.app/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
+- User Authentication: Users can sign up, log in, and manage their profiles.
+- User Roles: Supports both admin and customer roles.
+- Admin: Create product categories, manage products, and view all customer orders.
+- Customer: Browse and search for products, add products to the cart, and checkout.
+- Product Management: Admins can add, update, and delete products and categories.
+- Order Management: Customers can place orders, and admins can view all orders.
+- Image Upload: Images are stored in AWS S3 for efficient and scalable storage.
+- Responsive Design: The mobile-friendly application works well on all devices.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+## Tech Stack
+- Frontend: Next.js, React, Redux, CSS Modules
+- Backend: Next.js API Routes
+- Database: AWS RDS (PostgreSQL)
+- Storage: AWS S3 for storing images
+- State Management: Redux
+- Deployment: Vercel
+- Other Tools: ESLint, Prettier, Axios
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Architecture
+The application follows a modern web architecture pattern, leveraging Next.js for both server-side rendering (SSR) and static site generation (SSG). Here's an overview of the architecture:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- Next.js: Handles the server-side logic and page rendering.
+- AWS RDS (PostgreSQL): Serves as the primary data store for application data, such as user information, product details, and order histories.
+- AWS S3: Used to store product images securely and efficiently.
+- Redux: Manages the global state across the application to provide a seamless user experience.
+- Vercel: Hosts the application and provides a fast and scalable environment for deployment.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
