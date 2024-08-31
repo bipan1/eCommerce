@@ -77,7 +77,7 @@ export default function Cart() {
                                         <p>${convertToFloat(subTotal)}</p>
                                     </div>
                                     <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                                    <Button size='large' onClick={handleChekout} className="!bg-green-500 w-full mt-5 !text-white">Checkout</Button>
+                                    <Button size='large' onClick={handleChekout} className="!bg-green-900 w-full mt-5 !text-white">Checkout</Button>
 
                                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                                         <p>

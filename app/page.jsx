@@ -82,7 +82,7 @@ export default function Home() {
         <div className="mb-10">
           <Slider {...settings} >
             {specials.map(product => {
-              return <div className=''>
+              return <div className="ml-10 md:ml-0 lg:ml-0">
                 <ProductDisplay product={product} />
               </div>
             })}
@@ -96,7 +96,7 @@ export default function Home() {
             {
               categoryProductsMap[cat.id].length > 0 && <>
                 <div className="flex mt-5 items-center justify-between mb-4">
-                  <div className="float-left">
+                  < div className="float-left" >
                     <h2 className="text-2xl font-bold relative">
                       {cat.name}
                       <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-900"></div>
@@ -117,8 +117,9 @@ export default function Home() {
                 </div>
               </>}
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
+        ))
+        }
+      </div >
+    </div >
+  </div >
 }

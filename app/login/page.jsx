@@ -99,7 +99,7 @@ export default function Login() {
             <Button
               htmlType="submit"
               loading={loading}
-              className="w-full h-12 !bg-green-600 !text-white mb-3"
+              className="w-full h-12 !bg-green-900 !text-white mb-3"
             >
               <span className="ml-3">Login</span>
             </Button>
