@@ -1,48 +1,48 @@
 export default function Footer() {
-    return <footer className="w-full bg-green-200 mt-20">
+    return <footer className="w-full bg-[#023020] !text-white mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 gap-y-8 md:gap-8 py-10 max-w-sm mx-auto sm:max-w-3xl lg:max-w-full">
                 <div className="col-span-full mb-10 lg:col-span-2 lg:mb-0">
-                    <p className="text-2xl text-gray-900 lg:max-w-xs text-center lg:text-left">NEPMART</p>
-                    <p className="py-4 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Trusted by South asian people in Melbourne and across Australia.</p>
+                    <p className="text-2xl text-white lg:max-w-xs text-center lg:text-left">NEPMART</p>
+                    <p className="py-4 text-sm lg:max-w-xs text-center lg:text-left">Trusted by South asian people in Melbourne and across Australia.</p>
 
-                    <p className="text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Want to talk with us?</p>
-                    <p className="py-1 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">Please call us on 1300 455 453</p>
+                    <p className="text-sm lg:max-w-xs text-center lg:text-left">Want to talk with us?</p>
+                    <p className="py-1 text-sm lg:max-w-xs text-center lg:text-left">Please call us on 1300 455 453</p>
                     <a className="mt-2 py-2.5 px-5 h-9 block w-fit bg-indigo-600 rounded-full shadow-sm text-xs text-white mx-auto transition-all  duration-500 hover:bg-indigo-700 lg:mx-0">
                         Contact us
                     </a>
                 </div>
                 <div className="lg:mx-auto text-left ">
-                    <h4 className="text-lg text-gray-900 font-medium mb-7">Customer Care</h4>
+                    <h4 className="text-lg text-white font-medium mb-7">Customer Care</h4>
                     <ul className="text-sm  transition-all duration-500">
-                        <li className="mb-6"><a className="text-gray-600 hover:text-gray-900">Help Center</a></li>
-                        <li className="mb-6"><a className=" text-gray-600 hover:text-gray-900">How to Buy</a></li>
-                        <li><a className=" text-gray-600 hover:text-gray-900">Returns and Refunds</a></li>
+                        <li className="mb-6"><a className="text-white hover:text-white">Help Center</a></li>
+                        <li className="mb-6"><a className=" text-white hover:text-white">How to Buy</a></li>
+                        <li><a className=" text-white hover:text-white">Returns and Refunds</a></li>
                     </ul>
                 </div>
                 <div className="lg:mx-auto text-left ">
-                    <h4 className="text-lg text-gray-900 font-medium mb-7">Terms and Policies</h4>
+                    <h4 className="text-lg text-white font-medium mb-7">Terms and Policies</h4>
                     <ul className="text-sm  transition-all duration-500">
-                        <li className="mb-6"><a className="text-gray-600 hover:text-gray-900">Privacy Policy</a></li>
-                        <li className="mb-6"><a className=" text-gray-600 hover:text-gray-900">Refund Policy</a></li>
-                        <li><a className=" text-gray-600 hover:text-gray-900">Term of Service</a></li>
+                        <li className="mb-6"><a className="text-white hover:text-white">Privacy Policy</a></li>
+                        <li className="mb-6"><a className=" text-white hover:text-white">Refund Policy</a></li>
+                        <li><a className=" text-white hover:text-white">Term of Service</a></li>
                     </ul>
                 </div>
                 <div className="lg:mx-auto text-left ">
-                    <h4 className="text-lg text-gray-900 font-medium mb-7">Payment Methods</h4>
+                    <h4 className="text-lg text-white font-medium mb-7">Payment Methods</h4>
                     <ul className="text-sm  transition-all duration-500">
-                        <li className="mb-6"><a className="text-gray-600 hover:text-gray-900">Stripe</a></li>
-                        <li className="mb-6"><a className=" text-gray-600 hover:text-gray-900">Cash on delivery</a></li>
+                        <li className="mb-6"><a className="text-white hover:text-white">Stripe</a></li>
+                        <li className="mb-6"><a className=" text-white hover:text-white">Cash on delivery</a></li>
                     </ul>
                 </div>
                 <div className="lg:mx-auto text-left ">
-                    <h4 className="text-lg text-gray-900 font-medium mb-7">Customer Care Hours</h4>
-                    <p className="text-sm text-gray-500 leading-6 mb-7">8AM - 8PM: Mon - Fri</p>
+                    <h4 className="text-lg text-white font-medium mb-7">Customer Care Hours</h4>
+                    <p className="text-sm leading-6 mb-7">8AM - 8PM: Mon - Fri</p>
                 </div>
             </div>
             <div className="py-7 border-t border-gray-200">
                 <div className="flex items-center justify-center flex-col lg:justify-between lg:flex-row">
-                    <span className="text-sm text-gray-500 ">©<a href="https://pagedone.io/">NepMart</a> 2024, All rights reserved.</span>
+                    <span className="text-sm ">©<a href="https://pagedone.io/">NepMart</a> 2024, All rights reserved.</span>
                     <div className="flex mt-4 space-x-4 sm:justify-center lg:mt-0 ">
                         <a className="w-8 h-8 rounded-full transition-all duration-500 flex justify-center items-center bg-[#33CCFF] hover:bg-gray-900">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">

@@ -15,7 +15,7 @@ import MobileSidebar from '../components/Sidebar/MobileSidebar'
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ backgroundColor: '#fbfaf7' }}>
+      <body>
         <main>
           <AntdStyledComponentsRegistry>
             <ReduxProvider>
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
                   hideProgressBar={true}
                 />
                 <Header />
-                <div className="pt-16">{children}</div>
+                <div>{children}</div>
                 <Footer />
                 <Cart />
                 <MobileSidebar />

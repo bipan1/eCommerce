@@ -65,24 +65,24 @@ export default function Home() {
 
 
     <div className='mt-10 relative z-[10] overflow-hidden px-4 sm:px-8 md:px-12 lg:px-20 mx-auto'>
-      <div>
+      <div className='md:px-20 lg:px-40'>
         <div className="flex items-center justify-between">
           <div className="float-left">
             <h2 className="text-2xl font-bold relative">
               Our Specials
-              <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
+              <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-900"></div>
             </h2>
           </div>
-          <div onClick={() => router.push(`/specials`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+          <div onClick={() => router.push(`/specials`)} className="hover:cursor-pointer text-blue-900 hover:text-green-900 flex text-lg items-center">
             <p className="mr-2">See all</p>
             <FaArrowRight />
           </div>
         </div>
 
-        <div className="mb-10 mx-auto">
+        <div className="mb-10">
           <Slider {...settings} >
             {specials.map(product => {
-              return <div className='ml-10'>
+              return <div className=''>
                 <ProductDisplay product={product} />
               </div>
             })}
@@ -92,23 +92,23 @@ export default function Home() {
 
       <div>
         {categories.map(cat => (
-          <div>
+          <div className='md:px-20 lg:px-40'>
             {
               categoryProductsMap[cat.id].length > 0 && <>
                 <div className="flex mt-5 items-center justify-between mb-4">
                   <div className="float-left">
                     <h2 className="text-2xl font-bold relative">
                       {cat.name}
-                      <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-600"></div>
+                      <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-900"></div>
                     </h2>
                   </div>
-                  <div onClick={() => router.push(`/products/categories/${cat.id}`)} className="hover:cursor-pointer text-blue-600 flex items-center">
+                  <div onClick={() => router.push(`/products/categories/${cat.id}`)} className="hover:cursor-pointer text-blue-900 hover:text-green-900 text-lg flex items-center">
                     <p className="mr-2">See all</p>
                     <FaArrowRight />
                   </div>
 
                 </div>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-5 lg:gap-6">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-4 lg:gap-6">
                   {categoryProductsMap[cat.id].map(product => {
                     return <div>
                       <ProductDisplay product={product} />

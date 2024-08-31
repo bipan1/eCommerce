@@ -2,20 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Rubik&display=swap");
+
 html {
   line-height: 1.5;
-  /* 1 */
   -webkit-text-size-adjust: 100%;
-  /* 2 */
-  /* 3 */
   tab-size: 4;
-  /* 3 */
-  font-family: 'Montserrat', sans-serif;
-  /* 4 */
   font-feature-settings: normal;
-  /* 5 */
   font-variation-settings: normal;
-  /* 6 */
 }
 
 .suggestions {
@@ -33,7 +28,7 @@ html {
 }
 
 .custom-carousel {
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -41,7 +36,7 @@ html {
   display: flex;
   justify-content: center;
   height: 100%;
-  max-height: 60vh;
+  max-height: 65vh;
 }
 
 .carousel-image {
@@ -64,7 +59,6 @@ html {
 .show-scroll {
   transform: translateY(0);
 }
-
 
 /* .StripeElement {
   display: block;

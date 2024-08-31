@@ -46,9 +46,9 @@ export default function ProductDisplay({ product }) {
         router.push(`/products/${product.id}`)
     }
 
-    return <div className="relative w-full flex max-w-xs flex-col overflow-hidden rounded-lg border hover:shadow-2xl border-gray-100 bg-gray-50 shadow-md">
+    return <div className="relative w-full flex max-w-xs flex-col overflow-hidden rounded-lg border hover:shadow-lg border-gray-500">
         <a onClick={handleCardClick} className="relative flex overflow-hidden" href="#">
-            <img style={{ aspectRatio: 'auto', width: '100%', maxHeight: '16vh' }} className=" object-cover" src={product.image} alt="product image" />
+            <img style={{ aspectRatio: 'auto', width: '100%', height: '27vh', maxHeight: '27vh' }} className=" object-cover" src={product.image} alt="product image" />
             {product.isSpecial && <span className="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Special Offer</span>}
             {product.outofStock && <span className="absolute top-0 left-0 m-2 rounded-full bg-red-600 px-2 text-center text-sm font-medium text-white">Out of stock</span>}
         </a>
@@ -58,8 +58,8 @@ export default function ProductDisplay({ product }) {
             </a>
             <div className="mt-2 mb-3 flex items-center justify-between">
                 <p>
-                    <span className="italic text-2xl font-bold text-green-600">${product.isSpecial ? convertToFloat(product.specialPrice) : convertToFloat(product.price)}</span>
-                    {product.isSpecial && <span className="italic ml-2 text-md text-green-600 line-through">${convertToFloat(product.price)}</span>}
+                    <span className="italic text-2xl font-bold text-green-900">${product.isSpecial ? convertToFloat(product.specialPrice) : convertToFloat(product.price)}</span>
+                    {product.isSpecial && <span className="italic ml-2 text-md text-green-900 line-through">${convertToFloat(product.price)}</span>}
                 </p>
             </div>
             <div className="flex items-center justify-between mb-2">

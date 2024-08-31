@@ -12,7 +12,7 @@ export default function PopOverContent() {
     const Final = ({ subcategories }) => (
         <div className="bg-white border border-gray-300 rounded-md shadow-lg hover:cursor-pointer">
             {subcategories.map(subCat => (
-                <div onClick={() => router.push(`/products/subcategories/${subCat.id}`)} key={subCat.id} className="flex justify-between min-w-[200px] max-w-[300px] p-3 border-b border-gray-200 text-gray-800 hover:bg-green-600 hover:text-white">
+                <div onClick={() => router.push(`/products/subcategories/${subCat.id}`)} key={subCat.id} className="flex justify-between min-w-[200px] max-w-[300px] p-3 border-b border-gray-200 text-gray-800 hover:bg-[#00563B] hover:text-white">
                     <h3 className="font-semibold font-xl">{subCat.name}</h3>
                 </div>
             ))}
@@ -24,7 +24,7 @@ export default function PopOverContent() {
         {data?.map((category) => (
             <>
                 <Popover content={() => <Final subcategories={category.subcategories} />} placement='rightBottom'>
-                    <div onClick={() => router.push(`/products/categories/${category.id}`)} key={category.name} className="flex justify-between min-w-[200px] max-w-[300px] p-3 border-b border-gray-200 text-gray-800 hover:bg-green-600 hover:text-white">
+                    <div onClick={() => router.push(`/products/categories/${category.id}`)} key={category.name} className="flex justify-between min-w-[200px] max-w-[300px] p-3 border-b border-gray-200 text-gray-800 hover:bg-[#00563B] hover:text-white">
                         <div>
                             <h3 className="font-semibold font-xl">{category.name}</h3>
                         </div>
