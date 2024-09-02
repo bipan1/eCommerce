@@ -30,6 +30,9 @@ export default function CheckoutPage() {
             const response = await axiosApiCall(`/user/${session.user.id}`)
             const user = response.data.user;
 
+            if (user.phoneNumber) {
+                setPhoneNumber(user.phoneNumber)
+            }
             if (user.addressId) {
                 const response = await axiosApiCall(`/address/${user.addressId}`);
                 const address = response.data.address;
@@ -59,7 +62,7 @@ export default function CheckoutPage() {
     return <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4">
         <div className="flex-1 flex justify-center lg:justify-end mb-10 p-4">
             <div className="w-full lg:w-3/5">
-                <h1 className="mt-2 text-lg">Order Summary</h1>
+                <h1 className="mt-2 text-lg font-bold">Order Summary</h1>
                 <div className="flow-root">
                     <ul role="list" className="-my-2 mt-5">
                         {items.map(item => {

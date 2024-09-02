@@ -5,9 +5,12 @@ import { getCategoryById } from "@/redux/selectors/category";
 import { getProductsByCategoryId } from "@/redux/selectors/product";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { Button } from "antd";
+import { useRouter } from "next/navigation";
 
 export default function ProductsCategory({ params }) {
     const { categoryId } = params;
+
+    const router = useRouter();
 
     const categoryName = useSelector((state) => getCategoryById(state, categoryId))
     const productsDisplay = useSelector((state) => getProductsByCategoryId(state, categoryId))
