@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { getCategoryById } from "@/redux/selectors/category";
 import { getProductsByCategoryId } from "@/redux/selectors/product";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
+import { Button } from "antd";
 
 export default function ProductsCategory({ params }) {
     const { categoryId } = params;
