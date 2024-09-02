@@ -54,7 +54,7 @@ export default function Account() {
         setLoading(true)
 
         try {
-            const response = await axiosApiCall('/user/changeNumber', 'POST', { phoneNumber })
+            const response = await axiosApiCall('/user/changenumber', 'POST', { phoneNumber })
             console.log(response);
             setLoading(false)
             setIsEdit(false)
