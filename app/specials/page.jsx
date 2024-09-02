@@ -3,10 +3,11 @@ import ProductDisplay from '@/components/products/productDisplay';
 import { Button } from 'antd';
 import { IoIosArrowDropleftCircle } from 'react-icons/io';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 
 export default function Specials() {
     const { specials } = useSelector((state) => state.products);
-
+    const router = useRouter()
     return <>
         <div className="m-2 md:hidden">
             <Button onClick={() => router.back()} type="link" className="flex rounded-2xl !bg-green-900 !text-white" >
