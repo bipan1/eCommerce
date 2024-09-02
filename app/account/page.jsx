@@ -6,11 +6,18 @@ import { useEffect, useState } from "react";
 import { axiosApiCall } from "utils/axiosApiCall";
 import { useRouter } from "next/navigation";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
+import { GrEdit } from "react-icons/gr";
 
 export default function Account() {
     const [places, setPlaces] = useState({})
+    const [isEdit, setIsEdit] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState();
+    const [user, setUser] = useState();
     const { data: session } = useSession();
     const router = useRouter()
+
+
     const handleAddressSubmit = async () => {
         try {
             await axiosApiCall(`/address`, 'POST', places);
@@ -22,10 +29,15 @@ export default function Account() {
     useEffect(() => {
         const fetchUserData = async () => {
             const response = await axiosApiCall(`/user/${session.user.id}`);
-            const user = response.data.user;
+            const userRes = response.data.user;
+            setUser(userRes)
 
-            if (user.addressId) {
-                const response = await axiosApiCall(`/address/${user.addressId}`);
+            if (userRes.phoneNumber) {
+                setPhoneNumber(userRes.phoneNumber)
+            }
+
+            if (userRes.addressId) {
+                const response = await axiosApiCall(`/address/${userRes.addressId}`);
                 const address = response.data.address;
                 setPlaces({
                     addressLine: address.addressLine,
@@ -38,6 +50,20 @@ export default function Account() {
         fetchUserData();
     }, []);
 
+    const updatePhoneNumber = async () => {
+        setLoading(true)
+
+        try {
+            const response = await axiosApiCall('/user/changeNumber', 'POST', { phoneNumber })
+            console.log(response);
+            setLoading(false)
+            setIsEdit(false)
+        } catch (e) {
+            console.log(e);
+            setLoading(false)
+        }
+    }
+
     return (
         <>
             <div className="m-2 md:hidden">
@@ -49,15 +75,25 @@ export default function Account() {
             <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4 m-2">
                 <div className="flex-1 flex justify-center lg:justify-end">
                     <div className="w-full lg:w-2/3">
-                        <Card className="mb-6 shadow-lg" title="Personal Information">
-                            <p><span className="font-bold">Name:</span> {session?.user.name}</p>
-                            <p><span className="font-bold">Email:</span> {session?.user.email}</p>
+                        <Card className="shadow-lg !mb-4" title="Personal Information">
+                            <p className="mb-1"><span className="font-bold">Name:</span> {session?.user.name}</p>
+                            <p className="mb-1"><span className="font-bold">Email:</span> {session?.user.email}</p>
+                            <p className="mb-1">
+                                <span className="font-bold">Phone number:</span>
+                                {isEdit ? <>
+                                    <Input className="!mt-2" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                                    <div className="mt-2">
+                                        <Button className="mr-2 !bg-red-800 !text-white" onClick={() => setIsEdit(false)}>Cancel</Button>
+                                        <Button loading={loading} onClick={updatePhoneNumber} className="!bg-green-800 !text-white">Update</Button>
+                                    </div>
+                                </> : <> {phoneNumber ? phoneNumber : <>Provide your phone number</>}  <GrEdit onClick={() => setIsEdit(true)} size={16} className="inline ml-3 cursor-pointer" />
+                                </>}
+                            </p>
                         </Card>
 
-
-                        <Card title="Edit your address" className="shadow-lg mb-4">
+                        <Card title="Edit your address" className="shadow-lg !mb-4">
                             <AddressForm places={places} setPlaces={setPlaces} />
-                            <Button onClick={handleAddressSubmit} className="!bg-green-400 float-right !text-white">
+                            <Button onClick={handleAddressSubmit} className="!bg-green-800 float-right !text-white">
                                 Update
                             </Button>
                         </Card>
@@ -117,7 +153,7 @@ export default function Account() {
                                     />
                                 </Form.Item>
 
-                                <Button className="!bg-green-400 float-right !text-white">
+                                <Button className="!bg-green-800 float-right !text-white">
                                     Update
                                 </Button>
                             </Form>
