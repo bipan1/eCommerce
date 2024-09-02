@@ -143,7 +143,7 @@ export default function PaymentForm({ setError, clientSecret, places, email, ful
                 <label className="">Full name</label>
                 <Input size="large" type="text" placeholder="Card holder name" className="mb-3" />
                 <PaymentElement className="mt-2" id="payment-element" options={paymentElementOptions} />
-                <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-500 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
+                <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-900 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
                     Pay Now
                 </Button>
                 {message && <div id="payment-message">{message}</div>}

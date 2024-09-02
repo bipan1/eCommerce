@@ -6,6 +6,7 @@ import { Carousel } from 'react-responsive-carousel';
 import Slider from "react-slick";
 import { FaArrowRight } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { Slidersettings } from '@/utils/sliderUtils';
 
 export default function Home() {
   const { data: products, specials } = useSelector((state) => state.products);
@@ -17,40 +18,6 @@ export default function Home() {
     acc[category.id] = products.filter(product => product.categoryId === category.id);
     return acc;
   }, {});
-
-  const settings = {
-    infinite: true,
-    speed: 500,
-    arrows: false,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-          infinite: true,
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-          initialSlide: 2
-        }
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
 
 
   return <div>
@@ -80,7 +47,7 @@ export default function Home() {
         </div>
 
         <div className="mb-10">
-          <Slider {...settings} >
+          <Slider {...Slidersettings} >
             {specials.map(product => {
               return <div className="ml-10 md:ml-0 lg:ml-0">
                 <ProductDisplay product={product} />
