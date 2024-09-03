@@ -1,5 +1,6 @@
 'use client';
 import { Button, Card, Form, Input } from "antd";
+import { toast } from 'react-toastify'
 import AddressForm from "components/address/addressForm";
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from "react";
@@ -14,16 +15,23 @@ export default function Account() {
     const [isEdit, setIsEdit] = useState(false);
     const [loading, setLoading] = useState(false);
     const [dataFetchLoading, setDataFetchLoading] = useState(false);
+    const [addressLoading, setAddressLoading] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState();
     const [user, setUser] = useState();
     const { data: session } = useSession();
     const router = useRouter()
+    const addressSuccess = () => toast.success("Address updated sucessfully")
+
 
 
     const handleAddressSubmit = async () => {
         try {
+            setAddressLoading(true);
             await axiosApiCall(`/address`, 'POST', places);
+            setAddressLoading(false);
+            addressSuccess();
         } catch (error) {
+            setAddressLoading(false);
             console.log(error)
         }
     }
@@ -98,7 +106,7 @@ export default function Account() {
 
                         <Card title="Edit your address" className="shadow-lg !mb-4">
                             <AddressForm places={places} setPlaces={setPlaces} />
-                            <Button onClick={handleAddressSubmit} className="!bg-green-800 float-right !text-white">
+                            <Button onClick={handleAddressSubmit} loading={addressLoading} className="!bg-green-800 float-right !text-white">
                                 Update
                             </Button>
                         </Card>
