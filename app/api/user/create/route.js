@@ -22,9 +22,12 @@ export async function POST(req) {
     return NextResponse.json({ user }, { status: 200 })
   } catch (e) {
     if (e.code === 'P2002') {
-      return NextResponse.json({
-        message: 'Email already exists in the system.',
-      })
+      return NextResponse.json(
+        {
+          message: 'Email already exists in the system.',
+        },
+        { status: 400 },
+      )
     } else {
       return NextResponse.json(
         { message: 'invalid credentials' },

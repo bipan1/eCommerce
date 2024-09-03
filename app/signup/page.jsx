@@ -3,23 +3,28 @@ import { toast } from 'react-toastify'
 import { Button, Form, Card, Input } from 'antd'
 import { useState } from 'react'
 import { axiosApiCall } from 'utils/axiosApiCall'
+import { useRouter } from 'next/navigation';
 
 export default function Signup() {
-
   const [loading, setLoading] = useState(false)
   const createSuccess = () => toast.success('Account created sucessfully.');
+  const duplicateEmail = () => toast.error("Email already exists in the system.")
+  const router = useRouter();
 
   const handleSubmit = async (values) => {
-
     setLoading(true);
-    const res = await axiosApiCall('/user/create', 'POST', values);
-    setLoading(false)
-    createSuccess();
 
-    if (res.ok) {
-      const data = await res.json();
-    } else {
+    try {
+      await axiosApiCall('/user/create', 'POST', values);
       setLoading(false)
+      createSuccess();
+      router.push('/login');
+      setLoading(false);
+    } catch (e) {
+      if (e.code == "ERR_BAD_REQUEST") {
+        duplicateEmail();
+      }
+      setLoading(false);
     }
   }
 
