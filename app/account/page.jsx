@@ -7,11 +7,13 @@ import { axiosApiCall } from "utils/axiosApiCall";
 import { useRouter } from "next/navigation";
 import { IoIosArrowDropleftCircle } from "react-icons/io";
 import { GrEdit } from "react-icons/gr";
+import Spinner from "@/components/spinner";
 
 export default function Account() {
     const [places, setPlaces] = useState({})
     const [isEdit, setIsEdit] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [dataFetchLoading, setDataFetchLoading] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState();
     const [user, setUser] = useState();
     const { data: session } = useSession();
@@ -28,6 +30,7 @@ export default function Account() {
 
     useEffect(() => {
         const fetchUserData = async () => {
+            setDataFetchLoading(true);
             const response = await axiosApiCall(`/user/${session.user.id}`);
             const userRes = response.data.user;
             setUser(userRes)
@@ -46,6 +49,7 @@ export default function Account() {
                     postcode: address.postcode
                 })
             }
+            setDataFetchLoading(false);
         }
         fetchUserData();
     }, []);
@@ -66,6 +70,7 @@ export default function Account() {
 
     return (
         <>
+            {dataFetchLoading && <Spinner />}
             <div className="m-2 md:hidden">
                 <Button onClick={() => router.back()} type="link" className="flex rounded-2xl !bg-green-900 !text-white" >
                     <IoIosArrowDropleftCircle className="inline mr-2" />

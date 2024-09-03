@@ -23,6 +23,7 @@ import { openSideBar } from '@/redux/features/bag-slice';
 import AccountSettings from './AccountSettings';
 import { IoIosCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
+import Spinner from '@/components/spinner';
 
 
 export default function Header() {
@@ -33,7 +34,7 @@ export default function Header() {
   const dispatch = useDispatch();
   const pathName = usePathname();
 
-  const { data: products } = useSelector((state) => state.products);
+  const { data: products, loading } = useSelector((state) => state.products);
   const { data: session } = useSession()
   const bag = useSelector((state) => state.bag);
   const { numberOfItems, isBagOpen } = bag;
@@ -112,6 +113,7 @@ export default function Header() {
 
   return (
     <>
+      {loading && <Spinner />}
       <div className='hidden md:flex px-60 items-center justify-between py-1 text-md mb-1'>
         <div className='flex items-center justify-between'>
           <p className='flex items-center justify-between mr-3'><IoIosCall className='mr-1' /> nepmart@gmail.com</p>
@@ -150,7 +152,7 @@ export default function Header() {
 
       <div>
         <header
-          className={`z-[1000] w-full !bg-[#023020] text-white ${isScrolled ? '!fixed top-0 left-0' : ''}`}
+          className={`z-[100] w-full !bg-[#023020] text-white ${isScrolled ? '!fixed top-0 left-0' : ''}`}
         >
 
           <div className="container mx-auto lg:py-3 lg:px-10 ">

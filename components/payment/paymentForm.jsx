@@ -5,22 +5,25 @@ import {
     useElements
 } from "@stripe/react-stripe-js";
 import { Button, Input } from "antd";
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useSession } from 'next-auth/react';
-import { useRouter } from "next/navigation";
 import { axiosApiCall } from "utils/axiosApiCall";
+import { useRouter } from "next/navigation";
+import { clearBag } from "@/redux/features/bag-slice";
 
 const isEmpty = (value) => value === "";
 
-export default function PaymentForm({ setError, clientSecret, places, email, fullName, phoneNumber }) {
+export default function PaymentForm({ setError, error, clientSecret, places, email, fullName, phoneNumber }) {
     const stripe = useStripe();
     const elements = useElements();
-    const router = useRouter();
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [cardholdername, setCardholdername] = useState();
     const bag = useSelector((state) => state.bag);
     const { items } = bag;
     const { data: session } = useSession()
+    const router = useRouter();
+    const dispatch = useDispatch();
 
     useEffect(() => {
 
@@ -77,16 +80,18 @@ export default function PaymentForm({ setError, clientSecret, places, email, ful
             checkError = { ...checkError, postcode: "Required" }
         }
 
+        if (!cardholdername) {
+            checkError = { ...checkError, cardholdername: "Card holder's name is required." }
+        }
+
         if (Object.keys(checkError).length > 0) {
             setError(checkError);
             return;
         }
 
-
         if (!stripe || !elements) {
             return;
         }
-        setIsLoading(true);
 
         const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
@@ -97,8 +102,6 @@ export default function PaymentForm({ setError, clientSecret, places, email, ful
 
         });
 
-
-
         let addressId;
         if (error) {
             if (error.type === "card_error" || error.type === "validation_error") {
@@ -107,30 +110,36 @@ export default function PaymentForm({ setError, clientSecret, places, email, ful
                 setMessage("An unexpected error occurred.");
             }
         } else if (paymentIntent.status === "succeeded") {
+            setIsLoading(true);
 
-            if (session) {
-                const userRes = await axiosApiCall(`/user/${session.user.id}`);
-                addressId = userRes.data.user.addressId;
+            try {
+                if (session) {
+                    const userRes = await axiosApiCall(`/user/${session.user.id}`);
+                    addressId = userRes.data.user.addressId;
+                }
+
+
+                const order = await axiosApiCall('/order', 'POST', {
+                    products: items,
+                    shippingAddressId: addressId,
+                    addressData: places,
+                    paymentId: paymentIntent.id,
+                    paymentMethod: paymentIntent.payment_method,
+                    amount: paymentIntent.amount,
+                    guestData: {
+                        name: fullName,
+                        email,
+                        phoneNumber
+                    }
+                })
+                setIsLoading(false);
+                dispatch(clearBag());
+                router.push('/paymentsuccess');
+            } catch (e) {
+                console.log(e);
             }
 
-
-            const order = await axiosApiCall('/order', 'POST', {
-                products: items,
-                shippingAddressId: addressId,
-                addressData: places,
-                paymentId: paymentIntent.id,
-                paymentMethod: paymentIntent.payment_method,
-                amount: paymentIntent.amount,
-                guestData: {
-                    name: fullName,
-                    email,
-                    phoneNumber
-                }
-            })
-            setIsLoading(false);
-        };
-
-        // router.push('/paymentsuccess')
+        }
     }
 
     const paymentElementOptions = {
@@ -139,9 +148,10 @@ export default function PaymentForm({ setError, clientSecret, places, email, ful
 
     return (
         <div className="bg-white">
+            <label className="">Full name</label>
+            <Input value={cardholdername} onChange={(e) => setCardholdername(e.target.value)} size="large" type="text" placeholder="Card holder name" className="mb-3" />
+            {error.cardholdername && <p className="mt-2 text-red-500">{error.cardholdername}</p>}
             <form id="payment-form" onSubmit={handleSubmit}>
-                <label className="">Full name</label>
-                <Input size="large" type="text" placeholder="Card holder name" className="mb-3" />
                 <PaymentElement className="mt-2" id="payment-element" options={paymentElementOptions} />
                 <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-900 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
                     Pay Now

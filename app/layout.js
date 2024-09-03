@@ -15,7 +15,7 @@ import MobileSidebar from '../components/Sidebar/MobileSidebar'
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-[#FBFAF7]">
         <main>
           <AntdStyledComponentsRegistry>
             <ReduxProvider>

@@ -1,4 +1,5 @@
 'use client'
+import { toast } from 'react-toastify';
 import { closeBag } from '@/redux/features/bag-slice';
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from './CartItem';
@@ -10,6 +11,7 @@ import { convertToFloat } from 'utils';
 
 export default function Cart() {
     const [subTotal, setSubTotal] = useState(0);
+    const lessAmount = () => toast.warning('Minimum order amount of $50.')
 
     const dispatch = useDispatch()
     const router = useRouter()
@@ -28,14 +30,16 @@ export default function Cart() {
     }, [bag])
 
     const handleChekout = () => {
+        if (subTotal < 50) {
+            lessAmount();
+            return;
+        }
         handleCancel();
         router.push('/checkout')
     }
 
-
-
     return <>
-        {isBagOpen && <div className="relative z-[100000]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+        {isBagOpen && <div className="relative z-[101]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
             <div className="fixed inset-0 overflow-hidden">
                 <div className="absolute inset-0 overflow-hidden">

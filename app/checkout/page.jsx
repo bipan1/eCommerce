@@ -2,11 +2,12 @@
 import Payment from "@/components/payment"
 import { useSelector } from 'react-redux';
 import AddressForm from "components/address/addressForm";
-import { Input, Radio } from "antd";
+import { Input } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useSession } from 'next-auth/react';
 import { convertToFloat } from "utils";
 import { axiosApiCall } from "utils/axiosApiCall";
+import Spinner from "@/components/spinner";
 
 
 export default function CheckoutPage() {
@@ -16,6 +17,7 @@ export default function CheckoutPage() {
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('')
     const [error, setError] = useState({})
+    const [loading, setLoading] = useState(false);
 
     const { data: session } = useSession()
 
@@ -23,15 +25,15 @@ export default function CheckoutPage() {
     //     setShippingMethod(e.target.value)
     // }
 
-    console.log(error)
-
     useEffect(() => {
         const fetchUserData = async () => {
+            setLoading(true);
             const response = await axiosApiCall(`/user/${session.user.id}`)
             const user = response.data.user;
 
             if (user.phoneNumber) {
                 setPhoneNumber(user.phoneNumber)
+
             }
             if (user.addressId) {
                 const response = await axiosApiCall(`/address/${user.addressId}`);
@@ -43,10 +45,12 @@ export default function CheckoutPage() {
                     postcode: address.postcode
                 })
             }
+            setLoading(false)
         }
 
         if (session) {
             setFullName(session.user.name);
+            setEmail(session.user.email)
             fetchUserData();
         }
     }, []);
@@ -59,8 +63,9 @@ export default function CheckoutPage() {
         return items.reduce((total, item) => total + item.quantity * item.price, 0);
     }, [bag]);
 
-    return <div className="flex flex-col lg:flex-row mt-10 w-full lg:gap-4">
-        <div className="flex-1 flex justify-center lg:justify-end mb-10 p-4">
+    return <div className="flex flex-col lg:flex-row w-full lg:gap-4">
+        {loading && <Spinner />}
+        <div className="flex-1 flex justify-center lg:justify-end mb-5 p-4">
             <div className="w-full lg:w-3/5">
                 <h1 className="mt-2 text-lg font-bold">Order Summary</h1>
                 <div className="flow-root">
@@ -145,7 +150,7 @@ export default function CheckoutPage() {
                 {error.phoneNumber && <p className="mt-2 text-red-500">{error.phoneNumber}</p>}
                 <p className="text-xl mt-8 font-medium">Payment Details</p>
                 <p className="text-gray-400 text-sm mb-3">Complete your order by providing your payment details.</p>
-                <Payment setError={setError} subTotal={subTotal} places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
+                <Payment error={error} setError={setError} subTotal={subTotal} places={places} email={email} fullName={fullName} phoneNumber={phoneNumber} />
             </div>
         </div>
     </div>

@@ -71,3 +71,13 @@ export async function POST(req) {
     return NextResponse.json({ order }, { status: 200 })
   })
 }
+
+export async function GET() {
+  try {
+    const orders = await prisma.order.findMany()
+    return NextResponse.json({ orders }, { status: 200 })
+  } catch (err) {
+    console.log(err)
+    return NextResponse.json({ message: err.message, status: 500 })
+  }
+}

@@ -11,7 +11,7 @@ export default function PaymentSuccess() {
             title="Your order was placed sucessfully."
             subTitle="Please check your email for recipt and confirmation."
             extra={[
-                <Button onClick={() => router.push('/')} type="primary" key="console">
+                <Button className="!bg-green-800" onClick={() => router.push('/')} type="primary" key="console">
                     Back to shopping
                 </Button>,
             ]}

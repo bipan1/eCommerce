@@ -9,7 +9,7 @@ export async function POST(req) {
   const { amount } = data
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Number(amount) * 100,
+      amount: Math.round(Number(amount) * 100),
       currency: 'aud',
     })
 
