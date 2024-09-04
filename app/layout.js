@@ -11,6 +11,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loa
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import MobileSidebar from '../components/Sidebar/MobileSidebar'
+import Head from 'next/head'
 
 export default function RootLayout({ children }) {
   return (
@@ -30,6 +31,16 @@ export default function RootLayout({ children }) {
                 <Footer />
                 <Cart />
                 <MobileSidebar />
+                <div>
+                  <Head>
+                    <title>Best Nepalese Grocery</title>
+                    <link
+                      rel="icon"
+                      type="image/svg+xml"
+                      href="/logo-no-background.svg"
+                    />
+                  </Head>
+                </div>
               </NextAuthProvider>
             </ReduxProvider>
           </AntdStyledComponentsRegistry>

@@ -3,7 +3,8 @@ export default function Footer() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 gap-y-8 md:gap-8 py-10 max-w-sm mx-auto sm:max-w-3xl lg:max-w-full">
                 <div className="col-span-full mb-10 lg:col-span-2 lg:mb-0">
-                    <p className="text-2xl text-white lg:max-w-xs text-center lg:text-left">NEPMART</p>
+                    <img className='h-18 w-40 object-contain py-4 text-sm lg:max-w-xs text-center lg:text-left' src="/logo-no-background.svg" />
+
                     <p className="py-4 text-sm lg:max-w-xs text-center lg:text-left">Trusted by South asian people in Melbourne and across Australia.</p>
 
                     <p className="text-sm lg:max-w-xs text-center lg:text-left">Want to talk with us?</p>

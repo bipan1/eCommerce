@@ -162,10 +162,10 @@ export default function Header() {
                   <IoIosMenu size={40} />
                 </button>
                 <Link
-                  className="text-[22px] font-extrabold cursor-pointer block p-2"
+                  className="cursor-pointer block p-2"
                   href={'/'}
                 >
-                  NepMart
+                  <img className='h-18 w-40 object-contain' src="/logo-no-background.svg" />
                 </Link>
               </div>
 
@@ -258,12 +258,12 @@ export default function Header() {
 
             <div className="hidden md:flex items-center justify-between py-1">
               {/* Logo */}
-              <div className="w-30 max-w-full">
+              <div className="max-w-full">
                 <Link
-                  className="text-[30px] font-extrabold cursor-pointer block p-2"
+                  className=" cursor-pointer block"
                   href={'/'}
                 >
-                  NepMart
+                  <img className='h-18 w-40 object-contain' src="/logo-no-background.svg" />
                 </Link>
               </div>
 

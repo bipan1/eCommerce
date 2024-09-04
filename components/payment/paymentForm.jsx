@@ -156,7 +156,7 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
                 <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-900 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
                     Pay Now
                 </Button>
-                {message && <div id="payment-message">{message}</div>}
+                {message && <div className="text-red-700" id="payment-message">{message}</div>}
             </form>
         </div>
     );
