@@ -53,66 +53,188 @@ export default function ProductDetails({ params }) {
 
     return <>
         <div className="m-2 md:hidden">
-            <Button onClick={() => goBack()} type="link" className="flex rounded-2xl !bg-green-900 !text-white" >
-                <IoIosArrowDropleftCircle className="inline mr-2" />
+            <Button 
+                onClick={() => goBack()} 
+                type="link" 
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2C7A7B] text-white hover:bg-[#FC8181] transition-colors duration-300"
+            >
+                <IoIosArrowDropleftCircle className="text-xl" />
                 <span>Back</span>
-            </Button >
+            </Button>
         </div>
 
-        <div className="flex flex-col lg:flex-row w-full lg:gap-4 md:mt-4">
-            <div className="flex-1 flex justify-center lg:justify-end">
-                <div className="w-full lg:w-3/5 p-2">
-                    <div className="relative flex overflow-hidden border-2 border-gray-200">
-                        <section style={{ aspectRatio: 'auto' }} className="object-cover w-[90%] h-60vh max-h-60vh ">
-                            <img src={product?.image} />
-                        </section>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+                {/* Product Image Section */}
+                <div className="flex-1">
+                    <div className="relative rounded-2xl overflow-hidden bg-white shadow-lg border border-[#E2E8F0]">
+                        <div className="aspect-square relative">
+                            <img 
+                                src={product?.image} 
+                                alt={product?.name}
+                                className="w-full h-full object-cover object-center"
+                            />
+                            {product?.isSpecial && (
+                                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                                    <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#FC8181] text-white shadow-sm">
+                                        Special Offer
+                                    </span>
+                                    {product?.specialPrice && (
+                                        <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-[#2C7A7B] text-white shadow-sm">
+                                            {Math.round(((product.price - product.specialPrice) / product.price) * 100)}% OFF
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Product Info Section */}
+                <div className="flex-1">
+                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#E2E8F0]">
+                        <h1 className="text-3xl font-bold text-[#2D3748] mb-4">{product?.name}</h1>
+                        
+                        {/* Price Section */}
+                        <div className="mb-6">
+                            {product?.isSpecial && product?.specialPrice ? (
+                                <div className="flex items-baseline gap-3">
+                                    <span className="text-2xl font-bold text-[#FC8181]">
+                                        ${Number(product.specialPrice).toFixed(2)}
+                                    </span>
+                                    <span className="text-lg text-[#2C7A7B] line-through">
+                                        ${Number(product.price).toFixed(2)}
+                                    </span>
+                                </div>
+                            ) : (
+                                <span className="text-2xl font-bold text-[#2C7A7B]">
+                                    ${Number(product?.price).toFixed(2)}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Description Section */}
+                        <div className="mb-6">
+                            <h2 className="text-lg font-semibold text-[#2D3748] mb-2">Description</h2>
+                            <p className="text-[#4A5568] leading-relaxed">{product?.description}</p>
+                        </div>
+
+                        {/* Product Details Section */}
+                        <div className="mb-8">
+                            <h2 className="text-lg font-semibold text-[#2D3748] mb-2">Product Details</h2>
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[#4A5568]">Category:</span>
+                                    <span className="text-[#2C7A7B] font-medium">{categoryName}</span>
+                                </div>
+                                {product?.rating && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[#4A5568]">Rating:</span>
+                                        <div className="flex items-center gap-1 bg-[#E6FFFA] px-2 py-1 rounded-full">
+                                            <span className="text-[#2C7A7B]">★</span>
+                                            <span className="text-[#2C7A7B] font-medium">{product.rating}</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Add to Cart Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between border border-[#2C7A7B] rounded-lg overflow-hidden max-w-[200px]">
+                                <button
+                                    onClick={handleDecreaseCount}
+                                    className="flex-1 px-4 py-2 text-[#2C7A7B] hover:bg-[#E6FFFA] transition-colors duration-300"
+                                >
+                                    <FaMinus className="w-4 h-4 mx-auto" />
+                                </button>
+                                <span className="flex-1 text-center py-2 text-[#2C7A7B] font-medium text-lg">{count}</span>
+                                <button
+                                    onClick={() => setCount(count + 1)}
+                                    className="flex-1 px-4 py-2 text-[#2C7A7B] hover:bg-[#E6FFFA] transition-colors duration-300"
+                                >
+                                    <FaPlus className="w-4 h-4 mx-auto" />
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={handleAddToBag}
+                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#2C7A7B] 
+                                         hover:bg-[#FC8181] text-white rounded-lg text-base font-medium 
+                                         transition-all duration-300 shadow-sm hover:shadow-md 
+                                         transform hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                <LuShoppingCart className="w-5 h-5" />
+                                Add to Bag
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="flex-1 flex justify-center lg:justify-start">
-                <div className="w-full lg:w-3/5">
-                    <Card>
-                        <h1 className="font-bold text-2xl">{product?.name}</h1>
-                        <div className=" border-b-2 border-green-900 mb-2">
-                            <p className="mt-3 text-lg text-blue-500 ">Description</p>
-                        </div>
-                        <p className="text-gray-600 text-base">{product?.description}</p>
-                        <div className=" border-b-2 border-green-900 mb-2 mt-2">
-                            <p className="mt-3 text-lg text-blue-500 ">About Product</p>
-                        </div>
-                        <p className="text-gray-500">Category: <span className="ml-2 text-lg text-black">{categoryName}</span></p>
-                        <p className="text-gray-500 mt-2">Price: <span className="italic text-lg  ml-2 !text-green-900">${product?.price}</span></p>
 
-                        <div className="flex items-center justify-between mt-10 mb-2">
-                            <Button onClick={() => setCount(count + 1)} icon={<FaPlus />} shape="circle" className="!flex !items-center !justify-center !border-black" />
-                            <span className="text-xl">{count}</span>
-                            <Button onClick={handleDecreaseCount} icon={<FaMinus />} shape="circle" className="!flex !items-center !justify-center !border-black" />
+            {/* Suggested Products Section */}
+            {suggestedProducts?.length > 0 && (
+                <div className="mt-16">
+                    <div className="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 className="text-2xl font-bold text-[#2D3748]">
+                                You may also like
+                            </h2>
+                            <div className="mt-2 h-1 w-20 bg-[#2C7A7B] rounded-full"></div>
                         </div>
-                        <Button onClick={handleAddToBag} className="!bg-green-900 !text-white w-full" icon={<LuShoppingCart size={16} />} >Add to cart</Button>
-                    </Card>
+                    </div>
+
+                    <div className="relative">
+                        <Slider {...Slidersettings}>
+                            {suggestedProducts.map(product => (
+                                <div key={product.id} className="px-2">
+                                    <ProductDisplay product={product} />
+                                </div>
+                            ))}
+                        </Slider>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
 
-        <div className='md:px-20 lg:px-40 mt-10 p-2'>
-            <div className="flex items-center justify-between mb-4">
-                <div className="float-left">
-                    <h2 className="text-2xl font-bold relative">
-                        You may also like to buy
-                        <div className="custom-width mb-4 mt-1 h-[2px] rounded-md bg-green-900"></div>
-                    </h2>
-                </div>
-            </div>
-
-            <div className="mb-10">
-                <Slider {...Slidersettings} >
-                    {suggestedProducts.map(product => {
-                        return <div className="ml-10 md:ml-0 lg:ml-0">
-                            <ProductDisplay product={product} />
-                        </div>
-                    })}
-                </Slider>
-            </div>
-        </div>
+        <style jsx global>{`
+            .slick-prev,
+            .slick-next {
+                width: 40px;
+                height: 40px;
+                z-index: 1;
+                background: white;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .slick-prev:hover,
+            .slick-next:hover {
+                background: #2C7A7B;
+            }
+            .slick-prev:hover:before,
+            .slick-next:hover:before {
+                color: white;
+            }
+            .slick-prev {
+                left: -20px;
+            }
+            .slick-next {
+                right: -20px;
+            }
+            .slick-prev:before,
+            .slick-next:before {
+                font-size: 24px;
+                color: #2C7A7B;
+                opacity: 1;
+            }
+            @media (max-width: 640px) {
+                .slick-prev {
+                    left: 5px;
+                }
+                .slick-next {
+                    right: 5px;
+                }
+            }
+        `}</style>
     </>
 }

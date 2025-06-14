@@ -7,97 +7,116 @@ import { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
 import { convertToFloat } from 'utils';
-
+import { FaShoppingBag } from 'react-icons/fa';
+import { MdArrowBack, MdClose } from 'react-icons/md';
 
 export default function Cart() {
-    const [subTotal, setSubTotal] = useState(0);
-    const lessAmount = () => toast.warning('Minimum order amount of $50.')
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const { items: cartItems, isBagOpen } = useSelector((state) => state.bag);
+    const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
-    const dispatch = useDispatch()
-    const router = useRouter()
+    const handleClose = () => {
+        dispatch(closeBag());
+    };
 
+    const handleCheckout = () => {
+        dispatch(closeBag());
+        router.push('/checkout');
+    };
 
-    const bag = useSelector((state) => state.bag);
-    const { isBagOpen, items } = bag;
+    const EmptyCart = () => (
+        <div className="flex flex-col items-center justify-center h-full p-8">
+            <FaShoppingBag className="w-12 h-12 text-[#2C7A7B] mb-3" />
+            <h2 className="text-lg font-medium text-[#2D3748] mb-1">Your bag is empty</h2>
+            <p className="text-sm text-[#4A5568] mb-6 text-center">Looks like you haven't added any items to your bag yet.</p>
+            <button
+                onClick={() => {
+                    handleClose();
+                    router.push('/products');
+                }}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-[#2C7A7B] hover:bg-[#285E61] transition-colors duration-300"
+            >
+                Start Shopping
+            </button>
+        </div>
+    );
 
-    const handleCancel = () => {
-        dispatch(closeBag())
-    }
+    const CartContent = () => (
+        <div className="flex h-full flex-col bg-white">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-[#E2E8F0]">
+                <h2 className="text-lg font-medium text-[#2D3748]">Shopping Bag</h2>
+                <button
+                    onClick={handleClose}
+                    className="p-1.5 text-[#A0AEC0] hover:text-[#2C7A7B] hover:bg-[#F7FAFC] rounded-md transition-colors duration-300"
+                >
+                    <MdClose className="w-5 h-5" />
+                </button>
+            </div>
 
-    useEffect(() => {
-        const iTotal = items.reduce((total, item) => total + item.quantity * item.price, 0);
-        setSubTotal(iTotal);
-    }, [bag])
+            <div className="flex-1 overflow-y-auto">
+                {cartItems.length > 0 ? (
+                    <div className="px-4">
+                        <div className="flow-root">
+                            <ul role="list" className="divide-y divide-[#E2E8F0]">
+                                {cartItems.map((item) => (
+                                    <CartItem key={item.productId} item={item} />
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <EmptyCart />
+                )}
+            </div>
 
-    const handleChekout = () => {
-        if (subTotal < 50) {
-            lessAmount();
-            return;
-        }
-        handleCancel();
-        router.push('/checkout')
-    }
+            {cartItems.length > 0 && (
+                <div className="border-t border-[#E2E8F0] px-4 py-4">
+                    <div className="flex justify-between text-sm font-medium text-[#2D3748] mb-3">
+                        <p>Subtotal</p>
+                        <p className="text-[#FC8181]">${subtotal.toFixed(2)}</p>
+                    </div>
+                    <p className="text-xs text-[#4A5568] mb-4">
+                        Shipping and taxes calculated at checkout.
+                    </p>
+                    <div className="space-y-3">
+                        <button
+                            onClick={handleCheckout}
+                            className="w-full flex justify-center items-center px-4 py-2.5 text-sm font-medium rounded-md text-white bg-[#2C7A7B] hover:bg-[#285E61] transition-colors duration-300 shadow-sm"
+                        >
+                            Proceed to Checkout
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleClose();
+                                router.push('/products');
+                            }}
+                            className="w-full flex justify-center items-center px-4 py-2.5 text-sm font-medium rounded-md text-[#2C7A7B] bg-[#F7FAFC] hover:bg-[#E6FFFA] transition-colors duration-300"
+                        >
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 
-    return <>
-        {isBagOpen && <div className="relative z-[101]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            <div className="fixed inset-0 overflow-hidden">
-                <div className="absolute inset-0 overflow-hidden">
-                    <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
-                        <div className="pointer-events-auto w-screen max-w-md">
-                            <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-                                <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
-                                    <div className="flex items-start justify-between">
-                                        <h2 className="text-lg font-bold text-gray-900" id="slide-over-title">Shopping cart</h2>
-                                        <div className="ml-3 flex h-7 items-center">
-                                            <button onClick={handleCancel} type="button" className="relative -m-2 p-2 text-gray-400 hover:text-gray-500">
-                                                <span className="absolute -inset-0.5"></span>
-                                                <span className="sr-only">Close panel</span>
-                                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {items.length > 0 ? <div className="mt-8">
-                                        <div className="flow-root">
-                                            <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                                {items.map(item => <CartItem item={item} />)}
-                                            </ul>
-                                        </div>
-                                    </div> :
-                                        <div className='text-gray-500 flex flex-col items-center justify-center'>
-                                            <img src="/emptycart.png" className='mt-10 w-60 h-50 mb-4' alt="Empty cart" />
-                                            <p className='text-center mb-4'>Your cart is currently empty.</p>
-                                            <p className='text-center mb-6'>Before heading to checkout, you must add some items to your cart.</p>
-                                        </div>
-                                    }
-                                </div>
-
-                                <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                                    <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <p>Subtotal</p>
-                                        <p>${convertToFloat(subTotal)}</p>
-                                    </div>
-                                    <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                                    <Button size='large' onClick={handleChekout} className="!bg-green-900 w-full mt-5 !text-white">Checkout</Button>
-
-                                    <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
-                                        <p>
-                                            or
-                                            <button onClick={handleCancel} type="button" className="ml-2 font-medium text-indigo-600 hover:text-indigo-500">
-                                                Continue Shopping
-                                                <span aria-hidden="true"> &rarr;</span>
-                                            </button>
-                                        </p>
-                                    </div>
+    return (
+        <>
+            {isBagOpen && (
+                <div className="relative z-[101]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+                    <div className="fixed inset-0 bg-black bg-opacity-40 transition-opacity" onClick={handleClose}></div>
+                    <div className="fixed inset-0 overflow-hidden">
+                        <div className="absolute inset-0 overflow-hidden">
+                            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                                <div className="pointer-events-auto w-screen max-w-md">
+                                    <CartContent />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div >}
-    </>
+            )}
+        </>
+    );
 }

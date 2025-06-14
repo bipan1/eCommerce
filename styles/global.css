@@ -2,8 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Rubik&display=swap");
+:root {
+  --primary: #1a365d;
+  --primary-dark: #142a4a;
+  --secondary: #2d3748;
+  --accent: #e53e3e;
+  --accent-light: #fc8181;
+  --background: #f7fafc;
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --border: #e2e8f0;
+}
 
 html {
   line-height: 1.5;
@@ -11,16 +22,76 @@ html {
   tab-size: 4;
   font-feature-settings: normal;
   font-variation-settings: normal;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
 }
 
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Modern Button Styles */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-[#1a365d] text-white hover:bg-[#e53e3e] hover:shadow-lg;
+}
+
+.btn-secondary {
+  @apply bg-[#2d3748] text-white hover:bg-[#e53e3e] hover:shadow-lg;
+}
+
+.btn-outline {
+  @apply border-2 border-[#1a365d] text-[#1a365d] hover:bg-[#1a365d] hover:text-white;
+}
+
+/* Card Styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+.card-hover {
+  @apply transform hover:-translate-y-1 transition-transform duration-200;
+}
+
+/* Form Styles */
+.input {
+  @apply w-full px-4 py-2 rounded-lg border-2 border-gray-200 focus:border-[#1a365d] focus:ring-2 focus:ring-[#1a365d]/20 outline-none transition-all;
+}
+
+.input-search {
+  @apply w-full h-12 pl-12 pr-4 rounded-full border-2 border-gray-200 focus:border-[#1a365d] focus:ring-2 focus:ring-[#1a365d]/20 outline-none transition-all;
+}
+
+/* Navigation Styles */
+.nav-link {
+  @apply text-[#1a365d] hover:text-[#e53e3e] transition-colors font-medium;
+}
+
+.nav-link-active {
+  @apply text-[#e53e3e] font-semibold;
+}
+
+/* Utility Classes */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#1a365d] to-[#e53e3e];
+}
+
+.bg-gradient {
+  @apply bg-gradient-to-r from-[#1a365d] to-[#e53e3e];
+}
+
+/* Existing Styles */
 .suggestions {
-  /* Position the suggestions below the input */
-  @apply absolute top-full left-0 bg-white shadow-md rounded-md max-h-60 overflow-y-auto hidden;
+  @apply absolute top-full left-0 bg-white shadow-md rounded-lg max-h-60 overflow-y-auto z-50;
 }
 
 .suggestions li {
-  /* Style each suggestion list item */
-  @apply p-2 hover:bg-gray-100;
+  @apply p-3 hover:bg-gray-50 cursor-pointer transition-colors;
 }
 
 .ant-popover-inner {
@@ -48,7 +119,6 @@ html {
   white-space: nowrap;
   overflow: hidden;
   max-width: 200px;
-  /* Adjust as needed */
 }
 
 .hidden-scroll {
@@ -60,46 +130,56 @@ html {
   transform: translateY(0);
 }
 
-/* .StripeElement {
-  display: block;
-  box-sizing: border-box;
-  height: 40px;
-  padding: 10px 12px;
-  font-size: 16px;
-  line-height: 1.4;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-in-out;
+}
+
+/* Responsive Typography */
+h1 {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold text-[#1a365d];
+}
+
+h2 {
+  @apply text-2xl md:text-3xl lg:text-4xl font-semibold text-[#1a365d];
+}
+
+h3 {
+  @apply text-xl md:text-2xl lg:text-3xl font-medium text-[#1a365d];
+}
+
+p {
+  @apply text-base text-[#2d3748];
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a365d;
   border-radius: 4px;
-  background-color: #fff;
-  border: 1px solid #ced4da;
 }
 
-.StripeElement--focused {
-  border-color: #309fbf;
+::-webkit-scrollbar-thumb:hover {
+  background: #e53e3e;
 }
-
-.StripeElement--invalid {
-  border-color: #dc3545;
-} */
-
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-} */
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-} */
-
-/* body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-} */

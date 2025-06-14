@@ -1,4 +1,3 @@
-
 'use client';
 import { TbLogout } from 'react-icons/tb'
 import { signOut } from 'next-auth/react'

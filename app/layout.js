@@ -1,3 +1,5 @@
+'use client'
+
 import '../styles/global.css'
 import Header from '../components/header'
 import NextAuthProvider from '../providers/next-auth-provider'
@@ -7,13 +9,22 @@ import 'react-toastify/dist/ReactToastify.css'
 import Cart from '../components/cart'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
 import Footer from 'components/footer'
-import 'react-responsive-carousel/lib/styles/carousel.min.css' // requires a loader
+import 'react-responsive-carousel/lib/styles/carousel.min.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import MobileSidebar from '../components/Sidebar/MobileSidebar'
 import Head from 'next/head'
+import { useEffect } from 'react'
+import { store } from '@/redux/store'
+import { fetchCategories } from '@/redux/features/category-slice'
+import { fetchProducts } from '@/redux/features/products-slice'
 
-export default function RootLayout({ children }) {
+function RootLayoutContent({ children }) {
+  useEffect(() => {
+    store.dispatch(fetchCategories())
+    store.dispatch(fetchProducts())
+  }, [])
+
   return (
     <html lang="en">
       <body className="bg-[#FBFAF7]">
@@ -48,4 +59,8 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   )
+}
+
+export default function RootLayout({ children }) {
+  return <RootLayoutContent>{children}</RootLayoutContent>
 }

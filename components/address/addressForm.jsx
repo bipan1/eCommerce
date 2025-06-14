@@ -1,20 +1,17 @@
 'use client';
-import { Input } from "antd";
+import { Input, Select } from "antd";
 import { useEffect, useRef } from "react";
 import { useLoadScript } from "@react-google-maps/api";
+import { states } from "utils";
 
 const libraries = ["places"];
 
 export default function AddressForm({ places, setPlaces, error }) {
-
     const inputRef = useRef(null);
-
-
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY,
         libraries,
     });
-
 
     useEffect(() => {
         if (!isLoaded || loadError) return;
@@ -30,7 +27,7 @@ export default function AddressForm({ places, setPlaces, error }) {
 
     const handlePlaceChanged = async (address) => {
         if (!isLoaded) return;
-        const place = address.getPlace()
+        const place = address.getPlace();
 
         if (!place) {
             setPlaces({});
@@ -71,40 +68,79 @@ export default function AddressForm({ places, setPlaces, error }) {
         });
     };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (name, value) => {
         setPlaces((values) => ({ ...values, [name]: value }));
     };
 
     return (
-        <div className="mb-2">
-            <div className="mb-4">
-                <input onChange={handleChange} name="addressLine" value={places ? places.addressLine : ''} className="border w-full h-10 rounded-md px-4 text-lg focus:outline-none focus:ring-1 focus:ring-blue-500" ref={inputRef} type="text" />
-                {error?.addressLine && <p className="text-red-500 mb-2">{error.addressLine}</p>}
+        <div className="space-y-4">
+            {/* Street Address */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Street Address
+                </label>
+                <Input
+                    ref={inputRef}
+                    value={places?.addressLine || ''}
+                    onChange={(e) => handleChange('addressLine', e.target.value)}
+                    placeholder="Start typing your address..."
+                    className="!rounded-lg !h-10"
+                />
+                {error?.addressLine && (
+                    <p className="mt-1 text-sm text-red-500">{error.addressLine}</p>
+                )}
             </div>
 
-            <div className="grid lg:grid-cols-3 md:gird-cols-1 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-4">
+            {/* Suburb */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Suburb
+                </label>
+                <Input
+                    value={places?.suburb || ''}
+                    onChange={(e) => handleChange('suburb', e.target.value)}
+                    placeholder="Enter suburb"
+                    className="!rounded-lg !h-10"
+                />
+                {error?.suburb && (
+                    <p className="mt-1 text-sm text-red-500">{error.suburb}</p>
+                )}
+            </div>
+
+            {/* State and Postcode */}
+            <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <Input
-                        onChange={handleChange}
-                        name="suburb"
-                        type="text"
-                        placeholder="City name"
-                        size="large"
-                        value={places ? places.suburb : ''}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State
+                    </label>
+                    <Select
+                        value={places?.state || undefined}
+                        onChange={(value) => handleChange('state', value)}
+                        placeholder="Select state"
+                        className="w-full !rounded-lg"
+                        options={states}
                     />
-                    {error?.suburb && <p className="mt-2 text-red-500">{error.suburb}</p>}
+                    {error?.state && (
+                        <p className="mt-1 text-sm text-red-500">{error.state}</p>
+                    )}
                 </div>
 
                 <div>
-                    <Input onChange={handleChange} name="state" value={places ? places.state : ''} size="large" type='text' placeholder="State" />
-                    {error?.state && <p className="mt-2 text-red-500">{error.state}</p>}
-                </div>
-                <div>
-                    <Input onChange={handleChange} name="postcode" value={places ? places.postcode : ''} size="large" type='text' placeholder='Post code' />
-                    {error?.postcode && <p className="mt-2 text-red-500"> {error.postcode}</p>}
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Postcode
+                    </label>
+                    <Input
+                        value={places?.postcode || ''}
+                        onChange={(e) => handleChange('postcode', e.target.value)}
+                        placeholder="Enter postcode"
+                        className="!rounded-lg !h-10"
+                        maxLength={4}
+                    />
+                    {error?.postcode && (
+                        <p className="mt-1 text-sm text-red-500">{error.postcode}</p>
+                    )}
                 </div>
             </div>
         </div>
-    )
+    );
 }
