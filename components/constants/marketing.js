@@ -1,0 +1,1 @@
+export const slogan = "Your Taste of Nepal, Delivered Fresh Daily in Melbourne West!"

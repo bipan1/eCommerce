@@ -1,21 +1,30 @@
-import { useRouter } from "next/navigation";
-import { SlNotebook } from "react-icons/sl";
-import { TbLogout } from "react-icons/tb";
+import Link from "next/link";
+import { FaUserCircle, FaUserPlus } from "react-icons/fa";
 
-export default function AccountSettings() {
-    const router = useRouter();
+export default function AccountSettings({ onClose }) {
+    const handleLinkClick = () => {
+        onClose();
+    };
 
     return (
         <div className='w-40 p-0'>
-            <div className='p-4'>
-                <div onClick={() => router.push('/login')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
-                    <SlNotebook size={20} />
-                    Login
-                </div>
-                <div onClick={() => router.push('signup')} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
-                    <TbLogout size={20} />
-                    Signup
-                </div>
+            <div className='p-2'>
+                <Link 
+                    href="/login"
+                    onClick={handleLinkClick}
+                    className='w-full flex items-center p-3 rounded-lg my-1 gap-3 cursor-pointer text-[#2D3748] hover:bg-[#E6FFFA] hover:text-[#2C7A7B] transition-colors duration-300'
+                >
+                    <FaUserCircle size={20} />
+                    <span className="font-medium">Login</span>
+                </Link>
+                <Link 
+                    href="/signup"
+                    onClick={handleLinkClick}
+                    className='w-full flex items-center p-3 rounded-lg my-1 gap-3 cursor-pointer text-[#2D3748] hover:bg-[#E6FFFA] hover:text-[#2C7A7B] transition-colors duration-300'
+                >
+                    <FaUserPlus size={20} />
+                    <span className="font-medium">Signup</span>
+                </Link>
             </div>
         </div>
     )

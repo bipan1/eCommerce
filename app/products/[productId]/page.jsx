@@ -52,18 +52,22 @@ export default function ProductDetails({ params }) {
 
 
     return <>
-        <div className="m-2 md:hidden">
-            <Button 
-                onClick={() => goBack()} 
-                type="link" 
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2C7A7B] text-white hover:bg-[#FC8181] transition-colors duration-300"
-            >
-                <IoIosArrowDropleftCircle className="text-xl" />
-                <span>Back</span>
-            </Button>
-        </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Page Header with Back Button */}
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-[#2C7A7B]">{product?.name}</h1>
+                    <div className="mt-2 h-1 w-20 bg-[#FC8181] rounded-full"></div>
+                </div>
+                <Button 
+                    onClick={() => router.back()} 
+                    className="!flex !items-center !gap-2 !text-[#2C7A7B] hover:!text-[#FC8181] !bg-transparent !border-none !shadow-none"
+                >
+                    <IoIosArrowDropleftCircle className="text-xl" />
+                    <span>Back</span>
+                </Button>
+            </div>
+
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Product Image Section */}
                 <div className="flex-1">
@@ -93,8 +97,6 @@ export default function ProductDetails({ params }) {
                 {/* Product Info Section */}
                 <div className="flex-1">
                     <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#E2E8F0]">
-                        <h1 className="text-3xl font-bold text-[#2D3748] mb-4">{product?.name}</h1>
-                        
                         {/* Price Section */}
                         <div className="mb-6">
                             {product?.isSpecial && product?.specialPrice ? (

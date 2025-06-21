@@ -20,6 +20,7 @@ import { fetchSearchProducts } from "@/redux/features/searchproducts-slice";
 import { getSuggestions } from '@/utils/fuse';
 import { openSideBar } from '@/redux/features/bag-slice';
 import AccountSettings from './AccountSettings';
+import ProfilePopover from './ProfilePopover';
 import { IoIosCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import Spinner from '@/components/spinner';
@@ -60,7 +61,9 @@ const Header = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const searchRef = useRef(null);
+  const profileTriggerRef = useRef(null);
 
   // Get user initials for avatar
   const initials = useMemo(() => {
@@ -314,105 +317,14 @@ const Header = () => {
                     <p className="text-sm font-semibold text-[#2C7A7B]">{session.user.name}</p>
                   </div>
                 )}
-                <Popover
-                  content={
-                    session ? (
-                      <div 
-                        className="w-64 p-4"
-                        onMouseLeave={(e) => {
-                          // Close popover when mouse leaves
-                          const popover = e.currentTarget.closest('.ant-popover');
-                          if (popover) {
-                            const closeButton = popover.querySelector('.ant-popover-close');
-                            if (closeButton) closeButton.click();
-                          }
-                        }}
-                      >
-                        <div className="space-y-2">
-                          <Link 
-                            href="/account" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              // Close popover when clicking menu item
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsPerson className="text-lg" />
-                            <span>My Profile</span>
-                          </Link>
-                          <Link 
-                            href="/myorders" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsBoxSeam className="text-lg" />
-                            <span>My Orders</span>
-                          </Link>
-                          <Link 
-                            href="/wishlist" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsHeart className="text-lg" />
-                            <span>Wishlist</span>
-                          </Link>
-                          {session?.user?.isAdmin && (
-                            <Link 
-                              href="/admin/category" 
-                              className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                              onClick={(e) => {
-                                const popover = e.currentTarget.closest('.ant-popover');
-                                if (popover) {
-                                  const closeButton = popover.querySelector('.ant-popover-close');
-                                  if (closeButton) closeButton.click();
-                                }
-                              }}
-                            >
-                              <BsGear className="text-lg" />
-                              <span>Admin Dashboard</span>
-                            </Link>
-                          )}
-                          <button 
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                              signOut();
-                            }}
-                            className="w-full flex items-center gap-2 text-gray-700 hover:text-[#FC8181] p-2 rounded hover:bg-gray-50"
-                          >
-                            <BsShield className="text-lg" />
-                            <span>Logout</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <AccountSettings />
-                    )
-                  }
-                  trigger="click"
-                  placement="bottomRight"
-                  overlayClassName="profile-popover"
-                >
-                  <Button className="!flex !items-center !gap-2 !text-[#2C7A7B] !bg-transparent hover:!text-[#FC8181] !border-none !shadow-none !p-0">
+                
+                {/* Custom Profile Popover */}
+                <div className="relative">
+                  <button
+                    ref={profileTriggerRef}
+                    onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
+                    className="flex items-center gap-2 text-[#2C7A7B] bg-transparent hover:text-[#FC8181] border-none shadow-none p-0 transition-colors duration-300"
+                  >
                     {session ? (
                       <div className="w-8 h-8 rounded-full bg-[#2C7A7B] text-white flex items-center justify-center text-sm font-medium">
                         {initials}
@@ -420,8 +332,15 @@ const Header = () => {
                     ) : (
                       <BsPerson className="text-2xl" />
                     )}
-                  </Button>
-                </Popover>
+                  </button>
+                  
+                  <ProfilePopover
+                    isOpen={isProfilePopoverOpen}
+                    onClose={() => setIsProfilePopoverOpen(false)}
+                    triggerRef={profileTriggerRef}
+                  />
+                </div>
+
                 <Link href="/wishlist" className="relative group">
                   <BsHeart className="text-2xl text-[#2C7A7B] group-hover:text-[#FC8181] transition-colors duration-300" />
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FC8181] text-white text-xs rounded-full flex items-center justify-center">0</span>
@@ -488,105 +407,14 @@ const Header = () => {
                   <BsCart className="text-2xl text-[#2C7A7B]" />
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FC8181] text-white text-xs rounded-full flex items-center justify-center">{numberOfItems}</span>
                 </button>
-                <Popover
-                  content={
-                    session ? (
-                      <div 
-                        className="w-64 p-4"
-                        onMouseLeave={(e) => {
-                          // Close popover when mouse leaves
-                          const popover = e.currentTarget.closest('.ant-popover');
-                          if (popover) {
-                            const closeButton = popover.querySelector('.ant-popover-close');
-                            if (closeButton) closeButton.click();
-                          }
-                        }}
-                      >
-                        <div className="space-y-2">
-                          <Link 
-                            href="/account" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              // Close popover when clicking menu item
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsPerson className="text-lg" />
-                            <span>My Profile</span>
-                          </Link>
-                          <Link 
-                            href="/myorders" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsBoxSeam className="text-lg" />
-                            <span>My Orders</span>
-                          </Link>
-                          <Link 
-                            href="/wishlist" 
-                            className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                            }}
-                          >
-                            <BsHeart className="text-lg" />
-                            <span>Wishlist</span>
-                          </Link>
-                          {session?.user?.isAdmin && (
-                            <Link 
-                              href="/admin/category" 
-                              className="flex items-center gap-2 text-gray-700 hover:text-[#2C7A7B] p-2 rounded hover:bg-gray-50"
-                              onClick={(e) => {
-                                const popover = e.currentTarget.closest('.ant-popover');
-                                if (popover) {
-                                  const closeButton = popover.querySelector('.ant-popover-close');
-                                  if (closeButton) closeButton.click();
-                                }
-                              }}
-                            >
-                              <BsGear className="text-lg" />
-                              <span>Admin Dashboard</span>
-                            </Link>
-                          )}
-                          <button 
-                            onClick={(e) => {
-                              const popover = e.currentTarget.closest('.ant-popover');
-                              if (popover) {
-                                const closeButton = popover.querySelector('.ant-popover-close');
-                                if (closeButton) closeButton.click();
-                              }
-                              signOut();
-                            }}
-                            className="w-full flex items-center gap-2 text-gray-700 hover:text-[#FC8181] p-2 rounded hover:bg-gray-50"
-                          >
-                            <BsShield className="text-lg" />
-                            <span>Logout</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <AccountSettings />
-                    )
-                  }
-                  trigger="click"
-                  placement="bottomRight"
-                  overlayClassName="profile-popover"
-                >
-                  <Button className="!flex !items-center !gap-2 !text-[#2C7A7B] !bg-transparent hover:!text-[#FC8181] !border-none !shadow-none !p-0">
+                
+                {/* Custom Profile Popover for Mobile */}
+                <div className="relative">
+                  <button
+                    ref={profileTriggerRef}
+                    onClick={() => setIsProfilePopoverOpen(!isProfilePopoverOpen)}
+                    className="flex items-center gap-2 text-[#2C7A7B] bg-transparent hover:text-[#FC8181] border-none shadow-none p-0 transition-colors duration-300"
+                  >
                     {session ? (
                       <div className="w-8 h-8 rounded-full bg-[#2C7A7B] text-white flex items-center justify-center text-sm font-medium">
                         {initials}
@@ -594,8 +422,14 @@ const Header = () => {
                     ) : (
                       <BsPerson className="text-2xl" />
                     )}
-                  </Button>
-                </Popover>
+                  </button>
+                  
+                  <ProfilePopover
+                    isOpen={isProfilePopoverOpen}
+                    onClose={() => setIsProfilePopoverOpen(false)}
+                    triggerRef={profileTriggerRef}
+                  />
+                </div>
               </div>
             </div>
 
@@ -606,50 +440,156 @@ const Header = () => {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-              <div className="fixed inset-0 bg-white z-50">
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-6">
+              <div className="fixed inset-0 bg-gradient-to-br from-[#F7FAFC] to-[#EDF2F7] z-50">
+                <div className="p-4 h-full overflow-y-auto">
+                  <div className="flex justify-between items-center mb-8">
                     <Link href="/" className="text-xl font-bold text-[#2C7A7B]">ShopHub</Link>
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="text-[#2C7A7B]">
+                    <button 
+                      onClick={() => setIsMobileMenuOpen(false)} 
+                      className="p-2 text-[#2C7A7B] hover:text-[#FC8181] hover:bg-white rounded-lg transition-all duration-300"
+                    >
                       <BsX className="text-2xl" />
                     </button>
                   </div>
 
-                  {/* User Info in Mobile Menu */}
-                  {session && (
-                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                      <p className="text-sm text-gray-600">Welcome back,</p>
-                      <p className="text-lg font-semibold text-[#2C7A7B]">{session.user.name}</p>
-                    </div>
-                  )}
-
-                  {/* Mobile Menu Items */}
-                  <nav className="space-y-4">
-                    <Link href="/" className="block text-gray-700 hover:text-[#2C7A7B]">Home</Link>
-                    <Link href="/products" className="block text-gray-700 hover:text-[#2C7A7B]">All Products</Link>
-                    <Link href="/categories" className="block text-gray-700 hover:text-[#2C7A7B]">Categories</Link>
-                    <Link href="/wishlist" className="block text-gray-700 hover:text-[#2C7A7B]">Wishlist</Link>
-                    {session ? (
-                      <>
-                        <Link href="/account" className="block text-gray-700 hover:text-[#2C7A7B]">My Profile</Link>
-                        <Link href="/myorders" className="block text-gray-700 hover:text-[#2C7A7B]">My Orders</Link>
-                        {session.user.isAdmin && (
-                          <Link href="/admin/category" className="block text-gray-700 hover:text-[#2C7A7B]">
-                            <div className="flex items-center gap-2">
-                              <BsGear className="text-lg" />
-                              <span>Admin Dashboard</span>
-                            </div>
-                          </Link>
-                        )}
-                        <button 
-                          onClick={() => signOut()}
-                          className="block w-full text-left text-gray-700 hover:text-[#FC8181]"
+                  {/* Mobile Menu Items - Enhanced with Theme Colors */}
+                  <nav className="space-y-6">
+                    {/* Shop Section */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
+                      <div className="bg-gradient-to-r from-[#2C7A7B] to-[#38B2AC] p-4">
+                        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+                          <BsGrid className="text-xl" />
+                          Shop
+                        </h3>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        <Link 
+                          href="/" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
                         >
-                          Logout
-                        </button>
-                      </>
-                    ) : (
-                      <Link href="/login" className="block text-gray-700 hover:text-[#2C7A7B]">Login</Link>
+                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
+                            <span className="text-white font-bold">H</span>
+                          </div>
+                          <span className="font-medium">Home</span>
+                        </Link>
+                        <Link 
+                          href="/products" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
+                            <BsBoxSeam className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">All Products</span>
+                        </Link>
+                        <Link 
+                          href="/categories" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
+                            <BsGrid className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Categories</span>
+                        </Link>
+                        <Link 
+                          href="/flash-deals" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                            <BsLightningCharge className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Flash Deals</span>
+                        </Link>
+                        <Link 
+                          href="/new-arrivals" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
+                            <BsStar className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">New Arrivals</span>
+                        </Link>
+                        <Link 
+                          href="/best-sellers" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
+                            <BsTrophy className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Best Sellers</span>
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Support Section */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
+                      <div className="bg-gradient-to-r from-[#FC8181] to-[#F687B3] p-4">
+                        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+                          <BsShield className="text-xl" />
+                          Support
+                        </h3>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        <Link 
+                          href="/contact" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                            <span className="text-white font-bold text-sm">C</span>
+                          </div>
+                          <span className="font-medium">Contact Us</span>
+                        </Link>
+                        <Link 
+                          href="/track-order" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                            <BsBoxSeam className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Track Order</span>
+                        </Link>
+                        <Link 
+                          href="/wishlist" 
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                        >
+                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                            <BsHeart className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Wishlist</span>
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Admin Section */}
+                    {session?.user?.isAdmin && (
+                      <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
+                        <div className="bg-gradient-to-r from-[#2D3748] to-[#4A5568] p-4">
+                          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+                            <BsGear className="text-xl" />
+                            Admin
+                          </h3>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <Link 
+                            href="/admin/category" 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                          >
+                            <div className="w-8 h-8 bg-[#2D3748] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                              <BsGear className="text-white text-lg" />
+                            </div>
+                            <span className="font-medium">Admin Dashboard</span>
+                          </Link>
+                        </div>
+                      </div>
                     )}
                   </nav>
                 </div>

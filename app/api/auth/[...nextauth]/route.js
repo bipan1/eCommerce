@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 import prisma from '@/database'
@@ -14,6 +15,10 @@ export const hashPassword = (string) => {
 
 export const authOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     CredentialsProvider({
       id: 'credentials',
       name: 'Credentials',
@@ -31,7 +36,7 @@ export const authOptions = {
             },
           })
 
-          if (user && user.password === hashPassword(password)) {
+          if (user && user.password && user.password === hashPassword(password)) {
             return exclude(user, ['password'])
           } else {
             return null
@@ -58,6 +63,28 @@ export const authOptions = {
   },
 
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        // Create a cart for new Google users if they don't have one
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+          include: { cart: true }
+        });
+
+        if (!existingUser) {
+          const cart = await prisma.cart.create({});
+          await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name,
+              cartId: cart.id,
+              emailVerified: new Date(),
+            }
+          });
+        }
+      }
+      return true;
+    },
     async session({ session, token, user }) {
       session.user.id = token.user_id
       session.user.isAdmin = token.isAdmin
