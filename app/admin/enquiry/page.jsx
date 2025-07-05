@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Card, Button, Modal, Typography, Space, Tag, Tooltip } from 'antd';
+import { Table, Card, Button, Modal, Typography, Space, Tag, Tooltip, Popconfirm } from 'antd';
 import { DeleteOutlined, EyeOutlined, MailOutlined, PhoneOutlined, UserOutlined, CalendarOutlined } from '@ant-design/icons';
 import { useNotification } from '../../../components/notification/NotificationProvider';
 import { axiosApiCall } from '../../../utils/axiosApiCall';
+import AdminPageLayout from "@/components/adminLayout";
 
 const { Title, Text, Paragraph } = Typography;
 

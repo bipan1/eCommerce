@@ -2,7 +2,7 @@
 
 import { useNotification } from '../../../components/notification/NotificationProvider';
 import { Button, Form, Input, Modal } from "antd";
-import AdminPageLayout from "components/adminLayout";
+import AdminPageLayout from "@/components/adminLayout";
 import { useState } from "react";
 import CategoryItems from "components/categoryItems";
 import { FaPlus } from "react-icons/fa"
