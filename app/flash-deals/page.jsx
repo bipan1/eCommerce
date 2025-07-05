@@ -7,7 +7,7 @@ import { useNotification } from '../../components/notification/NotificationProvi
 import { FaLightningBolt, FaShoppingCart, FaFire, FaClock, FaTag } from 'react-icons/fa';
 import { BsLightningCharge, BsFire, BsTag } from 'react-icons/bs';
 import { MdLocalOffer } from 'react-icons/md';
-import { addItemToCart, addItemDirectly } from '@/redux/features/bag-slice';
+import { addItemToCart, addItem } from '@/redux/features/bag-slice';
 
 export default function FlashDealsPage() {
     const [specialProducts, setSpecialProducts] = useState([]);
@@ -39,7 +39,7 @@ export default function FlashDealsPage() {
 
     const handleAddToCart = async (product) => {
         const item = {
-            id: product.id,
+            productId: product.id,
             name: product.name,
             price: product.isSpecial ? product.specialPrice : product.price,
             image: product.image,
@@ -56,7 +56,7 @@ export default function FlashDealsPage() {
             }
         } else {
             // Guest user - use local cart
-            dispatch(addItemDirectly(item));
+            dispatch(addItem(item));
             showNotification('Item added to cart!', 'success');
         }
     };

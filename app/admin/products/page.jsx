@@ -4,9 +4,9 @@ import { useNotification } from '../../../components/notification/NotificationPr
 import { Button } from 'antd';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteProdut } from '@/redux/features/products-slice';
+import { removeProduct } from '@/redux/features/products-slice';
 import ProductForm from 'components/productForm';
-import AdminPageLayout from "components/adminLayout";
+import AdminPageLayout from "components/adminLayout/index";
 import ProductCard from "components/products/productCard";
 import { FaPlus } from "react-icons/fa";
 import { axiosApiCall } from 'utils/axiosApiCall';
@@ -29,7 +29,7 @@ export default function ProductsPage() {
     const deleteProduct = async (productId) => {
         try {
             await axiosApiCall('/product', 'DELETE', { data: { id: productId } })
-            dispatch(deleteProdut(productId))
+            dispatch(removeProduct(productId))
             deleteSuccess();
         } catch (err) {
             console.log(err)
