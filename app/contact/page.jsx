@@ -208,7 +208,7 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <h4 className="font-semibold text-gray-800">Email</h4>
-                                            <p className="text-gray-600">info@himalibasket.com</p>
+                                            <p className="text-gray-600">info@sathikopasal.com</p>
                                         </div>
                                     </div>
 
@@ -230,7 +230,7 @@ export default function ContactPage() {
 
                             {/* Why Choose Us Card */}
                             <div className="bg-gradient-to-br from-[#2C7A7B] to-[#38B2AC] rounded-2xl shadow-xl p-8 text-white">
-                                <h3 className="text-2xl font-bold mb-6">Why Choose Himali Basket?</h3>
+                                <h3 className="text-2xl font-bold mb-6">Why Choose Sathiko Pasal?</h3>
                                 
                                 <div className="space-y-4">
                                     <div className="flex items-center space-x-3">

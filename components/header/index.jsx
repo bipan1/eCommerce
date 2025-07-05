@@ -383,7 +383,11 @@ const Header = () => {
             <div className="flex items-center justify-between py-4">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-[#2C7A7B]">Himali Basket</span>
+                <img 
+                  src="/finallogowhite.png" 
+                  alt="Sathiko Pasal Logo" 
+                  className="h-20 w-auto object-contain"
+                />
               </Link>
 
               {/* Search Bar */}
@@ -470,7 +474,13 @@ const Header = () => {
                 <BsList className="text-2xl" />
               </button>
               
-              <Link href="/" className="text-xl font-bold text-[#2C7A7B]">Himali Basket</Link>
+              <Link href="/" className="flex items-center">
+                <img 
+                  src="/finallogowhite.png" 
+                  alt="Sathiko Pasal Logo" 
+                  className="h-16 w-auto object-contain"
+                />
+              </Link>
               
               <div className="flex items-center space-x-4">
                 <button onClick={handleBagClick} className="relative">
@@ -513,7 +523,13 @@ const Header = () => {
               <div className="fixed inset-0 bg-gradient-to-br from-[#F7FAFC] to-[#EDF2F7] z-50">
                 <div className="p-4 h-full overflow-y-auto">
                   <div className="flex justify-between items-center mb-8">
-                    <Link href="/" className="text-xl font-bold text-[#2C7A7B]">Himali Basket</Link>
+                    <Link href="/" className="flex items-center">
+                      <img 
+                        src="/finallogowhite.png" 
+                        alt="Sathiko Pasal Logo" 
+                        className="h-16 w-auto object-contain"
+                      />
+                    </Link>
                     <button 
                       onClick={() => setIsMobileMenuOpen(false)} 
                       className="p-2 text-[#2C7A7B] hover:text-[#FC8181] hover:bg-white rounded-lg transition-all duration-300"

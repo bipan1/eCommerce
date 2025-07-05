@@ -62,8 +62,8 @@ export default function PaymentSuccess() {
                     <div className="mt-8 pt-6 border-t border-gray-200">
                         <p className="text-sm text-gray-500">
                             Need help? Contact our support team at{' '}
-                            <a href="mailto:support@himalibasket.com" className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300 font-medium">
-                                support@himalibasket.com
+                            <a href="mailto:support@sathikopasal.com" className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300 font-medium">
+                                support@sathikopasal.com
                             </a>
                         </p>
                     </div>

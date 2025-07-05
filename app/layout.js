@@ -14,10 +14,10 @@ import { NotificationProvider } from '../components/notification/NotificationPro
 import DataInitializer from '../components/DataInitializer'
 
 export const metadata = {
-  title: 'Himali Basket - Your Online Grocery Store',
-  description: 'Your trusted online grocery store',
+  title: 'Sathiko Pasal - Your Online Grocery Store',
+  description: 'Your trusted online grocery store in Nepal',
   icons: {
-    icon: '/logo-no-background.svg',
+    icon: '/logoheader.png',
   },
 }
 

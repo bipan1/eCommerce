@@ -56,7 +56,13 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Company Info */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">Himali Basket</h3>
+                        <div className="mb-4">
+                            <img 
+                                src="/finallogo.png" 
+                                alt="Sathiko Pasal Logo" 
+                                className="h-24 w-auto object-contain"
+                            />
+                        </div>
                         <p className="text-white/80 mb-4">
                             Your one-stop destination for all your shopping needs. Quality products, great prices, and excellent service.
                         </p>
@@ -157,7 +163,7 @@ const Footer = () => {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <p className="text-white/80 text-sm">
-                            © {new Date().getFullYear()} Himali Basket. All rights reserved.
+                            © {new Date().getFullYear()} Sathiko Pasal. All rights reserved.
                         </p>
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
