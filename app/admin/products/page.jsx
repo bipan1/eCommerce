@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeProduct } from '@/redux/features/products-slice';
 import ProductForm from 'components/productForm';
-import AdminPageLayout from "components/adminLayout/index";
+import AdminPageLayout from "@/components/adminLayout";
 import ProductCard from "components/products/productCard";
 import { FaPlus } from "react-icons/fa";
 import { axiosApiCall } from 'utils/axiosApiCall';
