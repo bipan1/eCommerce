@@ -17,8 +17,14 @@ export async function POST(req) {
 
   try {
     const user = await prisma.user.create({
-      data: { ...data, password: hashPassword(password), cart: { create: {} } },
+      data: { ...data, password: hashPassword(password) },
     })
+    
+    // Create a cart for the new user
+    await prisma.cart.create({
+      data: { userId: user.id },
+    })
+    
     return NextResponse.json({ user }, { status: 200 })
   } catch (e) {
     if (e.code === 'P2002') {

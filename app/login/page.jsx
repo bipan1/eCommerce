@@ -4,27 +4,48 @@ import { Button, Card, Form, Input, Divider } from 'antd'
 import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons'
 import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 import Image from 'next/image'
-import { GoogleLogin } from '@react-oauth/google'
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const [form] = Form.useForm()
 
   const { push } = useRouter()
+  const searchParams = useSearchParams()
   const loginSuccess = () => toast.success('Logged in Successfully')
   const loginFailure = () => toast.error("Invalid Credentials")
   const googleLoginFailure = () => toast.error("Google login failed")
+  const oauthAccountNotLinked = () => toast.error("This email is already registered with a different login method. Please use your email and password to sign in.")
 
   const { status } = useSession()
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    // Only redirect if authenticated and no OAuth error parameters present
+    if (status === 'authenticated' && !searchParams.get('error') && !searchParams.get('code')) {
       push('/')
     }
-  }, [status])
+  }, [status, searchParams])
+
+  // Check for OAuth errors in URL parameters
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error === 'OAuthAccountNotLinked') {
+      oauthAccountNotLinked()
+      // Clean up URL by removing error parameter
+      const url = new URL(window.location)
+      url.searchParams.delete('error')
+      window.history.replaceState({}, '', url)
+    } else if (error === 'Callback') {
+      toast.error("OAuth callback error. Please check your Google OAuth configuration.")
+      // Clean up URL by removing error parameter
+      const url = new URL(window.location)
+      url.searchParams.delete('error')
+      window.history.replaceState({}, '', url)
+    }
+  }, [searchParams])
 
   const handleSubmit = async (values) => {
     console.log('Form submitted with values:', values)
@@ -64,28 +85,20 @@ export default function Login() {
     form.submit()
   }
 
-  const handleGoogleSuccess = async (credentialResponse) => {
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true)
     try {
-      const res = await signIn('google', {
-        credential: credentialResponse.credential,
-        redirect: false,
-        callbackUrl: '/'
+      // Use redirect: true for proper OAuth flow
+      // Toast will be handled by the home page after redirect
+      await signIn('google', {
+        callbackUrl: '/?login=success',
+        redirect: true,
       });
-
-      if (res.error) {
-        googleLoginFailure();
-      } else {
-        loginSuccess();
-      }
     } catch (error) {
       console.error("Google sign-in error:", error);
       googleLoginFailure();
+      setGoogleLoading(false)
     }
-  };
-
-  const handleGoogleError = () => {
-    console.log('Google Login Failed');
-    googleLoginFailure();
   };
 
   return (
@@ -97,17 +110,28 @@ export default function Login() {
             <p className="text-gray-500 text-lg">Sign in to your account to continue</p>
           </div>
 
-          <div className="w-full flex justify-center mb-6">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              size="large"
-              width="100%"
-              text="continue_with"
-              shape="rectangular"
-              theme="outline"
-            />
-          </div>
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={googleLoading}
+            className="w-full h-12 bg-white border-2 border-gray-200 text-gray-700 font-semibold rounded-lg transition-all duration-300 shadow-lg transform hover:scale-[1.02] active:scale-[0.98] mb-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 hover:border-gray-300"
+          >
+            {googleLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                <span>Signing in with Google...</span>
+              </div>
+            ) : (
+              <>
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span>Continue with Google</span>
+              </>
+            )}
+          </button>
 
           <Divider className="my-6 text-gray-400 font-medium text-sm">or sign in with email</Divider>
 

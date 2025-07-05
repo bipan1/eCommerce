@@ -1,7 +1,9 @@
 'use client'
 
 import { useSelector } from 'react-redux';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
 import HeroCarousel from '@/components/home/HeroCarousel';
 import FeaturedCategories from '@/components/home/FeaturedCategories';
 import SpecialsSection from '@/components/home/SpecialsSection';
@@ -12,6 +14,30 @@ export default function Home() {
   const { data: products } = useSelector((state) => state.products);
   const { data: categories } = useSelector((state) => state.category);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const toastShownRef = useRef({ signup: false, login: false });
+
+  // Check for signup/login success parameters
+  useEffect(() => {
+    const signupParam = searchParams.get('signup');
+    const loginParam = searchParams.get('login');
+    
+    if (signupParam === 'success' && !toastShownRef.current.signup) {
+      toast.success('Account created successfully.');
+      toastShownRef.current.signup = true;
+      // Clean up URL by removing the signup parameter
+      const url = new URL(window.location);
+      url.searchParams.delete('signup');
+      window.history.replaceState({}, '', url.pathname);
+    } else if (loginParam === 'success' && !toastShownRef.current.login) {
+      toast.success('Logged in Successfully');
+      toastShownRef.current.login = true;
+      // Clean up URL by removing the login parameter
+      const url = new URL(window.location);
+      url.searchParams.delete('login');
+      window.history.replaceState({}, '', url.pathname);
+    }
+  }, [searchParams]);
 
   const categoryProductsMap = categories.reduce((acc, category) => {
     acc[category.id] = products.filter(product => product.categoryId === category.id);

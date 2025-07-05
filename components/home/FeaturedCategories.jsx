@@ -3,7 +3,7 @@
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { FaShoppingBag, FaTshirt, FaMobileAlt, FaLaptop, FaHome, FaUtensils, FaBook, FaGamepad, FaHeartbeat, FaCar } from 'react-icons/fa';
-import { GiJewelCrown, GiLipstick, GiRunningShoe, GiSunglasses, GiWatch, GiFruitBowl, GiMeat, GiMilkCarton, GiCannedFood, GiBread } from 'react-icons/gi';
+import { GiJewelCrown, GiLipstick, GiRunningShoe, GiSunglasses, GiWatch, GiFruitBowl, GiMeat, GiMilkCarton, GiBread } from 'react-icons/gi';
 import { MdSportsSoccer, MdToys, MdPets, MdLocalDrink, MdLocalCafe, MdLocalDining, MdLocalGroceryStore } from 'react-icons/md';
 import { BsLightningCharge, BsStar, BsClock, BsBasket, BsBasketFill } from 'react-icons/bs';
 import React from 'react';
@@ -30,7 +30,7 @@ const categoryIcons = {
   'Vegetables': GiFruitBowl,
   'Meat': GiMeat,
   'Dairy': GiMilkCarton,
-  'Canned Goods': GiCannedFood,
+  'Canned Goods': FaUtensils,
   'Bakery': GiBread,
   'Beverages': MdLocalDrink,
   'Coffee & Tea': MdLocalCafe,

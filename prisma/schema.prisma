@@ -8,20 +8,19 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(cuid())
   name          String
   email         String    @unique
   emailVerified DateTime?
   password      String?   // Made optional for OAuth users
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  cartId        Int       @unique
   addressId     Int?
   isAdmin       Boolean   @default(false)
   phoneNumber   String?
   Order         Order[]
   address       Address?  @relation(fields: [addressId], references: [id])
-  cart          Cart      @relation(fields: [cartId], references: [id])
+  cart          Cart?
   accounts      Account[]
   sessions      Session[]
 }
@@ -71,10 +70,11 @@ model Product {
 
 model Cart {
   id        Int        @id @default(autoincrement())
+  userId    String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   items     CartItem[]
-  user      User?
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CartItem {
@@ -102,7 +102,7 @@ model Address {
 
 model Order {
   id                Int            @id @default(autoincrement())
-  userId            Int?
+  userId            String?
   total             Decimal
   shippingAddressId Int
   paymentId         Int            @unique
@@ -146,7 +146,7 @@ enum OrderStatus {
 // Add OAuth Account model
 model Account {
   id                String  @id @default(cuid())
-  userId            Int
+  userId            String
   type              String
   provider          String
   providerAccountId String
@@ -167,7 +167,7 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       Int
+  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
