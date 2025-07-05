@@ -17,6 +17,8 @@ export default function Myorders() {
         switch (status) {
             case 'PENDING':
                 return 'processing';
+            case 'APPROVED':
+                return 'cyan';
             case 'SHIPPED':
                 return 'warning';
             case 'DELIVERED':
@@ -127,7 +129,7 @@ export default function Myorders() {
                     <div className="text-center p-8">
                         <p className="text-gray-500 text-lg">No orders found</p>
                         <Button 
-                            onClick={() => router.push('/products')} 
+                            onClick={() => router.push('/')} 
                             className="mt-4 !bg-[#2C7A7B] !text-white hover:!bg-[#FC8181] !border-none !rounded-lg"
                         >
                             Start Shopping

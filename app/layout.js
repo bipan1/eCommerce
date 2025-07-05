@@ -7,6 +7,7 @@ import ReduxProvider from '../providers/redux-providers'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Cart from '../components/cart'
+import CartHydration from '../components/cart/CartHydration'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
 import Footer from 'components/footer'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
@@ -32,6 +33,7 @@ function RootLayoutContent({ children }) {
           <AntdStyledComponentsRegistry>
             <ReduxProvider>
               <NextAuthProvider>
+                <CartHydration />
                 <ToastContainer
                   position="bottom-right"
                   autoClose={1500}

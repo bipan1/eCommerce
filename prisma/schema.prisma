@@ -139,6 +139,7 @@ model Payment {
 
 enum OrderStatus {
   PENDING
+  APPROVED
   SHIPPED
   DELIVERED
 }

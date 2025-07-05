@@ -16,7 +16,7 @@ export async function GET(_, { params }) {
     
     return NextResponse.json({ user }, { status: 200 })
   } catch (e) {
-    console.log('Error fetching user:', e)
+    console.error('Error fetching user:', e)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -29,7 +29,7 @@ export async function PUT(request, { params }) {
     
     const user = await prisma.user.update({
       where: {
-        id: userId, // Use userId as string
+        id: userId,
       },
       data: {
         phoneNumber,
@@ -38,7 +38,7 @@ export async function PUT(request, { params }) {
     
     return NextResponse.json({ user }, { status: 200 })
   } catch (e) {
-    console.log('Error updating user:', e)
+    console.error('Error updating user:', e)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -3,16 +3,20 @@ import { Button } from "antd";
 import { useState } from "react";
 import { FaPlus, FaMinus, FaHeart } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
-import { addItem } from '@/redux/features/bag-slice';
+import { addItemToCart, addItem } from '@/redux/features/bag-slice';
 import { useDispatch } from 'react-redux';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
 import { convertToFloat } from "utils";
 import { useRouter } from "next/navigation";
 
 export default function ProductDisplay({ product }) {
     const [count, setCount] = useState(1);
     const [isWishlist, setIsWishlist] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
     const router = useRouter();
     const dispatch = useDispatch();
+    const { data: session } = useSession();
 
     const handleDecreaseCount = (e) => {
         e.stopPropagation();
@@ -25,15 +29,43 @@ export default function ProductDisplay({ product }) {
         setCount(count + 1);
     }
 
-    const handleAddToBag = (e) => {
+    const handleAddToBag = async (e) => {
         e.stopPropagation();
-        dispatch(addItem({
-            productId: product.id,
-            quantity: count,
-            price: product.price,
-            image: product.image,
-            name: product.name
-        }));
+        
+        if (isAdding) return; // Prevent double-clicking
+
+        if (session) {
+            // Logged-in user: use backend synchronization
+            setIsAdding(true);
+            try {
+                await dispatch(addItemToCart({
+                    productId: product.id,
+                    quantity: count,
+                    price: product.price,
+                    image: product.image,
+                    name: product.name
+                })).unwrap();
+                
+                toast.success('Item added to cart!');
+                setCount(1); // Reset count after successful add
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                toast.error(error || 'Failed to add item to cart');
+            } finally {
+                setIsAdding(false);
+            }
+        } else {
+            // Guest user: use local cart only
+            dispatch(addItem({
+                productId: product.id,
+                quantity: count,
+                price: product.price,
+                image: product.image,
+                name: product.name
+            }));
+            toast.success('Item added to cart!');
+            setCount(1); // Reset count after successful add
+        }
     }
 
     const handleCardClick = (e) => {
@@ -141,12 +173,14 @@ export default function ProductDisplay({ product }) {
                     {/* Add to Bag Button */}
                     <button
                         onClick={handleAddToBag}
+                        disabled={session && isAdding}
                         className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#2C7A7B] 
                                  hover:bg-[#FC8181] text-white rounded-lg text-sm font-medium transition-all duration-300 
-                                 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98]"
+                                 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98]
+                                 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                     >
                         <LuShoppingCart className="w-3.5 h-3.5" />
-                        Add to Bag
+                        {(session && isAdding) ? 'Adding...' : 'Add to Bag'}
                     </button>
                 </div>
             </div>

@@ -110,6 +110,43 @@ export const authOptions = {
         token.user_id = user.id;
         token.isAdmin = user.isAdmin;
       }
+      
+      // For Google OAuth, ensure we use the correct database user ID
+      if (account?.provider === 'google' && user) {
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email }
+          });
+          
+          if (existingUser) {
+            // Use the database user ID, not the Google OAuth ID
+            token.user_id = existingUser.id;
+            token.isAdmin = existingUser.isAdmin;
+          } else {
+            // Create user if it doesn't exist
+            const newUser = await prisma.user.create({
+              data: {
+                email: user.email,
+                name: user.name,
+                emailVerified: new Date(),
+              }
+            });
+            
+            // Create cart for the user
+            await prisma.cart.create({
+              data: {
+                userId: newUser.id
+              }
+            });
+            
+            token.user_id = newUser.id;
+            token.isAdmin = newUser.isAdmin;
+          }
+        } catch (error) {
+          console.error('Error ensuring user exists in JWT callback:', error);
+        }
+      }
+      
       return token;
     },
   },

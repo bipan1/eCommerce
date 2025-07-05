@@ -23,54 +23,84 @@ export default function OrderDetails({ params }) {
     }, [orderId])
 
     return (
-        <div className="flex flex-col lg:flex-row w-full lg:gap-4">
+        <>
             {loading && <Spinner />}
-            {order && <div className="flex-1 flex justify-center lg:justify-end mb-10 p-4">
-                <div className="w-full lg:w-3/5">
-                    <div className="mt-2 mb-4">
-                        <Button onClick={() => router.back()} type="link" className="flex rounded-2xl !bg-green-900 !text-white" >
-                            <IoIosArrowDropleftCircle className="inline mr-2" />
-                            <span>Back</span>
-                        </Button >
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {/* Header Section with Back Button */}
+                <div className="mb-8 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-[#2C7A7B]">Order Details</h1>
+                        <div className="mt-2 h-1 w-20 bg-[#FC8181] rounded-full"></div>
                     </div>
-                    <h1 className="mt-2 text-lg font-bold">Order Summary</h1>
-                    <div className="flow-root">
-                        <ul role="list" className="-my-2 mt-2">
-                            {order.products && order.products.map(item => {
-                                return <div>
-                                    <li className="flex py-2">
-                                        <div className="h-20 w-20 flex-shrink-0 overflow-hidden">
-                                            <img src={item.product.image} alt="Product Image" className="h-full w-full object-cover object-center" />
-                                        </div>
+                    <Button 
+                        onClick={() => router.back()} 
+                        className="!flex !items-center !gap-2 !text-[#2C7A7B] hover:!text-[#FC8181] !bg-transparent !border-none !shadow-none"
+                    >
+                        <IoIosArrowDropleftCircle className="text-xl" />
+                        <span>Back</span>
+                    </Button>
+                </div>
 
-                                        <div className="ml-4 flex flex-1 flex-col">
-                                            <div>
-                                                <div className="flex justify-between text-base font-medium text-gray-900">
-                                                    <h3>
-                                                        <a href="#">{item.product.name}</a>
-                                                        <p className="mt-1 text-sm text-gray-500">Quantity: {item.quantity}</p>
-                                                    </h3>
-                                                    <p className="ml-4">${parseInt(item.price)}</p>
+                {order && (
+                    <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
+                        <div className="p-6 border-b border-[#E2E8F0]">
+                            <h2 className="text-xl font-semibold text-[#2C7A7B]">Order Summary</h2>
+                            <p className="text-sm text-gray-500 mt-1">Order ID: #{order.id}</p>
+                        </div>
+                        
+                        <div className="p-6">
+                            <div className="flow-root">
+                                <ul role="list" className="divide-y divide-gray-200">
+                                    {order.products && order.products.map((item, index) => (
+                                        <li key={index} className="py-4 flex items-start">
+                                            <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200">
+                                                <img 
+                                                    src={item.product.image} 
+                                                    alt={item.product.name} 
+                                                    className="h-full w-full object-cover object-center" 
+                                                />
+                                            </div>
+
+                                            <div className="ml-4 flex flex-1 flex-col">
+                                                <div>
+                                                    <div className="flex justify-between">
+                                                        <div className="flex-1">
+                                                            <h3 className="text-base font-medium text-gray-900 max-w-xs overflow-hidden" 
+                                                                style={{ 
+                                                                    display: '-webkit-box', 
+                                                                    WebkitLineClamp: 2, 
+                                                                    WebkitBoxOrient: 'vertical',
+                                                                    textOverflow: 'ellipsis'
+                                                                }}>
+                                                                {item.product.name}
+                                                            </h3>
+                                                            <p className="mt-1 text-sm text-gray-500">
+                                                                Quantity: {item.quantity}
+                                                            </p>
+                                                        </div>
+                                                        <p className="ml-4 text-base font-medium text-gray-900">
+                                                            ${parseInt(item.price)}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </li>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            
+                            <div className="mt-6 border-t border-gray-200 pt-6">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-lg font-medium text-gray-900">Total</p>
+                                    <p className="text-2xl font-semibold text-[#2C7A7B]">
+                                        ${(parseInt(order.total) / 100).toFixed(2)}
+                                    </p>
                                 </div>
-                            })}
-                        </ul>
-                        <div className="mt-10">
-                            <div className="mt-6 flex items-center justify-between border-t pt-2">
-                                <p className="text-sm font-medium text-gray-900">Total</p>
-                                <p className="text-2xl font-semibold text-gray-900">$ {`${(parseInt(order.total) / 100).toFixed(2)}`}</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>}
-            <div style={{ minHeight: '100vh' }} className="flex-1 justify-center lg:justify-start bg-white flex">
-                <div className="w-full lg:w-2/3 p-6 mr-3">
-                </div>
+                )}
             </div>
-        </div>
+        </>
     )
 }

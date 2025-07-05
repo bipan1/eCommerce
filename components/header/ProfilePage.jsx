@@ -30,7 +30,20 @@ export default function Profilepage({ profileinfo }) {
                 <RiAccountCircleLine size={20} />
                 Admin
             </div>}
-            <div onClick={() => signOut()} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
+            <div onClick={() => {
+                // Check if user is on a protected route that needs redirect to home
+                const protectedRoutes = ['/myorders', '/account', '/admin']
+                const currentPath = window.location.pathname
+                const isOnProtectedRoute = protectedRoutes.some(route => 
+                  currentPath.startsWith(route)
+                )
+                
+                if (isOnProtectedRoute) {
+                  signOut({ callbackUrl: window.location.origin })
+                } else {
+                  signOut()
+                }
+            }} className='flex p-3 rounded-md mt-2 gap-4 cursor-pointer hover:bg-gray-300'>
                 <TbLogout size={20} />
                 Logout
             </div>

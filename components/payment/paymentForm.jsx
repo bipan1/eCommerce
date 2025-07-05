@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { axiosApiCall } from "utils/axiosApiCall";
 import { useRouter } from "next/navigation";
-import { clearBag } from "@/redux/features/bag-slice";
+import { clearCart, clearBag } from "@/redux/features/bag-slice";
 
 const isEmpty = (value) => value === "";
 
@@ -133,7 +133,15 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
                     }
                 })
                 setIsLoading(false);
-                dispatch(clearBag());
+                
+                // Clear cart from both frontend and backend
+                if (session) {
+                    await dispatch(clearCart()).unwrap();
+                } else {
+                    // For guest users, just clear local state
+                    dispatch(clearBag());
+                }
+                
                 router.push('/paymentsuccess');
             } catch (e) {
                 console.log(e);

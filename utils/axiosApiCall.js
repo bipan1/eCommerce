@@ -23,6 +23,8 @@ export const axiosApiCall = async (endpoint, method = 'GET', data) => {
     response = await axios.delete(apiAddress, data, headers)
   } else if (method === 'PUT') {
     response = await axios.put(apiAddress, data, headers)
+  } else if (method === 'PATCH') {
+    response = await axios.patch(apiAddress, data, headers)
   }
 
   return response

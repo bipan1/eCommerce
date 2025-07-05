@@ -5,7 +5,9 @@ import { getProductById } from "@/redux/selectors/product";
 import { getCategoryById } from "@/redux/selectors/category";
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
-import { addItem } from '@/redux/features/bag-slice';
+import { addItemToCart, addItem } from '@/redux/features/bag-slice';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
@@ -27,6 +29,7 @@ export default function ProductDetails({ params }) {
     const router = useRouter();
 
     const dispatch = useDispatch();
+    const { data: session } = useSession();
 
     const handleDecreaseCount = () => {
         if (count <= 1) {
@@ -35,15 +38,38 @@ export default function ProductDetails({ params }) {
         setCount(count - 1);
     }
 
-    const handleAddToBag = (e) => {
+    const handleAddToBag = async (e) => {
         e.stopPropagation();
-        dispatch(addItem({
-            productId: product.id,
-            quantity: count,
-            price: product.price,
-            image: product.image,
-            name: product.name
-        }));
+        
+        if (session) {
+            // Logged-in user: use backend synchronization
+            try {
+                await dispatch(addItemToCart({
+                    productId: product.id,
+                    quantity: count,
+                    price: product.price,
+                    image: product.image,
+                    name: product.name
+                })).unwrap();
+                
+                toast.success('Item added to cart!');
+                setCount(1); // Reset count after successful add
+            } catch (error) {
+                console.error('Error adding item to cart:', error);
+                toast.error(error || 'Failed to add item to cart');
+            }
+        } else {
+            // Guest user: use local cart only
+            dispatch(addItem({
+                productId: product.id,
+                quantity: count,
+                price: product.price,
+                image: product.image,
+                name: product.name
+            }));
+            toast.success('Item added to cart!');
+            setCount(1); // Reset count after successful add
+        }
     }
 
     const goBack = () => {

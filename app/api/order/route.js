@@ -81,3 +81,62 @@ export async function GET() {
     return NextResponse.json({ message: err.message, status: 500 })
   }
 }
+
+export async function PATCH(req) {
+  try {
+    const { orderId, status } = await req.json()
+    
+    // Validate required fields
+    if (!orderId || !status) {
+      return NextResponse.json({ 
+        message: 'Order ID and status are required' 
+      }, { status: 400 })
+    }
+    
+    // Validate status value
+    const validStatuses = ['PENDING', 'APPROVED', 'SHIPPED', 'DELIVERED']
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json({ 
+        message: 'Invalid status value' 
+      }, { status: 400 })
+    }
+    
+    console.log(`Updating order ${orderId} to status ${status}`)
+    
+    // Check if order exists first
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: parseInt(orderId) }
+    })
+    
+    if (!existingOrder) {
+      return NextResponse.json({ 
+        message: 'Order not found' 
+      }, { status: 404 })
+    }
+    
+    // Update the order
+    const updatedOrder = await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { status },
+      include: {
+        products: true,
+        shippingAddress: true,
+        payment: true
+      }
+    })
+    
+    console.log(`Order ${orderId} successfully updated to ${status}`)
+    
+    return NextResponse.json({ 
+      order: updatedOrder,
+      message: 'Order status updated successfully' 
+    }, { status: 200 })
+    
+  } catch (err) {
+    console.error('Error updating order status:', err)
+    return NextResponse.json({ 
+      message: 'Internal server error',
+      error: err.message 
+    }, { status: 500 })
+  }
+}
