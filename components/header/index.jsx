@@ -523,9 +523,9 @@ const Header = () => {
               <div className="fixed inset-0 bg-gradient-to-br from-[#F7FAFC] to-[#EDF2F7] z-50">
                 <div className="p-4 h-full overflow-y-auto">
                   <div className="flex justify-between items-center mb-8">
-                    <Link href="/" className="flex items-center">
+                    <Link href="/" className="flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                       <img 
-                        src="/finallogowhite.png" 
+                        src="/finallogo.png" 
                         alt="Sathiko Pasal Logo" 
                         className="h-16 w-auto object-contain"
                       />
