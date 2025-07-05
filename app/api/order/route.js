@@ -4,72 +4,138 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]/route'
 
 export async function POST(req) {
-  const data = await req.json()
-  const session = await getServerSession(authOptions)
+  try {
+    const data = await req.json()
+    const session = await getServerSession(authOptions)
 
-  const {
-    products,
-    shippingAddressId,
-    addressData,
-    paymentId,
-    paymentMethod,
-    amount,
-    guestData,
-  } = data
+    const {
+      products,
+      shippingAddressId,
+      addressData,
+      paymentId,
+      paymentMethod,
+      amount,
+      guestData,
+    } = data
 
-  return await prisma.$transaction(async (prisma) => {
-    let createdAddressId
-    let guestId
-
-    if (!shippingAddressId) {
-      const address = await prisma.address.create({
-        data: { ...addressData, postcode: parseInt(addressData.postcode) },
-      })
-      createdAddressId = address.id
+    // Validate required fields
+    if (!products || !Array.isArray(products) || products.length === 0) {
+      return NextResponse.json({ 
+        message: 'Products are required and must be a non-empty array' 
+      }, { status: 400 })
     }
 
-    if (!session) {
-      const guest = await prisma.guest.create({
+    if (!paymentId || !paymentMethod || !amount) {
+      return NextResponse.json({ 
+        message: 'Payment information is required' 
+      }, { status: 400 })
+    }
+
+    if (!session && !guestData) {
+      return NextResponse.json({ 
+        message: 'Guest data is required for non-authenticated users' 
+      }, { status: 400 })
+    }
+
+    if (!shippingAddressId && !addressData) {
+      return NextResponse.json({ 
+        message: 'Shipping address information is required' 
+      }, { status: 400 })
+    }
+
+    const result = await prisma.$transaction(async (prisma) => {
+      let createdAddressId
+      let guestId
+
+      // Create address if not provided
+      if (!shippingAddressId) {
+        const address = await prisma.address.create({
+          data: { 
+            ...addressData, 
+            postcode: parseInt(addressData.postcode) 
+          },
+        })
+        createdAddressId = address.id
+      }
+
+      // Create guest user if not authenticated
+      if (!session) {
+        const guest = await prisma.guest.create({
+          data: {
+            ...guestData,
+            addressId: createdAddressId,
+          },
+        })
+        guestId = guest.id
+      }
+
+      // Create payment record
+      const payment = await prisma.payment.create({
         data: {
-          ...guestData,
-          addressId: createdAddressId,
+          method: paymentMethod,
+          transactionId: paymentId,
+          amount: amount,
         },
       })
-      guestId = guest.id
+
+      const shippingId = shippingAddressId ? shippingAddressId : createdAddressId
+
+      // Create order with products
+      const order = await prisma.order.create({
+        data: {
+          ...(session ? { userId: session.user.id } : { guestId: guestId }),
+          paymentId: payment.id,
+          shippingAddressId: shippingId,
+          status: 'PENDING',
+          total: amount,
+          products: {
+            create: products.map((product) => ({
+              productId: product.productId,
+              quantity: product.quantity,
+              price: product.price,
+            })),
+          },
+        },
+        include: {
+          products: true,
+        },
+      })
+
+      return order
+    })
+
+    return NextResponse.json({ 
+      order: result,
+      message: 'Order created successfully' 
+    }, { status: 200 })
+
+  } catch (error) {
+    console.error('Error creating order:', error)
+    
+    // Handle specific Prisma errors
+    if (error.code === 'P2028') {
+      return NextResponse.json({ 
+        message: 'Database transaction error. Please try again.' 
+      }, { status: 500 })
+    }
+    
+    if (error.code === 'P2002') {
+      return NextResponse.json({ 
+        message: 'Duplicate entry error. Please try again.' 
+      }, { status: 400 })
+    }
+    
+    if (error.code === 'P2025') {
+      return NextResponse.json({ 
+        message: 'Record not found. Please check your data.' 
+      }, { status: 404 })
     }
 
-    const payment = await prisma.payment.create({
-      data: {
-        method: paymentMethod,
-        transactionId: paymentId,
-        amount: amount,
-      },
-    })
-
-    const shippingId = shippingAddressId ? shippingAddressId : createdAddressId
-
-    const order = await prisma.order.create({
-      data: {
-        ...(session ? { userId: session.user.id } : { guestId: guestId }),
-        paymentId: payment.id,
-        shippingAddressId: shippingId,
-        status: 'PENDING',
-        total: amount,
-        products: {
-          create: products.map((product) => ({
-            productId: product.productId,
-            quantity: product.quantity,
-            price: product.price,
-          })),
-        },
-      },
-      include: {
-        products: true,
-      },
-    })
-
-    return NextResponse.json({ order }, { status: 200 })
-  })
+    return NextResponse.json({ 
+      message: 'Failed to create order. Please try again.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    }, { status: 500 })
+  }
 }
 
 export async function GET() {

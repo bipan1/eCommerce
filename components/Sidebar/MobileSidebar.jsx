@@ -3,10 +3,14 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { closeSideBar } from '@/redux/features/bag-slice';
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { BsPerson, BsBoxSeam } from "react-icons/bs";
 
 export default function MobileSidebar() {
     const dispatch = useDispatch();
     const router = useRouter();
+    const { data: session } = useSession();
 
     const bag = useSelector((state) => state.bag);
     const { isSideBarOpen } = bag;
@@ -20,6 +24,27 @@ export default function MobileSidebar() {
 
     const handleCategoryClick = (categoryId) => {
         router.push(`/products/categories/${categoryId}`)
+        dispatch(closeSideBar())
+    }
+
+    const handleLogout = () => {
+        dispatch(closeSideBar())
+        // Check if user is on a protected route that needs redirect to home
+        const protectedRoutes = ['/myorders', '/account', '/admin']
+        const currentPath = window.location.pathname
+        const isOnProtectedRoute = protectedRoutes.some(route => 
+            currentPath.startsWith(route)
+        )
+        
+        if (isOnProtectedRoute) {
+            signOut({ callbackUrl: window.location.origin })
+        } else {
+            signOut()
+        }
+    }
+
+    const handleAuthNavigation = (path) => {
+        router.push(path)
         dispatch(closeSideBar())
     }
 
@@ -50,6 +75,69 @@ export default function MobileSidebar() {
                                                 <p className='text-lg'>{category.name}</p>
                                             </div>
                                         ))}
+                                    </div>
+                                    
+                                    {/* Authentication Section */}
+                                    <div className='text-white pt-6 mt-6 border-t border-green-800'>
+                                        <h3 className='text-lg font-semibold mb-4 flex items-center gap-2'>
+                                            <BsPerson className="text-xl" />
+                                            {session ? 'Account' : 'Authentication'}
+                                        </h3>
+                                        
+                                        {session ? (
+                                            // Logged in user options
+                                            <div className='space-y-2'>
+                                                <div 
+                                                    onClick={() => handleAuthNavigation('/account')}
+                                                    className='border-b border-green-800 py-2 cursor-pointer hover:bg-green-800/20 transition-colors duration-200'
+                                                >
+                                                    <p className='text-lg flex items-center gap-2'>
+                                                        <BsPerson className="text-base" />
+                                                        My Profile
+                                                    </p>
+                                                </div>
+                                                <div 
+                                                    onClick={() => handleAuthNavigation('/myorders')}
+                                                    className='border-b border-green-800 py-2 cursor-pointer hover:bg-green-800/20 transition-colors duration-200'
+                                                >
+                                                    <p className='text-lg flex items-center gap-2'>
+                                                        <BsBoxSeam className="text-base" />
+                                                        My Orders
+                                                    </p>
+                                                </div>
+                                                <div 
+                                                    onClick={handleLogout}
+                                                    className='border-b border-green-800 py-2 cursor-pointer hover:bg-red-800/20 transition-colors duration-200'
+                                                >
+                                                    <p className='text-lg flex items-center gap-2 text-red-300'>
+                                                        <span className="text-base">↗</span>
+                                                        Logout
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            // Guest user options
+                                            <div className='space-y-2'>
+                                                <div 
+                                                    onClick={() => handleAuthNavigation('/login')}
+                                                    className='border-b border-green-800 py-2 cursor-pointer hover:bg-green-800/20 transition-colors duration-200'
+                                                >
+                                                    <p className='text-lg flex items-center gap-2'>
+                                                        <BsPerson className="text-base" />
+                                                        Login
+                                                    </p>
+                                                </div>
+                                                <div 
+                                                    onClick={() => handleAuthNavigation('/signup')}
+                                                    className='border-b border-green-800 py-2 cursor-pointer hover:bg-green-800/20 transition-colors duration-200'
+                                                >
+                                                    <p className='text-lg flex items-center gap-2'>
+                                                        <span className="text-base font-bold">+</span>
+                                                        Sign Up
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

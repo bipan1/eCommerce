@@ -1,9 +1,9 @@
 'use client';
 
 import axios from 'axios';
-import { toast } from 'react-toastify'
-import { Button, Card, Form, Input, Select, Switch, Upload } from 'antd';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { Button, Card, Form, Input, Select, Switch, Upload, message } from 'antd';
+import { useEffect } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/es/form/Form';
 import { LeftOutlined } from '@ant-design/icons';
@@ -11,10 +11,12 @@ import TextArea from 'antd/es/input/TextArea';
 import { useSelector, useDispatch } from 'react-redux';
 import { addProduct, editProduct } from '@/redux/features/products-slice';
 import { axiosApiCall } from 'utils/axiosApiCall';
+import { useNotification } from '../notification/NotificationProvider';
 
 export default function ProductForm({ setIsCreate, selectedProduct, setSelectedProduct }) {
     const [loading, setLoading] = useState(false);
-    const createSuccess = () => toast.success('Product Created Sucessfully.')
+    const { showNotification } = useNotification();
+    const createSuccess = () => showNotification('Product Created Successfully.', 'success');
     const [showSpecialPrice, setShowSpecialPrice] = useState()
 
     const [form] = useForm();

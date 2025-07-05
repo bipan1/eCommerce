@@ -123,7 +123,7 @@ export default function Myorders() {
             <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
                 {loading ? (
                     <div className="flex justify-center items-center p-8">
-                        <Spinner />
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2C7A7B]"></div>
                     </div>
                 ) : orders.length === 0 ? (
                     <div className="text-center p-8">

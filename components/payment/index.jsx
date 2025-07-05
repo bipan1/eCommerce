@@ -21,6 +21,38 @@ export default function Payment({ places, error, email, fullName, phoneNumber, s
 
     const appearance = {
         theme: 'stripe',
+        variables: {
+            colorPrimary: '#2C7A7B',
+            colorBackground: '#ffffff',
+            colorText: '#1f2937',
+            colorDanger: '#df1b41',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            spacingUnit: '4px',
+            borderRadius: '8px',
+        },
+        rules: {
+            '.Input': {
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                padding: '10px',
+                fontSize: '16px',
+            },
+            '.Input:focus': {
+                border: '1px solid #2C7A7B',
+                boxShadow: '0 0 0 2px rgba(44, 122, 123, 0.1)',
+            },
+            '.Tab': {
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+            },
+            '.Tab:hover': {
+                backgroundColor: '#f9fafb',
+            },
+            '.Tab--selected': {
+                backgroundColor: '#2C7A7B',
+                color: '#ffffff',
+            },
+        },
     };
     const options = {
         clientSecret,

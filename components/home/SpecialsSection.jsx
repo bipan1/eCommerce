@@ -1,18 +1,32 @@
 'use client'
 
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Card, Skeleton, Empty, Avatar, Divider } from 'antd';
+import { ShoppingCartOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { setProducts } from '@/redux/features/products-slice';
+import { addItemToCart } from '@/redux/features/bag-slice';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useNotification } from '../notification/NotificationProvider';
+import { axiosApiCall } from 'utils/axiosApiCall';
+import { convertToFloat } from "utils";
 import Slider from "react-slick";
-import { FaArrowRight } from "react-icons/fa";
-import { useEffect, useState } from 'react';
+import { FaArrowRight, FaPlus, FaMinus } from "react-icons/fa";
+import { LuShoppingCart } from "react-icons/lu";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 export default function SpecialsSection() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { data: session } = useSession();
+  const { showNotification } = useNotification();
   const { specials = [] } = useSelector((state) => state.products);
   const [slidesToShow, setSlidesToShow] = useState(4);
   const [isMounted, setIsMounted] = useState(false);
+  const [quantities, setQuantities] = useState({});
+  const [isAdding, setIsAdding] = useState({});
 
   // Helper function to calculate discount percentage
   const calculateDiscount = (price, specialPrice) => {
@@ -20,6 +34,66 @@ export default function SpecialsSection() {
     const discountedPrice = Number(specialPrice) || 0;
     if (regularPrice === 0) return 0;
     return Math.round((1 - discountedPrice / regularPrice) * 100);
+  };
+
+  // Get quantity for a product (default to 1)
+  const getQuantity = (productId) => quantities[productId] || 1;
+
+  // Handle quantity changes
+  const handleDecreaseCount = (e, productId) => {
+    e.stopPropagation();
+    const currentQuantity = getQuantity(productId);
+    if (currentQuantity <= 1) return;
+    setQuantities(prev => ({ ...prev, [productId]: currentQuantity - 1 }));
+  };
+
+  const handleIncreaseCount = (e, productId) => {
+    e.stopPropagation();
+    const currentQuantity = getQuantity(productId);
+    setQuantities(prev => ({ ...prev, [productId]: currentQuantity + 1 }));
+  };
+
+  // Handle add to bag
+  const handleAddToBag = async (e, product) => {
+    e.stopPropagation();
+    
+    if (isAdding[product.id]) return; // Prevent double-clicking
+
+    const quantity = getQuantity(product.id);
+    const price = product.specialPrice || product.price;
+
+    if (session) {
+      // Logged-in user: use backend synchronization
+      setIsAdding(prev => ({ ...prev, [product.id]: true }));
+      try {
+        await dispatch(addItemToCart({
+          productId: product.id,
+          quantity: quantity,
+          price: price,
+          image: product.image,
+          name: product.name
+        })).unwrap();
+        
+        showNotification('Item added to cart!', 'success');
+        setQuantities(prev => ({ ...prev, [product.id]: 1 })); // Reset quantity after successful add
+      } catch (error) {
+        console.error('Error adding item to cart:', error);
+        showNotification(error || 'Failed to add item to cart', 'error');
+      } finally {
+        setIsAdding(prev => ({ ...prev, [product.id]: false }));
+      }
+    } else {
+      // Guest user: use local cart only
+      dispatch(addItemToCart({
+        productId: product.id,
+        quantity: quantity,
+        price: price,
+        image: product.image,
+        name: product.name
+      }));
+      showNotification('Item added to cart!', 'success');
+      setQuantities(prev => ({ ...prev, [product.id]: 1 })); // Reset quantity after successful add
+    }
   };
 
   useEffect(() => {
@@ -149,24 +223,47 @@ export default function SpecialsSection() {
                       </h3>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-base font-bold text-[#FC8181]">
-                          ${Number(product.specialPrice || 0).toFixed(2)}
+                          ${convertToFloat(product.specialPrice || 0)}
                         </span>
                         <span className="text-xs text-[#2C7A7B] line-through">
-                          ${Number(product.price || 0).toFixed(2)}
+                          ${convertToFloat(product.price || 0)}
                         </span>
                       </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click when clicking button
-                          router.push(`/products/${product.id}`);
-                        }}
-                        className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#2C7A7B] 
-                                 hover:bg-[#FC8181] text-white rounded-lg text-sm font-medium transition-all duration-300 
-                                 shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98]"
-                      >
-                        View Details
-                        <FaArrowRight className="w-3.5 h-3.5" />
-                      </button>
+
+                      {/* Controls Container */}
+                      <div className="space-y-2">
+                        {/* Quantity Controls */}
+                        <div className="flex items-center justify-between border border-[#2C7A7B] rounded-lg overflow-hidden">
+                          <button
+                            onClick={(e) => handleDecreaseCount(e, product.id)}
+                            className="flex-1 px-2 py-1.5 text-[#2C7A7B] hover:bg-[#E6FFFA] transition-colors duration-300"
+                          >
+                            <FaMinus className="w-3 h-3 mx-auto" />
+                          </button>
+                          <span className="flex-1 text-center py-1.5 text-[#2C7A7B] font-medium">
+                            {getQuantity(product.id)}
+                          </span>
+                          <button
+                            onClick={(e) => handleIncreaseCount(e, product.id)}
+                            className="flex-1 px-2 py-1.5 text-[#2C7A7B] hover:bg-[#E6FFFA] transition-colors duration-300"
+                          >
+                            <FaPlus className="w-3 h-3 mx-auto" />
+                          </button>
+                        </div>
+
+                        {/* Add to Bag Button */}
+                        <button
+                          onClick={(e) => handleAddToBag(e, product)}
+                          disabled={session && isAdding[product.id]}
+                          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 bg-[#2C7A7B] 
+                                   hover:bg-[#FC8181] text-white rounded-lg text-sm font-medium transition-all duration-300 
+                                   shadow-sm hover:shadow-md transform hover:scale-[1.02] active:scale-[0.98]
+                                   disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        >
+                          <LuShoppingCart className="w-3.5 h-3.5" />
+                          {(session && isAdding[product.id]) ? 'Adding...' : 'Add to Bag'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

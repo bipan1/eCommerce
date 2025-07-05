@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
+import { useNotification } from '../notification/NotificationProvider';
 import { MdDelete } from "react-icons/md";
 import { removeCartItem, updateCartItemQuantity, removeItem, increaseQuantity, decreaseQuantity } from '@/redux/features/bag-slice';
 import { FaPlus, FaMinus } from "react-icons/fa";
@@ -9,6 +9,7 @@ import { useState } from "react";
 export default function CartItem({ item }) {
     const dispatch = useDispatch();
     const { data: session } = useSession();
+    const { showNotification } = useNotification();
     const [isUpdating, setIsUpdating] = useState(false);
 
     const handleDelete = async () => {
@@ -19,17 +20,17 @@ export default function CartItem({ item }) {
             setIsUpdating(true);
             try {
                 await dispatch(removeCartItem(item.productId)).unwrap();
-                toast.success('Item removed from cart');
+                showNotification('Item removed from cart', 'success');
             } catch (error) {
                 console.error('Error removing item:', error);
-                toast.error(error || 'Failed to remove item');
+                showNotification(error || 'Failed to remove item', 'error');
             } finally {
                 setIsUpdating(false);
             }
         } else {
             // Guest user: use local cart only
             dispatch(removeItem(item.productId));
-            toast.success('Item removed from cart');
+            showNotification('Item removed from cart', 'success');
         }
     }
 
@@ -46,7 +47,7 @@ export default function CartItem({ item }) {
                 })).unwrap();
             } catch (error) {
                 console.error('Error updating quantity:', error);
-                toast.error(error || 'Failed to update quantity');
+                showNotification(error || 'Failed to update quantity', 'error');
             } finally {
                 setIsUpdating(false);
             }
@@ -65,7 +66,7 @@ export default function CartItem({ item }) {
             try {
                 if (item.quantity <= 1) {
                     await dispatch(removeCartItem(item.productId)).unwrap();
-                    toast.success('Item removed from cart');
+                    showNotification('Item removed from cart', 'success');
                 } else {
                     await dispatch(updateCartItemQuantity({
                         productId: item.productId,
@@ -74,7 +75,7 @@ export default function CartItem({ item }) {
                 }
             } catch (error) {
                 console.error('Error updating quantity:', error);
-                toast.error(error || 'Failed to update quantity');
+                showNotification(error || 'Failed to update quantity', 'error');
             } finally {
                 setIsUpdating(false);
             }

@@ -5,7 +5,7 @@ import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons'
 import { signIn, useSession } from 'next-auth/react'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { toast } from 'react-toastify'
+import { useNotification } from '../../components/notification/NotificationProvider'
 import Image from 'next/image'
 
 export default function Login() {
@@ -15,17 +15,21 @@ export default function Login() {
 
   const { push } = useRouter()
   const searchParams = useSearchParams()
-  const loginSuccess = () => toast.success('Logged in Successfully')
-  const loginFailure = () => toast.error("Invalid Credentials")
-  const googleLoginFailure = () => toast.error("Google login failed")
-  const oauthAccountNotLinked = () => toast.error("This email is already registered with a different login method. Please use your email and password to sign in.")
+  const { showNotification } = useNotification()
+  const loginSuccess = () => showNotification('Logged in Successfully', 'success')
+  const loginFailure = () => showNotification("Invalid Credentials", 'error')
+  const googleLoginFailure = () => showNotification("Google login failed", 'error')
+  const oauthAccountNotLinked = () => showNotification("This email is already registered with a different login method. Please use your email and password to sign in.", 'error')
 
   const { status } = useSession()
 
   useEffect(() => {
     // Only redirect if authenticated and no OAuth error parameters present
+    // Add a small delay to ensure the notification is shown before redirect
     if (status === 'authenticated' && !searchParams.get('error') && !searchParams.get('code')) {
-      push('/')
+      setTimeout(() => {
+        push('/')
+      }, 100) // Small delay to ensure notification is shown
     }
   }, [status, searchParams])
 
@@ -39,7 +43,7 @@ export default function Login() {
       url.searchParams.delete('error')
       window.history.replaceState({}, '', url)
     } else if (error === 'Callback') {
-      toast.error("OAuth callback error. Please check your Google OAuth configuration.")
+      showNotification("OAuth callback error. Please check your Google OAuth configuration.", 'error')
       // Clean up URL by removing error parameter
       const url = new URL(window.location)
       url.searchParams.delete('error')
@@ -66,6 +70,8 @@ export default function Login() {
           loginFailure();
         }
       } else {
+        // Show success notification for credentials login
+        // OAuth login success will be handled by home page
         loginSuccess();
       }
       setLoading(false)

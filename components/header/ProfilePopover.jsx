@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
-import { BsPerson, BsBoxSeam, BsHeart, BsGear, BsShield } from 'react-icons/bs'
+import { BsPerson, BsBoxSeam, BsGear, BsShield } from 'react-icons/bs'
 import AccountSettings from './AccountSettings'
 
 export default function ProfilePopover({ isOpen, onClose, triggerRef }) {
@@ -158,17 +158,7 @@ export default function ProfilePopover({ isOpen, onClose, triggerRef }) {
               <span className="font-medium">My Orders</span>
             </button>
 
-            <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                handleNavigation('/wishlist')
-              }}
-              className="w-full flex items-center gap-3 text-gray-700 hover:text-[#2C7A7B] p-3 rounded-lg hover:bg-gray-50 transition-all duration-200 group"
-            >
-              <BsHeart className="text-lg group-hover:scale-110 transition-transform duration-200" />
-              <span className="font-medium">Wishlist</span>
-            </button>
+
 
             {session?.user?.isAdmin && (
               <button

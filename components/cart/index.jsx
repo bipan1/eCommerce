@@ -1,5 +1,5 @@
 'use client'
-import { toast } from 'react-toastify';
+import { useNotification } from '../notification/NotificationProvider';
 import { closeBag } from '@/redux/features/bag-slice';
 import { useDispatch, useSelector } from 'react-redux';
 import CartItem from './CartItem';
@@ -101,6 +101,8 @@ export default function Cart() {
         </div>
     );
 
+    const { showNotification } = useNotification();
+
     return (
         <>
             {isBagOpen && (
@@ -108,7 +110,7 @@ export default function Cart() {
                     <div className="fixed inset-0 bg-black bg-opacity-40 transition-opacity" onClick={handleClose}></div>
                     <div className="fixed inset-0 overflow-hidden">
                         <div className="absolute inset-0 overflow-hidden">
-                            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                            <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-2 md:pl-10">
                                 <div className="pointer-events-auto w-screen max-w-md">
                                     <CartContent />
                                 </div>

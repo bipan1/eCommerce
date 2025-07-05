@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify'
+import { useNotification } from '../notification/NotificationProvider';
 import { FaEdit, FaPlus } from "react-icons/fa"
 import { SlOptionsVertical } from "react-icons/sl";
 import { Button, Dropdown, Input } from "antd"
@@ -15,8 +15,9 @@ export default function CategoryItems({ item, handleCategoryEdit, handleCategory
 
     const [openSub, setOpenSub] = useState(false);
     const [name, setName] = useState('');
-    const deleteSuccess = () => toast.success('Sub Category deleted sucessfully')
-    const createSuccess = () => toast.success('Sub Category created sucessfully')
+    const { showNotification } = useNotification();
+    const deleteSuccess = () => showNotification('Sub Category deleted successfully', 'success');
+    const createSuccess = () => showNotification('Sub Category created successfully', 'success');
 
 
     const dispatch = useDispatch();

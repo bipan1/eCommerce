@@ -1,24 +1,29 @@
 'use client';
 
-import { toast } from 'react-toastify'
-import { Button } from "antd";
+import { useNotification } from '../../../components/notification/NotificationProvider';
+import { Button, Card, Col, DatePicker, Form, Input, Modal, Popconfirm, Row, Select, Switch, Table, Tag, Tooltip } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { useForm } from 'antd/es/form/Form';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteProdut, fetchProducts } from '@/redux/features/products-slice';
+import { fetchCategories } from '@/redux/features/category-slice';
+import { format } from 'date-fns';
+import ProductForm from 'components/productForm';
 import AdminPageLayout from "components/adminLayout";
-import ProductForm from "components/productForm";
-import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
 import ProductCard from "components/products/productCard";
-import { useSelector, useDispatch } from 'react-redux';
-import { removeProduct } from '@/redux/features/products-slice';
+import { FaPlus } from "react-icons/fa";
 import { axiosApiCall } from 'utils/axiosApiCall';
 
-export default function Products() {
-    const deleteSuccess = () => toast.success('Product Deleted Sucessfully.')
-
-    const { data: products, loading, error } = useSelector((state) => state.products);
-    const dispatch = useDispatch();
-
-    const [isCreate, setIsCreate] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState();
+export default function ProductsPage() {
+    const [form] = useForm()
+    const dispatch = useDispatch()
+    const { products, loading } = useSelector(state => state.products)
+    const { categories } = useSelector(state => state.category)
+    const [isCreate, setIsCreate] = useState(false)
+    const [selectedProduct, setSelectedProduct] = useState(null)
+    const { showNotification } = useNotification();
+    const deleteSuccess = () => showNotification('Product Deleted Successfully.', 'success');
 
     const editProduct = (productId) => {
         const product = products.find(item => item.id === productId)
@@ -30,7 +35,7 @@ export default function Products() {
     const deleteProduct = async (productId) => {
         try {
             await axiosApiCall('/product', 'DELETE', { data: { id: productId } })
-            dispatch(removeProduct(productId))
+            dispatch(deleteProdut(productId))
             deleteSuccess();
         } catch (err) {
             console.log(err)

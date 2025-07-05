@@ -1,13 +1,31 @@
+'use client'
+
 import Link from 'next/link';
-import { BsFacebook, BsTwitter, BsInstagram, BsLinkedin, BsTruck, BsShield, BsClock, BsHeadset } from 'react-icons/bs';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useNotification } from '../notification/NotificationProvider';
+import { BsFacebook, BsTwitter, BsInstagram, BsLinkedin, BsTruck, BsShield, BsHeadset, BsCreditCard } from 'react-icons/bs';
+import { FaCcVisa, FaCcMastercard, FaCcStripe } from 'react-icons/fa';
 
 const Footer = () => {
+    const { data: session } = useSession();
+    const router = useRouter();
+    const { showNotification } = useNotification();
+
+    const handleTrackOrderClick = () => {
+        if (session) {
+            router.push('/myorders');
+        } else {
+            showNotification('Please sign in to track your orders', 'info');
+        }
+    };
+
     return (
         <footer className="bg-gradient-to-b from-[#2C7A7B] to-[#38B2AC] text-white">
             {/* Top Section - Features */}
             <div className="border-b border-white/10">
                 <div className="container mx-auto px-4 py-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="flex items-center space-x-3">
                             <BsTruck className="text-2xl text-white/90" />
                             <div>
@@ -20,13 +38,6 @@ const Footer = () => {
                             <div>
                                 <h3 className="font-semibold">Secure Payment</h3>
                                 <p className="text-sm text-white/80">100% secure checkout</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                            <BsClock className="text-2xl text-white/90" />
-                            <div>
-                                <h3 className="font-semibold">24/7 Support</h3>
-                                <p className="text-sm text-white/80">Dedicated support</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
@@ -45,7 +56,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {/* Company Info */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4">ShopHub</h3>
+                        <h3 className="text-xl font-bold mb-4">Himali Basket</h3>
                         <p className="text-white/80 mb-4">
                             Your one-stop destination for all your shopping needs. Quality products, great prices, and excellent service.
                         </p>
@@ -79,20 +90,42 @@ const Footer = () => {
                                     Contact Us
                                 </Link>
                             </li>
+                        </ul>
+                    </div>
+
+                    {/* Legal & Policies */}
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Legal & Policies</h3>
+                        <ul className="space-y-2">
                             <li>
-                                <Link href="/faq" className="text-white/80 hover:text-white transition-colors">
-                                    FAQ
-                                </Link>
+                                <a 
+                                    href="/policies/terms-of-service.pdf" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-white/80 hover:text-white transition-colors"
+                                >
+                                    Terms of Service
+                                </a>
                             </li>
                             <li>
-                                <Link href="/terms" className="text-white/80 hover:text-white transition-colors">
-                                    Terms & Conditions
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/privacy" className="text-white/80 hover:text-white transition-colors">
+                                <a 
+                                    href="/policies/privacy-policy.pdf" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-white/80 hover:text-white transition-colors"
+                                >
                                     Privacy Policy
-                                </Link>
+                                </a>
+                            </li>
+                            <li>
+                                <a 
+                                    href="/policies/refund-policy.pdf" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-white/80 hover:text-white transition-colors"
+                                >
+                                    Refund Policy
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -107,47 +140,14 @@ const Footer = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/returns" className="text-white/80 hover:text-white transition-colors">
-                                    Returns Policy
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/track-order" className="text-white/80 hover:text-white transition-colors">
+                                <button 
+                                    onClick={handleTrackOrderClick}
+                                    className="text-white/80 hover:text-white transition-colors bg-transparent border-none cursor-pointer"
+                                >
                                     Track Your Order
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/size-guide" className="text-white/80 hover:text-white transition-colors">
-                                    Size Guide
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/gift-cards" className="text-white/80 hover:text-white transition-colors">
-                                    Gift Cards
-                                </Link>
+                                </button>
                             </li>
                         </ul>
-                    </div>
-
-                    {/* Newsletter */}
-                    <div>
-                        <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-                        <p className="text-white/80 mb-4">
-                            Subscribe to our newsletter for the latest updates and offers.
-                        </p>
-                        <form className="space-y-3">
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:border-white/40"
-                            />
-                            <button
-                                type="submit"
-                                className="w-full px-4 py-2 bg-white text-[#2C7A7B] rounded-lg font-medium hover:bg-white/90 transition-colors"
-                            >
-                                Subscribe
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -157,16 +157,17 @@ const Footer = () => {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <p className="text-white/80 text-sm">
-                            © {new Date().getFullYear()} ShopHub. All rights reserved.
+                            © {new Date().getFullYear()} Himali Basket. All rights reserved.
                         </p>
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
-                                <img src="/stripe.svg" alt="Stripe" className="h-6" />
-                                <span className="text-white/80 text-sm">Powered by</span>
+                                <FaCcStripe className="h-6 w-6 text-white/90" />
+                                <span className="text-white/80 text-sm">Powered by Stripe</span>
                             </div>
                             <div className="flex items-center space-x-3">
-                                <img src="/visa.svg" alt="Visa" className="h-5" />
-                                <img src="/mastercard.svg" alt="Mastercard" className="h-5" />
+                                <FaCcVisa className="h-8 w-8 text-white/90" />
+                                <FaCcMastercard className="h-8 w-8 text-white/90" />
+                                <BsCreditCard className="h-6 w-6 text-white/90" />
                             </div>
                         </div>
                     </div>

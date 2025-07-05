@@ -308,7 +308,7 @@ export default function AddressForm({ places, setPlaces, error }) {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 pb-4">
             {renderFormFields()}
         </div>
     );

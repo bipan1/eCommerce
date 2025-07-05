@@ -1,10 +1,12 @@
 'use client'
-import { toast } from 'react-toastify'
-import { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { axiosApiCall } from 'utils/axiosApiCall'
-import { useRouter } from 'next/navigation'
-import { UserOutlined, MailOutlined, LockOutlined } from '@ant-design/icons'
+import { useNotification } from '../../components/notification/NotificationProvider';
+import { Button, Form, Input, Spin, Card, Typography, Divider, Row, Col, Checkbox } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, PhoneOutlined, GoogleOutlined, CheckCircleOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useForm } from 'antd/es/form/Form';
+import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function Signup() {
   const [loading, setLoading] = useState(false)
@@ -15,9 +17,10 @@ export default function Signup() {
   })
   const [errors, setErrors] = useState({})
   
-  const createSuccess = () => toast.success('Account created successfully.')
-  const duplicateEmail = () => toast.error("Email already exists in the system.")
-  const googleSignupFailure = () => toast.error("Google signup failed")
+  const { showNotification } = useNotification();
+  const createSuccess = () => showNotification('Account created successfully.', 'success')
+  const duplicateEmail = () => showNotification("Email already exists in the system.", 'error')
+  const googleSignupFailure = () => showNotification("Google signup failed", 'error')
   const router = useRouter();
 
   const validateForm = () => {

@@ -50,9 +50,19 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const isSpecial = searchParams.get('isSpecial');
+    
+    // Build the where clause based on query parameters
+    const whereClause = {};
+    if (isSpecial === 'true') {
+      whereClause.isSpecial = true;
+    }
+    
     const products = await prisma.product.findMany({
+      where: whereClause,
       include: {
         subcategory: {
           select: {

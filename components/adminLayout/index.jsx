@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { DashboardOutlined, UserOutlined, FileTextOutlined } from '@ant-design/icons';
+import { DashboardOutlined, UserOutlined, FileTextOutlined, MessageOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import AdminPrivateRoute from 'components/privateRoute';
@@ -18,6 +18,8 @@ function getMenuItemKey(pathname) {
             return '3';
         case '/admin/notices':
             return '4';
+        case '/admin/enquiry':
+            return '5';
         default:
             return '1'; // Default to the first item
     }
@@ -57,6 +59,9 @@ export default function AdminPageLayout({ children }) {
                             </Menu.Item>
                             <Menu.Item key="4" icon={<DashboardOutlined />}>
                                 <Link href="/admin/notices">Notices</Link>
+                            </Menu.Item>
+                            <Menu.Item key="5" icon={<MessageOutlined />}>
+                                <Link href="/admin/enquiry">Enquiry</Link>
                             </Menu.Item>
                         </Menu>
                     </Sider>

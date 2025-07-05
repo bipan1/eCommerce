@@ -26,35 +26,41 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
     const dispatch = useDispatch();
 
     useEffect(() => {
-
-        if (!stripe) {
+        // Only check payment intent status on mount if there's a specific need
+        // Removed automatic status checking to avoid conflicts with manual payment flow
+        if (!stripe || !clientSecret) {
             return;
         }
 
-        if (!clientSecret) {
-            return;
+        // Only retrieve payment intent if we're returning from a redirect scenario
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentIntentClientSecret = urlParams.get('payment_intent_client_secret');
+        
+        if (paymentIntentClientSecret) {
+            stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+                switch (paymentIntent.status) {
+                    case "succeeded":
+                        setMessage("Payment succeeded!");
+                        break;
+                    case "processing":
+                        setMessage("Your payment is processing.");
+                        break;
+                    case "requires_payment_method":
+                        setMessage("Your payment was not successful, please try again.");
+                        break;
+                    default:
+                        setMessage("Something went wrong.");
+                        break;
+                }
+            });
         }
-
-        stripe?.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
-            switch (paymentIntent.status) {
-                case "succeeded":
-                    setMessage("Payment succeeded!");
-                    break;
-                case "processing":
-                    setMessage("Your payment is processing.");
-                    break;
-                case "requires_payment_method":
-                    setMessage("Your payment was not successful, please try again.");
-                    break;
-                default:
-                    setMessage("Something went wrong.");
-                    break;
-            }
-        });
-    }, []);
+    }, [stripe, clientSecret]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Clear any previous error messages
+        setMessage(null);
 
         let checkError = {};
 
@@ -93,79 +99,169 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
             return;
         }
 
-        const { error, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                // return_url: omitted
-            },
-            redirect: 'if_required',
+        // Start single loading state for entire payment + order process
+        setIsLoading(true);
+        setMessage("Processing payment and creating order...");
 
-        });
+        try {
+            // Step 1: Confirm payment with Stripe
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    // return_url: omitted
+                },
+                redirect: 'if_required',
+            });
 
-        let addressId;
-        if (error) {
-            if (error.type === "card_error" || error.type === "validation_error") {
-                setMessage(error.message);
-            } else {
-                setMessage("An unexpected error occurred.");
-            }
-        } else if (paymentIntent.status === "succeeded") {
-            setIsLoading(true);
-
-            try {
-                if (session) {
-                    const userRes = await axiosApiCall(`/user/${session.user.id}`);
-                    addressId = userRes.data.user.addressId;
-                }
-
-
-                const order = await axiosApiCall('/order', 'POST', {
-                    products: items,
-                    shippingAddressId: addressId,
-                    addressData: places,
-                    paymentId: paymentIntent.id,
-                    paymentMethod: paymentIntent.payment_method,
-                    amount: paymentIntent.amount,
-                    guestData: {
-                        name: fullName,
-                        email,
-                        phoneNumber
-                    }
-                })
+            // Handle payment errors
+            if (error) {
                 setIsLoading(false);
-                
-                // Clear cart from both frontend and backend
+                if (error.type === "card_error" || error.type === "validation_error") {
+                    setMessage(error.message);
+                } else {
+                    setMessage("Payment failed. Please try again.");
+                }
+                return;
+            }
+
+            // Payment failed for other reasons
+            if (paymentIntent.status !== "succeeded") {
+                setIsLoading(false);
+                setMessage("Payment was not successful. Please try again.");
+                return;
+            }
+
+            // Step 2: Payment successful, now create order
+            setMessage("Payment successful! Creating your order...");
+
+            let addressId;
+            if (session) {
+                const userRes = await axiosApiCall(`/user/${session.user.id}`);
+                addressId = userRes.data.user.addressId;
+            }
+
+            // Format products for API
+            const formattedProducts = items.map(item => ({
+                productId: item.productId || item.id,
+                quantity: item.quantity,
+                price: item.price
+            }));
+
+            // Create order
+            const order = await axiosApiCall('/order', 'POST', {
+                products: formattedProducts,
+                shippingAddressId: addressId,
+                addressData: places,
+                paymentId: paymentIntent.id,
+                paymentMethod: paymentIntent.payment_method,
+                amount: paymentIntent.amount,
+                guestData: {
+                    name: fullName,
+                    email,
+                    phoneNumber
+                }
+            });
+
+            // Step 3: Clear cart and redirect
+            setMessage("Order created successfully! Redirecting...");
+            
+            try {
                 if (session) {
                     await dispatch(clearCart()).unwrap();
                 } else {
                     // For guest users, just clear local state
                     dispatch(clearBag());
                 }
-                
-                router.push('/paymentsuccess');
-            } catch (e) {
-                console.log(e);
+            } catch (cartError) {
+                console.warn('Cart clearing failed, but order was successful:', cartError);
+                // Don't fail the entire process if cart clearing fails
             }
 
+            // Small delay to show success message before redirect
+            setTimeout(() => {
+                setIsLoading(false);
+                router.push('/paymentsuccess');
+            }, 1000);
+
+        } catch (error) {
+            console.error('Payment/Order process error:', error);
+            setIsLoading(false);
+            
+            // Handle different types of errors
+            if (error.response) {
+                // Server responded with error status
+                const errorMessage = error.response.data?.message || 'Failed to create order after payment. Please contact support.';
+                setMessage(errorMessage);
+            } else if (error.request) {
+                // Network error
+                setMessage('Network error occurred. Payment may have been processed. Please contact support before retrying.');
+            } else {
+                // Other error
+                setMessage('An unexpected error occurred. Please contact support if payment was charged.');
+            }
         }
     }
 
     const paymentElementOptions = {
         layout: "tabs",
+        defaultValues: {
+            billingDetails: {
+                name: cardholdername
+            }
+        }
     };
 
     return (
-        <div className="bg-white">
-            <label className="">Full name</label>
-            <Input value={cardholdername} onChange={(e) => setCardholdername(e.target.value)} size="large" type="text" placeholder="Card holder name" className="mb-3" />
-            {error.cardholdername && <p className="mt-2 text-red-500">{error.cardholdername}</p>}
-            <form id="payment-form" onSubmit={handleSubmit}>
-                <PaymentElement className="mt-2" id="payment-element" options={paymentElementOptions} />
-                <Button loading={isLoading} size="large" htmlType="submit" className="!bg-green-900 !text-white mt-2 w-full" disabled={isLoading || !stripe || !elements} id="submit">
-                    Pay Now
-                </Button>
-                {message && <div className="text-red-700" id="payment-message">{message}</div>}
+        <>
+            <style jsx global>{`
+                #payment-form {
+                    overflow: visible !important;
+                }
+                #payment-element {
+                    overflow: visible !important;
+                    min-height: 250px !important;
+                }
+                .StripeElement {
+                    overflow: visible !important;
+                }
+                .StripeElement iframe {
+                    min-height: 200px !important;
+                }
+            `}</style>
+            <div className="bg-white pb-6 overflow-visible">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Full name</label>
+                <Input value={cardholdername} onChange={(e) => setCardholdername(e.target.value)} size="large" type="text" placeholder="Card holder name" className="mb-3" />
+                {error.cardholdername && <p className="mt-2 text-red-500">{error.cardholdername}</p>}
+                <form id="payment-form" onSubmit={handleSubmit} style={{ overflow: 'visible' }}>
+                    <div className="mt-4 mb-4" style={{ minHeight: '250px', overflow: 'visible' }}>
+                        <PaymentElement id="payment-element" options={paymentElementOptions} />
+                    </div>
+                    <button 
+                        type="submit" 
+                        disabled={isLoading || !stripe || !elements}
+                        className={`
+                            w-full h-12 rounded-lg font-semibold text-white transition-all duration-300 shadow-lg 
+                            transform hover:scale-[1.02] active:scale-[0.98] mt-6 mb-4
+                            ${isLoading || !stripe || !elements 
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'bg-gradient-to-r from-[#2C7A7B] to-[#38B2AC] hover:from-[#FC8181] hover:to-[#F687B3]'
+                            }
+                            disabled:transform-none disabled:hover:scale-100
+                        `}
+                        id="submit"
+                    >
+                    {isLoading ? (
+                        <div className="flex items-center justify-center space-x-2">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span>Processing...</span>
+                        </div>
+                    ) : (
+                        'Complete Order'
+                    )}
+                </button>
+                {message && <div className="text-red-700 mt-2" id="payment-message">{message}</div>}
             </form>
         </div>
+        </>
     );
 }

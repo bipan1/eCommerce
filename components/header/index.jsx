@@ -1,14 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState, Fragment, useRef } from 'react'
+import { useEffect, useMemo, useState, Fragment, useRef, useCallback } from 'react'
 import { Button, Input, Popover, Menu, Dropdown } from 'antd'
 import React from 'react';
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from 'next-auth/react'
-import { FaSearch, FaUser, FaHeart, FaShoppingCart, FaBars } from "react-icons/fa";
-import { MdOutlineLocalShipping, MdOutlineSupportAgent } from "react-icons/md";
-import { BsBoxSeam, BsChevronDown, BsTruck, BsClock, BsStar, BsShield, BsCart, BsList, BsX, BsGrid, BsChevronRight, BsSearch, BsPerson, BsLightningCharge, BsTrophy, BsHeart, BsGear } from "react-icons/bs";
+import { FaSearch, FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
+import { MdOutlineLocalShipping } from "react-icons/md";
+import { BsBoxSeam, BsChevronDown, BsTruck, BsClock, BsStar, BsShield, BsCart, BsList, BsX, BsGrid, BsChevronRight, BsSearch, BsPerson, BsLightningCharge, BsTrophy, BsGear } from "react-icons/bs";
 import Profilepage from './ProfilePage';
 import { openBag, closeBag } from '@/redux/features/bag-slice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,6 +25,8 @@ import { IoIosCall } from "react-icons/io";
 import { MdEmail } from "react-icons/md";
 import Spinner from '@/components/spinner';
 import { RiAccountCircleLine } from "react-icons/ri";
+import { axiosApiCall } from 'utils/axiosApiCall';
+import { useNotification } from '../notification/NotificationProvider';
 
 const menuItems = [
   {
@@ -36,11 +38,6 @@ const menuItems = [
     key: 'track',
     label: 'Track Order',
     icon: <BsBoxSeam className="text-lg" />,
-  },
-  {
-    key: 'support',
-    label: 'Customer Support',
-    icon: <MdOutlineSupportAgent className="text-lg" />,
   }
 ];
 
@@ -54,16 +51,19 @@ const Header = () => {
   const { data: products, loading } = useSelector((state) => state.products);
   const bag = useSelector((state) => state.bag);
   const { numberOfItems, isBagOpen } = bag;
+  const { showNotification } = useNotification();
 
   // Local state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfilePopoverOpen, setIsProfilePopoverOpen] = useState(false);
   const searchRef = useRef(null);
   const profileTriggerRef = useRef(null);
+  const debounceTimeoutRef = useRef(null);
 
   // Get user initials for avatar
   const initials = useMemo(() => {
@@ -101,35 +101,95 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Update suggestions based on search query
+  // Debounced search effect
   useEffect(() => {
-    if (searchQuery.length > 1) {
-      const filteredProducts = products
-        .filter(product => 
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        .slice(0, 5);
-      setSuggestions(filteredProducts);
-      setShowSuggestions(true);
-    } else {
+    // Clear previous timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Only proceed if we have a search query
+    if (!searchQuery || searchQuery.trim().length === 0) {
       setSuggestions([]);
       setShowSuggestions(false);
+      setSearchLoading(false);
+      return;
     }
-  }, [searchQuery, products]);
 
-  const handleSearch = (e) => {
+    // Don't search for single characters
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSearchLoading(false);
+      return;
+    }
+
+    // Set new timeout with proper debouncing (1.5 seconds)
+    debounceTimeoutRef.current = setTimeout(async () => {
+      try {
+        setSearchLoading(true);
+        const response = await axiosApiCall(`/search?q=${encodeURIComponent(searchQuery.trim())}&limit=5`);
+        const searchResults = response.data.products || [];
+        setSuggestions(searchResults);
+        setShowSuggestions(searchResults.length > 0);
+      } catch (error) {
+        console.error('Search error:', error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 1000); // 1 second debounce - wait for user to stop typing
+
+    // Cleanup
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  const handleSearch = useCallback((e) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowSuggestions(false);
       setSearchQuery('');
     }
-  };
+  }, [searchQuery, router]);
 
-  const handleSuggestionClick = (product) => {
+  const handleSuggestionClick = useCallback((product) => {
     router.push(`/products/${product.id}`);
     setShowSuggestions(false);
     setSearchQuery('');
+  }, [router]);
+
+  const handleViewAllResults = useCallback(() => {
+    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    setShowSuggestions(false);
+    setSearchQuery('');
+  }, [searchQuery, router]);
+
+  const handleTrackOrderClick = () => {
+    if (session) {
+      router.push('/myorders');
+    } else {
+      showNotification('Please sign in to track your orders', 'info');
+    }
+  };
+
+  const handleLogout = () => {
+    // Check if user is on a protected route that needs redirect to home
+    const protectedRoutes = ['/myorders', '/account', '/admin']
+    const currentPath = window.location.pathname
+    const isOnProtectedRoute = protectedRoutes.some(route => 
+      currentPath.startsWith(route)
+    )
+    
+    if (isOnProtectedRoute) {
+      signOut({ callbackUrl: window.location.origin })
+    } else {
+      signOut()
+    }
   };
 
   const userMenuItems = [
@@ -142,11 +202,6 @@ const Header = () => {
       key: 'orders',
       label: <Link href="/myorders">My Orders</Link>,
       icon: <BsBoxSeam />,
-    },
-    {
-      key: 'wishlist',
-      label: <Link href="/wishlist">Wishlist</Link>,
-      icon: <BsHeart />,
     },
     {
       type: 'divider',
@@ -185,7 +240,8 @@ const Header = () => {
     },
   ];
 
-  const SearchBar = ({ isMobile = false }) => (
+  // Optimized SearchBar render
+  const renderSearchBar = useCallback((isMobile = false) => (
     <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-2xl mx-8'}`} ref={searchRef}>
       <div className="relative">
         <input
@@ -221,46 +277,61 @@ const Header = () => {
       </div>
 
       {/* Search Suggestions */}
-      {showSuggestions && suggestions.length > 0 && (
+      {(showSuggestions || searchLoading) && (
         <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100 max-h-96 overflow-y-auto">
-          {suggestions.map((product) => (
-            <button
-              key={product.id}
-              onClick={() => handleSuggestionClick(product)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
-            >
-              {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-10 h-10 object-cover rounded"
-                />
-              )}
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{product.name}</p>
-                <p className="text-xs text-gray-500">{product.category}</p>
+          {searchLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#2C7A7B]"></div>
+              <span className="ml-2 text-sm text-gray-500">Searching...</span>
+            </div>
+          ) : suggestions.length > 0 ? (
+            <>
+              {suggestions.map((product) => (
+                <button
+                  key={product.id}
+                  onClick={() => handleSuggestionClick(product)}
+                  className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
+                >
+                  {product.image && (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-10 h-10 object-cover rounded"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900">{product.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {product.categoryName && product.subcategoryName 
+                        ? `${product.categoryName} › ${product.subcategoryName}`
+                        : product.categoryName || 'Product'
+                      }
+                    </p>
+                  </div>
+                  <div className="text-sm font-medium text-[#2C7A7B]">
+                    ${product.price}
+                  </div>
+                </button>
+              ))}
+              <div className="p-2 bg-gray-50 border-t border-gray-100">
+                <button
+                  onClick={handleViewAllResults}
+                  className="w-full text-center text-sm text-[#2C7A7B] hover:text-[#FC8181] font-medium py-1"
+                >
+                  View all results
+                </button>
               </div>
-              <div className="text-sm font-medium text-[#2C7A7B]">
-                ${product.price}
-              </div>
-            </button>
-          ))}
-          <div className="p-2 bg-gray-50 border-t border-gray-100">
-            <button
-              onClick={() => {
-                router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                setShowSuggestions(false);
-                setSearchQuery('');
-              }}
-              className="w-full text-center text-sm text-[#2C7A7B] hover:text-[#FC8181] font-medium py-1"
-            >
-              View all results
-            </button>
-          </div>
+            </>
+          ) : searchQuery.length > 1 && !searchLoading ? (
+            <div className="px-4 py-3 text-center text-gray-500">
+              <p className="text-sm">No products found for "{searchQuery}"</p>
+              <p className="text-xs mt-1">Try different keywords or check spelling</p>
+            </div>
+          ) : null}
         </div>
       )}
     </div>
-  );
+  ), [searchQuery, suggestions, searchLoading, showSuggestions, handleSearch, handleSuggestionClick, handleViewAllResults]);
 
   return (
     <>
@@ -282,10 +353,6 @@ const Header = () => {
               <div className="flex items-center justify-center space-x-2 text-sm">
                 <BsShield className="text-lg flex-shrink-0" />
                 <span className="whitespace-nowrap">Secure Payment</span>
-              </div>
-              <div className="flex items-center justify-center space-x-2 text-sm">
-                <MdOutlineSupportAgent className="text-lg flex-shrink-0" />
-                <span className="whitespace-nowrap">24/7 Support</span>
               </div>
             </div>
           </div>
@@ -316,11 +383,11 @@ const Header = () => {
             <div className="flex items-center justify-between py-4">
               {/* Logo */}
               <Link href="/" className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-[#2C7A7B]">ShopHub</span>
+                <span className="text-2xl font-bold text-[#2C7A7B]">Himali Basket</span>
               </Link>
 
               {/* Search Bar */}
-              <SearchBar />
+              {renderSearchBar()}
 
               {/* Navigation Icons */}
               <div className="flex items-center space-x-6">
@@ -354,10 +421,7 @@ const Header = () => {
                   />
                 </div>
 
-                <Link href="/wishlist" className="relative group">
-                  <BsHeart className="text-2xl text-[#2C7A7B] group-hover:text-[#FC8181] transition-colors duration-300" />
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FC8181] text-white text-xs rounded-full flex items-center justify-center">0</span>
-                </Link>
+
                 <button onClick={handleBagClick} className="relative group">
                   <BsCart className="text-2xl text-[#2C7A7B] group-hover:text-[#FC8181] transition-colors duration-300" />
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FC8181] text-white text-xs rounded-full flex items-center justify-center">{numberOfItems}</span>
@@ -367,7 +431,7 @@ const Header = () => {
 
             {/* Navigation Menu */}
             <nav className="border-t border-gray-100">
-              <div className="flex items-center justify-between py-3">
+              <div className="flex items-center py-3">
                 <div className="flex items-center space-x-8">
                   <Popover
                     content={<PopOverContent />}
@@ -384,21 +448,14 @@ const Header = () => {
                     <BsLightningCharge className="text-xl" />
                     <span className="font-medium">Flash Deals</span>
                   </Link>
-                  <Link href="/new-arrivals" className="flex items-center space-x-2 text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300">
-                    <BsStar className="text-xl" />
-                    <span className="font-medium">New Arrivals</span>
-                  </Link>
-                  <Link href="/best-sellers" className="flex items-center space-x-2 text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300">
-                    <BsTrophy className="text-xl" />
-                    <span className="font-medium">Best Sellers</span>
-                  </Link>
-                </div>
-                <div className="flex items-center space-x-6">
-                  <Link href="/contact" className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300">
-                    Contact Us
-                  </Link>
-                  <Link href="/track-order" className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300">
+                  <button 
+                    onClick={handleTrackOrderClick}
+                    className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300 bg-transparent border-none cursor-pointer font-medium"
+                  >
                     Track Order
+                  </button>
+                  <Link href="/contact" className="text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300 font-medium">
+                    Contact Us
                   </Link>
                 </div>
               </div>
@@ -413,7 +470,7 @@ const Header = () => {
                 <BsList className="text-2xl" />
               </button>
               
-              <Link href="/" className="text-xl font-bold text-[#2C7A7B]">ShopHub</Link>
+              <Link href="/" className="text-xl font-bold text-[#2C7A7B]">Himali Basket</Link>
               
               <div className="flex items-center space-x-4">
                 <button onClick={handleBagClick} className="relative">
@@ -448,7 +505,7 @@ const Header = () => {
 
             {/* Search Bar - Full Width */}
             <div className="py-3 border-t border-gray-100">
-              <SearchBar isMobile={true} />
+              {renderSearchBar(true)}
             </div>
 
             {/* Mobile Menu */}
@@ -456,7 +513,7 @@ const Header = () => {
               <div className="fixed inset-0 bg-gradient-to-br from-[#F7FAFC] to-[#EDF2F7] z-50">
                 <div className="p-4 h-full overflow-y-auto">
                   <div className="flex justify-between items-center mb-8">
-                    <Link href="/" className="text-xl font-bold text-[#2C7A7B]">ShopHub</Link>
+                    <Link href="/" className="text-xl font-bold text-[#2C7A7B]">Himali Basket</Link>
                     <button 
                       onClick={() => setIsMobileMenuOpen(false)} 
                       className="p-2 text-[#2C7A7B] hover:text-[#FC8181] hover:bg-white rounded-lg transition-all duration-300"
@@ -484,17 +541,7 @@ const Header = () => {
                           <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
                             <span className="text-white font-bold">H</span>
                           </div>
-                          <span className="font-medium">Home</span>
-                        </Link>
-                        <Link 
-                          href="/products" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                        >
-                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
-                            <BsBoxSeam className="text-white text-lg" />
-                          </div>
-                          <span className="font-medium">All Products</span>
+                                                    <span className="font-medium">Home</span>
                         </Link>
                         <Link 
                           href="/categories" 
@@ -516,38 +563,30 @@ const Header = () => {
                           </div>
                           <span className="font-medium">Flash Deals</span>
                         </Link>
-                        <Link 
-                          href="/new-arrivals" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                        >
-                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
-                            <BsStar className="text-white text-lg" />
-                          </div>
-                          <span className="font-medium">New Arrivals</span>
-                        </Link>
-                        <Link 
-                          href="/best-sellers" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                        >
-                          <div className="w-8 h-8 bg-[#2C7A7B] rounded-lg flex items-center justify-center group-hover:bg-[#FC8181] transition-colors duration-300">
-                            <BsTrophy className="text-white text-lg" />
-                          </div>
-                          <span className="font-medium">Best Sellers</span>
-                        </Link>
                       </div>
                     </div>
 
-                    {/* Support Section */}
+                    {/* Quick Links Section */}
                     <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
                       <div className="bg-gradient-to-r from-[#FC8181] to-[#F687B3] p-4">
                         <h3 className="text-white font-semibold text-lg flex items-center gap-2">
                           <BsShield className="text-xl" />
-                          Support
+                          Quick Links
                         </h3>
                       </div>
                       <div className="p-4 space-y-3">
+                        <button 
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            handleTrackOrderClick();
+                          }}
+                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group w-full bg-transparent border-none cursor-pointer"
+                        >
+                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                            <BsBoxSeam className="text-white text-lg" />
+                          </div>
+                          <span className="font-medium">Track Order</span>
+                        </button>
                         <Link 
                           href="/contact" 
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -558,52 +597,83 @@ const Header = () => {
                           </div>
                           <span className="font-medium">Contact Us</span>
                         </Link>
-                        <Link 
-                          href="/track-order" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                        >
-                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
-                            <BsBoxSeam className="text-white text-lg" />
-                          </div>
-                          <span className="font-medium">Track Order</span>
-                        </Link>
-                        <Link 
-                          href="/wishlist" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                        >
-                          <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
-                            <BsHeart className="text-white text-lg" />
-                          </div>
-                          <span className="font-medium">Wishlist</span>
-                        </Link>
+
                       </div>
                     </div>
 
-                    {/* Admin Section */}
-                    {session?.user?.isAdmin && (
-                      <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
-                        <div className="bg-gradient-to-r from-[#2D3748] to-[#4A5568] p-4">
-                          <h3 className="text-white font-semibold text-lg flex items-center gap-2">
-                            <BsGear className="text-xl" />
-                            Admin
-                          </h3>
-                        </div>
-                        <div className="p-4 space-y-3">
-                          <Link 
-                            href="/admin/category" 
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
-                          >
-                            <div className="w-8 h-8 bg-[#2D3748] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
-                              <BsGear className="text-white text-lg" />
-                            </div>
-                            <span className="font-medium">Admin Dashboard</span>
-                          </Link>
-                        </div>
+                    {/* Authentication Section */}
+                    <div className="bg-white rounded-2xl shadow-lg border border-[#E2E8F0] overflow-hidden">
+                      <div className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] p-4">
+                        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+                          <BsPerson className="text-xl" />
+                          {session ? 'Account' : 'Sign In'}
+                        </h3>
                       </div>
-                    )}
+                      <div className="p-4 space-y-3">
+                        {session ? (
+                          // Logged in user options
+                          <>
+                            <Link 
+                              href="/account" 
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                            >
+                              <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                                <BsPerson className="text-white text-lg" />
+                              </div>
+                              <span className="font-medium">My Profile</span>
+                            </Link>
+                            <Link 
+                              href="/myorders" 
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                            >
+                              <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                                <BsBoxSeam className="text-white text-lg" />
+                              </div>
+                              <span className="font-medium">My Orders</span>
+                            </Link>
+                            <button 
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                handleLogout();
+                              }}
+                              className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#FC8181] hover:bg-[#FFF5F5] rounded-lg transition-all duration-300 group w-full bg-transparent border-none cursor-pointer"
+                            >
+                              <div className="w-8 h-8 bg-[#FC8181] rounded-lg flex items-center justify-center group-hover:bg-[#E53E3E] transition-colors duration-300">
+                                <span className="text-white font-bold text-sm">↗</span>
+                              </div>
+                              <span className="font-medium">Logout</span>
+                            </button>
+                          </>
+                        ) : (
+                          // Guest user options
+                          <>
+                            <Link 
+                              href="/login" 
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                            >
+                              <div className="w-8 h-8 bg-[#4F46E5] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                                <BsPerson className="text-white text-lg" />
+                              </div>
+                              <span className="font-medium">Login</span>
+                            </Link>
+                            <Link 
+                              href="/signup" 
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 text-gray-700 hover:text-[#2C7A7B] hover:bg-[#E6FFFA] rounded-lg transition-all duration-300 group"
+                            >
+                              <div className="w-8 h-8 bg-[#7C3AED] rounded-lg flex items-center justify-center group-hover:bg-[#2C7A7B] transition-colors duration-300">
+                                <span className="text-white font-bold text-sm">+</span>
+                              </div>
+                              <span className="font-medium">Sign Up</span>
+                            </Link>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
                   </nav>
                 </div>
               </div>

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { addItemToCart, addItem } from '@/redux/features/bag-slice';
 import { useSession } from 'next-auth/react';
-import { toast } from 'react-toastify';
+import { useNotification } from '../../../components/notification/NotificationProvider';
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { LuShoppingCart } from "react-icons/lu";
@@ -30,6 +30,7 @@ export default function ProductDetails({ params }) {
 
     const dispatch = useDispatch();
     const { data: session } = useSession();
+    const { showNotification } = useNotification();
 
     const handleDecreaseCount = () => {
         if (count <= 1) {
@@ -52,11 +53,11 @@ export default function ProductDetails({ params }) {
                     name: product.name
                 })).unwrap();
                 
-                toast.success('Item added to cart!');
+                showNotification('Item added to cart!', 'success');
                 setCount(1); // Reset count after successful add
             } catch (error) {
                 console.error('Error adding item to cart:', error);
-                toast.error(error || 'Failed to add item to cart');
+                showNotification(error || 'Failed to add item to cart', 'error');
             }
         } else {
             // Guest user: use local cart only
@@ -67,7 +68,7 @@ export default function ProductDetails({ params }) {
                 image: product.image,
                 name: product.name
             }));
-            toast.success('Item added to cart!');
+            showNotification('Item added to cart!', 'success');
             setCount(1); // Reset count after successful add
         }
     }

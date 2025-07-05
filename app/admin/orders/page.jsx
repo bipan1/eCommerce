@@ -1,6 +1,6 @@
 'use client';
 import { Button, Table, Modal, Select } from 'antd';
-import { toast } from 'react-toastify';
+import { useNotification } from '../../../components/notification/NotificationProvider';
 import AdminPageLayout from "@/components/adminLayout";
 import Spinner from '@/components/spinner';
 import { useEffect, useState } from "react";
@@ -19,6 +19,7 @@ export default function Orders() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [newStatus, setNewStatus] = useState('');
     const [updating, setUpdating] = useState(false);
+    const { showNotification } = useNotification();
 
     const statusOptions = [
         { value: 'PENDING', label: 'Pending' },
@@ -54,7 +55,7 @@ export default function Orders() {
             setOrders(ordersData);
         } catch (error) {
             console.error('Error fetching orders:', error);
-            toast.error('Failed to fetch orders');
+            showNotification('Failed to fetch orders', 'error');
         } finally {
             setLoading(false);
         }
@@ -68,13 +69,13 @@ export default function Orders() {
 
     const handleUpdateStatus = async () => {
         if (!selectedOrder || !newStatus) {
-            toast.error('Please select a valid status');
+            showNotification('Please select a valid status', 'error');
             return;
         }
         
         // Prevent updating to the same status
         if (selectedOrder.status === newStatus) {
-            toast.warning('Order is already in this status');
+            showNotification('Order is already in this status', 'warning');
             return;
         }
         
@@ -95,7 +96,7 @@ export default function Orders() {
             setNewStatus('');
             
             // Show success message
-            toast.success(`Order #${selectedOrder.id} status updated to ${newStatus} successfully!`);
+            showNotification(`Order #${selectedOrder.id} status updated to ${newStatus} successfully!`, 'success');
             
             // Refresh orders data to get latest updates
             await fetchOrders();
@@ -110,7 +111,7 @@ export default function Orders() {
             } else if (error && error.message) {
                 errorMessage = error.message;
             }
-            toast.error(errorMessage);
+            showNotification(errorMessage, 'error');
             
         } finally {
             setUpdating(false);

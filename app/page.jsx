@@ -2,42 +2,69 @@
 
 import { useSelector } from 'react-redux';
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from 'react';
-import { toast } from 'react-toastify';
+import { useEffect, useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useNotification } from '../components/notification/NotificationProvider';
 import HeroCarousel from '@/components/home/HeroCarousel';
 import FeaturedCategories from '@/components/home/FeaturedCategories';
 import SpecialsSection from '@/components/home/SpecialsSection';
 import ProductDisplay from "components/products/productDisplay";
 import { FaArrowRight } from "react-icons/fa";
+import Spinner from '@/components/spinner';
 
 export default function Home() {
-  const { data: products } = useSelector((state) => state.products);
-  const { data: categories } = useSelector((state) => state.category);
+  const { data: products, loading: productsLoading } = useSelector((state) => state.products);
+  const { data: categories, loading: categoriesLoading } = useSelector((state) => state.category);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+  const { showNotification } = useNotification();
   const toastShownRef = useRef({ signup: false, login: false });
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
-  // Check for signup/login success parameters
+  // Check for signup/login success parameters and handle loading states
   useEffect(() => {
     const signupParam = searchParams.get('signup');
     const loginParam = searchParams.get('login');
     
+    // Handle signup success
     if (signupParam === 'success' && !toastShownRef.current.signup) {
-      toast.success('Account created successfully.');
+      showNotification('Account created successfully.', 'success');
       toastShownRef.current.signup = true;
       // Clean up URL by removing the signup parameter
       const url = new URL(window.location);
       url.searchParams.delete('signup');
       window.history.replaceState({}, '', url.pathname);
-    } else if (loginParam === 'success' && !toastShownRef.current.login) {
-      toast.success('Logged in Successfully');
+    }
+    
+    // Handle login success - only show notification if coming from OAuth callback
+    if (loginParam === 'success' && !toastShownRef.current.login) {
+      showNotification('Logged in Successfully', 'success');
       toastShownRef.current.login = true;
       // Clean up URL by removing the login parameter
       const url = new URL(window.location);
       url.searchParams.delete('login');
       window.history.replaceState({}, '', url.pathname);
     }
-  }, [searchParams]);
+    
+    // Check if page should still be loading
+    const shouldShowLoader = (
+      // If session is still loading
+      status === 'loading' ||
+      // If essential data is still loading
+      productsLoading ||
+      categoriesLoading ||
+      // If we're in the middle of a login/signup flow and data isn't ready
+      ((signupParam === 'success' || loginParam === 'success') && (productsLoading || categoriesLoading))
+    );
+    
+    setIsPageLoading(shouldShowLoader);
+  }, [searchParams, status, productsLoading, categoriesLoading]);
+
+  // Show loading spinner while essential data is loading
+  if (isPageLoading) {
+    return <Spinner />;
+  }
 
   const categoryProductsMap = categories.reduce((acc, category) => {
     acc[category.id] = products.filter(product => product.categoryId === category.id);
@@ -76,7 +103,7 @@ export default function Home() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                     {categoryProductsMap[cat.id].slice(0, 5).map(product => (
                       <div key={product.id}>
                         <ProductDisplay product={product} />

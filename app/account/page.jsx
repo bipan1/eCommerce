@@ -1,6 +1,6 @@
 'use client';
 import { Button, Card, Form, Input } from "antd";
-import { toast } from 'react-toastify'
+import { useNotification } from '../../components/notification/NotificationProvider';
 import AddressForm from "components/address/addressForm";
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from "react";
@@ -21,7 +21,8 @@ export default function Account() {
     const [user, setUser] = useState();
     const { data: session } = useSession();
     const router = useRouter()
-    const addressSuccess = () => toast.success("Address updated successfully")
+    const { showNotification } = useNotification();
+    const addressSuccess = () => showNotification("Address updated successfully", 'success')
 
     const handleAddressSubmit = async () => {
         try {
@@ -76,7 +77,7 @@ export default function Account() {
             await axiosApiCall(`/user/${session.user.id}`, 'PUT', { phoneNumber });
             setLoading(false);
             setIsEdit(false);
-            toast.success("Phone number updated successfully");
+            showNotification("Phone number updated successfully", 'success');
         } catch (error) {
             setLoading(false);
             console.log(error)

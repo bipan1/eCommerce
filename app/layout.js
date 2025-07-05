@@ -4,8 +4,6 @@ import '../styles/global.css'
 import Header from '../components/header'
 import NextAuthProvider from '../providers/next-auth-provider'
 import ReduxProvider from '../providers/redux-providers'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import Cart from '../components/cart'
 import CartHydration from '../components/cart/CartHydration'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
@@ -19,6 +17,7 @@ import { useEffect } from 'react'
 import { store } from '@/redux/store'
 import { fetchCategories } from '@/redux/features/category-slice'
 import { fetchProducts } from '@/redux/features/products-slice'
+import { NotificationProvider } from '../components/notification/NotificationProvider'
 
 function RootLayoutContent({ children }) {
   useEffect(() => {
@@ -33,27 +32,24 @@ function RootLayoutContent({ children }) {
           <AntdStyledComponentsRegistry>
             <ReduxProvider>
               <NextAuthProvider>
-                <CartHydration />
-                <ToastContainer
-                  position="bottom-right"
-                  autoClose={1500}
-                  hideProgressBar={true}
-                />
-                <Header />
-                <div>{children}</div>
-                <Footer />
-                <Cart />
-                <MobileSidebar />
-                <div>
-                  <Head>
-                    <title>Best Nepalese Grocery</title>
-                    <link
-                      rel="icon"
-                      type="image/svg+xml"
-                      href="/logo-no-background.svg"
-                    />
-                  </Head>
-                </div>
+                <NotificationProvider>
+                  <CartHydration />
+                  <Header />
+                  <div>{children}</div>
+                  <Footer />
+                  <Cart />
+                  <MobileSidebar />
+                  <div>
+                    <Head>
+                      <title>Himali Basket - Your Online Grocery Store</title>
+                      <link
+                        rel="icon"
+                        type="image/svg+xml"
+                        href="/logo-no-background.svg"
+                      />
+                    </Head>
+                  </div>
+                </NotificationProvider>
               </NextAuthProvider>
             </ReduxProvider>
           </AntdStyledComponentsRegistry>

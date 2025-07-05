@@ -1,6 +1,6 @@
 'use client';
 
-import { toast } from 'react-toastify'
+import { useNotification } from '../../../components/notification/NotificationProvider';
 import { Button, Form, Input, Modal } from "antd";
 import AdminPageLayout from "components/adminLayout";
 import { useState } from "react";
@@ -13,9 +13,10 @@ import { axiosApiCall } from 'utils/axiosApiCall';
 export default function Category() {
     const [createModel, setCreateModel] = useState(false);
     const [modelLoading, setModelLoading] = useState(false);
-    const deleteSuccess = () => toast.success('Category deleted sucessfully')
-    const createSuccess = () => toast.success('Category created sucessfully')
-    const editSuccess = () => toast.success('Category edited sucessfully')
+    const { showNotification } = useNotification();
+    const deleteSuccess = () => showNotification('Category deleted successfully', 'success');
+    const createSuccess = () => showNotification('Category created successfully', 'success');
+    const editSuccess = () => showNotification('Category edited successfully', 'success');
 
 
     const [form] = Form.useForm();
