@@ -52,7 +52,7 @@ export async function POST(req) {
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
     const isSpecial = searchParams.get('isSpecial');
     
     // Build the where clause based on query parameters

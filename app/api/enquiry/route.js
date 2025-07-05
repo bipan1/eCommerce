@@ -109,7 +109,7 @@ export async function DELETE(request) {
             );
         }
 
-        const { searchParams } = new URL(request.url);
+        const searchParams = request.nextUrl.searchParams;
         const enquiryId = searchParams.get('id');
 
         if (!enquiryId) {

@@ -160,7 +160,7 @@ export async function DELETE(req) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(req.url)
+    const searchParams = req.nextUrl.searchParams
     const productId = searchParams.get('productId')
     const clearAll = searchParams.get('clearAll')
 
