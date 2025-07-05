@@ -5,6 +5,8 @@ import prisma from '@/database'
 import { exclude } from '@/utils'
 import { SHA256 as sha256 } from 'crypto-js'
 
+export const dynamic = 'force-dynamic'
+
 export const hashPassword = (string) => {
   return sha256(string).toString()
 }

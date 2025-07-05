@@ -5,6 +5,8 @@ import { authOptions } from '../auth/[...nextauth]/route';
 
 const prisma = new PrismaClient();
 
+export const dynamic = 'force-dynamic'
+
 // POST - Create new enquiry
 export async function POST(request) {
     try {

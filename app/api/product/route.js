@@ -2,6 +2,8 @@ import prisma from '@/database'
 import { NextResponse } from 'next/server'
 import { uploadToS3 } from 'utils/uploadToS3'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(req) {
   const formadata = await req.formData()
   let data = {}
