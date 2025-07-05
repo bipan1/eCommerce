@@ -1,14 +1,10 @@
 'use client';
 
 import { useNotification } from '../../../components/notification/NotificationProvider';
-import { Button, Card, Col, DatePicker, Form, Input, Modal, Popconfirm, Row, Select, Switch, Table, Tag, Tooltip } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
-import { useForm } from 'antd/es/form/Form';
+import { Button } from 'antd';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteProdut, fetchProducts } from '@/redux/features/products-slice';
-import { fetchCategories } from '@/redux/features/category-slice';
-import { format } from 'date-fns';
+import { deleteProdut } from '@/redux/features/products-slice';
 import ProductForm from 'components/productForm';
 import AdminPageLayout from "components/adminLayout";
 import ProductCard from "components/products/productCard";
@@ -16,10 +12,8 @@ import { FaPlus } from "react-icons/fa";
 import { axiosApiCall } from 'utils/axiosApiCall';
 
 export default function ProductsPage() {
-    const [form] = useForm()
     const dispatch = useDispatch()
-    const { products, loading } = useSelector(state => state.products)
-    const { categories } = useSelector(state => state.category)
+    const { products } = useSelector(state => state.products)
     const [isCreate, setIsCreate] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState(null)
     const { showNotification } = useNotification();
