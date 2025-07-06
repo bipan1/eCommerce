@@ -13,7 +13,7 @@ const carouselItems = [
     subtitle: 'Quality Groceries Delivered to Your Door',
     description: 'Shop our wide range of fresh fruits, vegetables, and groceries',
     buttonText: 'Shop Now',
-    buttonLink: '/products/categories/1',
+    buttonLink: '#categories',
     overlayColor: 'rgba(44, 122, 123, 0.2)'
   },
   {
@@ -22,7 +22,7 @@ const carouselItems = [
     subtitle: 'Up to 50% Off on Selected Items',
     description: 'Limited time offers on your favorite products',
     buttonText: 'View Specials',
-    buttonLink: '/specials',
+    buttonLink: '/flash-deals',
     overlayColor: 'rgba(252, 129, 129, 0.15)'
   },
   {
@@ -31,13 +31,29 @@ const carouselItems = [
     subtitle: 'Same Day Delivery Available',
     description: 'Order by 4 PM for same day delivery',
     buttonText: 'Learn More',
-    buttonLink: '/delivery',
+    buttonLink: '/shipping',
     overlayColor: 'rgba(44, 122, 123, 0.2)'
   }
 ];
 
 export default function HeroCarousel() {
   const router = useRouter();
+
+  const handleButtonClick = (buttonLink) => {
+    if (buttonLink === '#categories') {
+      // Smooth scroll to categories section
+      const categoriesSection = document.getElementById('categories-section');
+      if (categoriesSection) {
+        categoriesSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    } else {
+      // Navigate to other routes
+      router.push(buttonLink);
+    }
+  };
 
   return (
     <div className="relative">
@@ -149,7 +165,7 @@ export default function HeroCarousel() {
                        {item.subtitle}
                      </p>
                     <button
-                      onClick={() => router.push(item.buttonLink)}
+                      onClick={() => handleButtonClick(item.buttonLink)}
                       className="group relative inline-flex items-center justify-center px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-in-out transform hover:scale-105 bg-[#2C7A7B] hover:bg-[#FC8181] rounded-full shadow-lg"
                     >
                       <span className="relative flex items-center gap-2">
@@ -171,7 +187,7 @@ export default function HeroCarousel() {
                        {item.description}
                      </p>
                     <button
-                      onClick={() => router.push(item.buttonLink)}
+                      onClick={() => handleButtonClick(item.buttonLink)}
                       className="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-semibold text-white transition-all duration-300 ease-in-out transform hover:scale-105"
                     >
                       <span className="absolute inset-0 w-full h-full transition duration-300 ease-out transform translate-x-1 translate-y-1 bg-[#FC8181] group-hover:-translate-x-0 group-hover:-translate-y-0"></span>

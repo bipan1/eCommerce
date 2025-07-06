@@ -247,7 +247,7 @@ export default function ShippingPage() {
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <a 
-                                href="/products" 
+                                href="/" 
                                 className="bg-gradient-to-r from-[#2C7A7B] to-[#38B2AC] text-white px-8 py-4 rounded-lg font-medium hover:from-[#FC8181] hover:to-[#F687B3] transition-all duration-300 flex items-center space-x-2 transform hover:scale-105"
                             >
                                 <BsTruck className="text-xl" />

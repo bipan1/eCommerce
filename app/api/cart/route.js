@@ -29,11 +29,11 @@ export async function GET(req) {
       return NextResponse.json({ items: [] }, { status: 200 })
     }
 
-    // Format cart items to match frontend expectations
+    // Format cart items with current database prices (not stored prices)
     const formattedItems = cart.items.map(item => ({
       productId: item.productId,
       quantity: item.quantity,
-      price: parseFloat(item.price),
+      price: parseFloat(item.product.isSpecial ? item.product.specialPrice : item.product.price),
       name: item.product.name,
       image: item.product.image
     }))
@@ -56,9 +56,21 @@ export async function POST(req) {
 
     const { productId, quantity, price } = await req.json()
 
-    if (!productId || !quantity || !price) {
+    if (!productId || !quantity) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 })
     }
+
+    // Validate product exists and get current price from database
+    const product = await prisma.product.findUnique({
+      where: { id: parseInt(productId) }
+    })
+
+    if (!product) {
+      return NextResponse.json({ message: 'Product not found' }, { status: 404 })
+    }
+
+    // Use database price instead of frontend price
+    const actualPrice = product.isSpecial ? product.specialPrice : product.price
 
     // Get or create cart
     let cart = await prisma.cart.findUnique({
@@ -83,7 +95,10 @@ export async function POST(req) {
       // Update existing item quantity
       await prisma.cartItem.update({
         where: { id: existingItem.id },
-        data: { quantity: existingItem.quantity + quantity }
+        data: { 
+          quantity: existingItem.quantity + quantity,
+          price: parseFloat(actualPrice) // Update price to current database price
+        }
       })
     } else {
       // Add new item
@@ -92,7 +107,7 @@ export async function POST(req) {
           cartId: cart.id,
           productId: parseInt(productId),
           quantity: quantity,
-          price: parseFloat(price)
+          price: parseFloat(actualPrice) // Use database price, not frontend price
         }
       })
     }

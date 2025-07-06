@@ -48,7 +48,7 @@ export default function ProductDetails({ params }) {
                 await dispatch(addItemToCart({
                     productId: product.id,
                     quantity: count,
-                    price: product.price,
+                    price: product.isSpecial ? product.specialPrice : product.price,
                     image: product.image,
                     name: product.name
                 })).unwrap();
@@ -64,7 +64,7 @@ export default function ProductDetails({ params }) {
             dispatch(addItem({
                 productId: product.id,
                 quantity: count,
-                price: product.price,
+                price: product.isSpecial ? product.specialPrice : product.price,
                 image: product.image,
                 name: product.name
             }));

@@ -1,0 +1,26 @@
+{
+  "name": "Sathiko Pasal - Your Online Grocery Store",
+  "short_name": "Sathiko Pasal",
+  "description": "Your trusted online grocery store in Nepal",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFAF7",
+  "theme_color": "#2C7A7B",
+  "icons": [
+    {
+      "src": "/logoheader.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/logoheader.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/logoheader.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 

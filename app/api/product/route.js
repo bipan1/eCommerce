@@ -1,44 +1,56 @@
 import prisma from '@/database'
 import { NextResponse } from 'next/server'
 import { uploadToS3 } from 'utils/uploadToS3'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]/route'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req) {
-  const formadata = await req.formData()
-  let data = {}
-  let image
-  let imageUrl = ''
-  for (const [key, value] of formadata.entries()) {
-    if (key === 'files') {
-      image = value
-    } else {
-      data[key] = value
+  try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
     }
-  }
 
-  try {
-    imageUrl = await uploadToS3(image)
-  } catch (err) {
-    console.log(err)
-    return NextResponse.json(
-      { message: 'Error uploading image to s3' },
-      { status: 500 },
-    )
-  }
+    const formadata = await req.formData()
+    let data = {}
+    let image
+    let imageUrl = ''
+    for (const [key, value] of formadata.entries()) {
+      if (key === 'files') {
+        image = value
+      } else {
+        data[key] = value
+      }
+    }
 
-  data = {
-    name: data.name,
-    description: data.description,
-    image: imageUrl,
-    subcategoryId: parseInt(data.subcategoryId),
-    price: parseFloat(data.price),
-    isSpecial: data.isSpecial === 'true',
-    outofStock: data.outofStock === 'true',
-    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
-  }
+    try {
+      imageUrl = await uploadToS3(image)
+    } catch (err) {
+      console.log(err)
+      return NextResponse.json(
+        { message: 'Error uploading image to s3' },
+        { status: 500 },
+      )
+    }
 
-  try {
+    data = {
+      name: data.name,
+      description: data.description,
+      image: imageUrl,
+      subcategoryId: parseInt(data.subcategoryId),
+      price: parseFloat(data.price),
+      isSpecial: data.isSpecial === 'true',
+      outofStock: data.outofStock === 'true',
+      ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
+    }
+
     const product = await prisma.product.create({
       data,
     })
@@ -46,7 +58,7 @@ export async function POST(req) {
   } catch (err) {
     console.log(err)
     return NextResponse.json(
-      { message: 'Error uploading image to s3' },
+      { message: 'Error creating product' },
       { status: 500 },
     )
   }
@@ -85,8 +97,18 @@ export async function GET(request) {
 }
 
 export async function DELETE(req) {
-  const { id } = await req.json()
   try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await req.json()
     const product = await prisma.product.delete({ where: { id } })
     return NextResponse.json(
       { message: 'Product deleted Sucessfully' },
@@ -102,43 +124,53 @@ export async function DELETE(req) {
 }
 
 export async function PUT(req) {
-  const formadata = await req.formData()
-  let data = {}
-  let image
-  let imageUrl
-  for (const [key, value] of formadata.entries()) {
-    if (key === 'files') {
-      image = value
-    } else {
-      data[key] = value
-    }
-  }
-
   try {
-    if (image) {
-      imageUrl = await uploadToS3(image)
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
     }
-  } catch (err) {
-    console.log(err)
-    return NextResponse.json(
-      { message: 'Error uploading image to s3' },
-      { status: 500 },
-    )
-  }
 
-  data = {
-    name: data.name,
-    description: data.description,
-    id: parseInt(data.id),
-    image: imageUrl ? imageUrl : data.image,
-    subcategoryId: parseInt(data.subcategoryId),
-    price: parseFloat(data.price),
-    isSpecial: data.isSpecial === 'true',
-    outofStock: data.outofStock === 'true',
-    ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
-  }
+    const formadata = await req.formData()
+    let data = {}
+    let image
+    let imageUrl
+    for (const [key, value] of formadata.entries()) {
+      if (key === 'files') {
+        image = value
+      } else {
+        data[key] = value
+      }
+    }
 
-  try {
+    try {
+      if (image) {
+        imageUrl = await uploadToS3(image)
+      }
+    } catch (err) {
+      console.log(err)
+      return NextResponse.json(
+        { message: 'Error uploading image to s3' },
+        { status: 500 },
+      )
+    }
+
+    data = {
+      name: data.name,
+      description: data.description,
+      id: parseInt(data.id),
+      image: imageUrl ? imageUrl : data.image,
+      subcategoryId: parseInt(data.subcategoryId),
+      price: parseFloat(data.price),
+      isSpecial: data.isSpecial === 'true',
+      outofStock: data.outofStock === 'true',
+      ...(data.isSpecial === 'true' ? { specialPrice: data.specialPrice } : {}),
+    }
+
     const product = await prisma.product.update({
       where: { id: data.id },
       data,
@@ -147,7 +179,7 @@ export async function PUT(req) {
   } catch (err) {
     console.log(err)
     return NextResponse.json(
-      { message: 'Error uploading image to s3' },
+      { message: 'Error updating product' },
       { status: 500 },
     )
   }

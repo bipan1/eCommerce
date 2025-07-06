@@ -42,7 +42,7 @@ export default function ProductDisplay({ product }) {
                 await dispatch(addItemToCart({
                     productId: product.id,
                     quantity: count,
-                    price: product.price,
+                    price: product.isSpecial ? product.specialPrice : product.price,
                     image: product.image,
                     name: product.name
                 })).unwrap();
@@ -60,7 +60,7 @@ export default function ProductDisplay({ product }) {
             dispatch(addItem({
                 productId: product.id,
                 quantity: count,
-                price: product.price,
+                price: product.isSpecial ? product.specialPrice : product.price,
                 image: product.image,
                 name: product.name
             }));
@@ -132,12 +132,18 @@ export default function ProductDisplay({ product }) {
                 </p>
 
                 <div className="flex items-center gap-2 mb-2.5 sm:mb-4">
-                    <span className="text-sm sm:text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                        ${convertToFloat(product.price)}
-                    </span>
-                    {product.originalPrice && (
-                        <span className="text-xs text-slate-500 line-through">
-                            ${convertToFloat(product.originalPrice)}
+                    {product.isSpecial && product.specialPrice ? (
+                        <>
+                            <span className="text-sm sm:text-lg font-bold bg-gradient-to-r from-red-500 to-rose-500 bg-clip-text text-transparent">
+                                ${convertToFloat(product.specialPrice)}
+                            </span>
+                            <span className="text-xs text-slate-500 line-through">
+                                ${convertToFloat(product.price)}
+                            </span>
+                        </>
+                    ) : (
+                        <span className="text-sm sm:text-lg font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            ${convertToFloat(product.price)}
                         </span>
                     )}
                 </div>

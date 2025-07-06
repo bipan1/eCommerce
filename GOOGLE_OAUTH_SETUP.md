@@ -58,90 +58,125 @@ STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
 4. Add Authorized redirect URIs:
    - `http://localhost:3000/api/auth/callback/google` (for development)
    - `https://yourdomain.com/api/auth/callback/google` (for production)
-5. Copy the Client ID and Client Secret
 
-### 4. Create Google Maps API Key
+### 4. Create Maps API Key
 1. Go to "APIs & Services" > "Credentials"
-2. Click "Create Credentials" > "API Key"
-3. Copy the API Key and restrict it (recommended):
-   - Click on the key name to edit
-   - Under "Application restrictions", choose "HTTP referrers"
-   - Add your domains:
-     - `localhost:3000/*` (for development)
-     - `localhost:3001/*` (alternative development port)
-     - `yourdomain.com/*` (for production)
-   - Under "API restrictions", select "Restrict key"
-   - Choose these APIs:
+2. Click "Create Credentials" > "API key"
+3. Restrict the key:
+   - **Application restrictions**: HTTP referrers
+   - **Website restrictions**: Add your domains:
+     - `http://localhost:3000/*`
+     - `https://yourdomain.com/*`
+   - **API restrictions**: Select these APIs:
      - Maps JavaScript API
      - Places API
-4. Save the API Key as `NEXT_PUBLIC_GOOGLE_MAP_API_KEY`
 
-## 🗺️ **Google Maps API Configuration**
+## 💳 **Google Pay & Apple Pay Setup**
 
-### Required APIs to Enable:
-1. **Maps JavaScript API** - For loading the maps
-2. **Places API** - For address autocomplete and search
+### 🟢 **Google Pay Setup**
 
-### API Key Setup:
-1. Create an API key in Google Cloud Console
-2. Restrict the key to your domains for security
-3. Enable billing (required for Places API)
-4. Set usage quotas if needed
+#### 1. Enable Google Pay in Stripe Dashboard
+1. Go to [Stripe Dashboard](https://dashboard.stripe.com/)
+2. Navigate to **Settings** > **Payment methods**
+3. Find **Google Pay** and click **Enable**
+4. Configure settings:
+   - **Merchant name**: "Sathiko Pasal"
+   - **Business type**: Select appropriate type
+   - **Country**: Australia (matching your AUD currency)
 
-### Testing Maps API:
-1. Open your account page
-2. Try typing in the address field
-3. You should see autocomplete suggestions
-4. Check browser console for any error messages
+#### 2. Verify Domain (Production Only)
+1. In Stripe Dashboard, go to **Settings** > **Payment methods** > **Google Pay**
+2. Add your production domain(s) to the domain verification list
+3. Follow the verification process provided by Stripe
 
-## 🔄 **Callback URL Configuration**
+#### 3. Test Google Pay (Development)
+- Google Pay will automatically work in development mode
+- Test using Chrome browser on Android device or desktop
+- Ensure you have a Google account with saved payment methods
 
-### Development (localhost:3000)
-```
-http://localhost:3000/api/auth/callback/google
-```
+### 🍎 **Apple Pay Setup**
 
-### Production (your domain)
-```
-https://yourdomain.com/api/auth/callback/google
-```
+#### 1. Apple Developer Account Setup
+1. You need an **Apple Developer Account** ($99/year)
+2. Go to [Apple Developer Portal](https://developer.apple.com/)
+3. Sign in with your Apple ID and enroll in the developer program
 
-## 🛠️ **Troubleshooting Common Issues**
+#### 2. Create Merchant ID
+1. In Apple Developer Portal, go to **Certificates, Identifiers & Profiles**
+2. Click **Identifiers** > **+** (Add button)
+3. Select **Merchant IDs** > **Continue**
+4. Enter details:
+   - **Description**: "Sathiko Pasal Merchant ID"
+   - **Identifier**: `merchant.com.sathikopasal.payments` (must be unique)
+5. Click **Continue** > **Register**
 
-### 1. "Invalid redirect_uri" Error
-- Ensure the redirect URI in Google Console matches exactly
-- Check for trailing slashes or protocol mismatches
-- Verify the domain is correct
+#### 3. Create Apple Pay Certificate
+1. In Stripe Dashboard, go to **Settings** > **Payment methods** > **Apple Pay**
+2. Click **Add new domain**
+3. Enter your domain name (e.g., `sathikopasal.com`)
+4. Download the domain verification file provided by Stripe
+5. Upload this file to your website at `https://yourdomain.com/.well-known/apple-developer-merchantid-domain-association`
 
-### 2. "Access blocked" Error
-- Add your email as a test user in OAuth consent screen
-- Ensure the app is not in "Testing" mode for production
-- Check if the required APIs are enabled
+#### 4. Configure Apple Pay in Stripe
+1. In Stripe Dashboard, go to **Settings** > **Payment methods** > **Apple Pay**
+2. Click **Enable Apple Pay**
+3. Enter your **Apple Merchant ID** created above
+4. Upload the Apple Pay certificate (download from Apple Developer Portal)
+5. Add your domains for verification
 
-### 3. Google Maps API Issues
-- **"Google Maps API key is missing"**: Set `NEXT_PUBLIC_GOOGLE_MAP_API_KEY` in `.env.local`
-- **"RefererNotAllowedMapError"**: Add your domain to API key restrictions
-- **"ApiNotActivatedMapError"**: Enable Maps JavaScript API and Places API
-- **"RequestDenied"**: Check API key restrictions and quotas
-- **Billing not enabled**: Enable billing in Google Cloud Console
+#### 5. Domain Verification
+1. Ensure your website is accessible via HTTPS
+2. Place the domain verification file at: `https://yourdomain.com/.well-known/apple-developer-merchantid-domain-association`
+3. Verify the domain in both Apple Developer Portal and Stripe Dashboard
 
-### 4. Address Autocomplete Not Working
-- Check if Places API is enabled
-- Verify API key has Places API access
-- Check browser console for JavaScript errors
-- Ensure you have billing enabled (Places API requires it)
+### 🔧 **Testing Payment Methods**
 
-### 5. Database Connection Issues
-- Verify your DATABASE_URL is correct
-- Ensure your RDS instance is accessible
-- Check if the database user has proper permissions
+#### Google Pay Testing:
+- **Desktop**: Chrome browser with Google account
+- **Mobile**: Android device with Google Pay app
+- **Requirements**: Saved payment methods in Google account
 
-### 6. NextAuth Secret Issues
-- Generate a strong secret: `openssl rand -base64 32`
-- Ensure NEXTAUTH_SECRET is set in environment variables
-- Verify NEXTAUTH_URL matches your domain
+#### Apple Pay Testing:
+- **Desktop**: Safari browser on macOS with Touch ID/Face ID
+- **Mobile**: iOS device with Apple Pay set up
+- **Requirements**: Saved cards in Apple Wallet
 
-## 🔍 **Testing the Setup**
+### 🎯 **Payment Method Display Logic**
+
+The payment methods will automatically appear based on:
+
+1. **Google Pay**: Shows when:
+   - Chrome browser (desktop/mobile)
+   - Android device with Google Pay
+   - User has saved payment methods
+   - Merchant domain is verified (production)
+
+2. **Apple Pay**: Shows when:
+   - Safari browser on macOS/iOS
+   - Device supports Apple Pay (Touch ID/Face ID)
+   - User has cards in Apple Wallet
+   - Domain is verified with Apple
+
+3. **Fallback**: Traditional card payment form always available
+
+### 🔄 **Express Checkout Flow**
+
+1. **User clicks Google Pay/Apple Pay button**
+2. **Native payment sheet opens** (Google Pay/Apple Pay interface)
+3. **User selects payment method** and confirms
+4. **Payment processes** through Stripe
+5. **Order creation** happens automatically
+6. **Success redirect** to payment success page
+
+### 📱 **Mobile Optimization**
+
+The payment interface is optimized for mobile:
+- Touch-friendly button sizes (48px height)
+- Responsive design for all screen sizes
+- Native payment sheet integration
+- One-tap payment experience
+
+## 🔍 **Environment Setup**
 
 ### OAuth Testing:
 1. Start your development server: `npm run dev`
@@ -156,7 +191,56 @@ https://yourdomain.com/api/auth/callback/google
 3. You should see autocomplete suggestions
 4. Select an address and verify it populates other fields
 
-## 📝 **Debug Mode**
+### Payment Testing:
+1. Navigate to `/checkout` with items in cart
+2. You should see Google Pay/Apple Pay buttons (if supported)
+3. Traditional card form should always be available
+4. Test payment flow end-to-end
+
+## 🚨 **Security Notes**
+
+- Never commit your `.env.local` file to version control
+- Use strong, unique secrets for production
+- Regularly rotate your Google OAuth credentials
+- Restrict your API keys to specific domains and APIs
+- Monitor your OAuth and Maps API usage in Google Cloud Console
+- Monitor payment transactions in Stripe Dashboard
+- Enable webhook endpoint monitoring
+- Use HTTPS in production for Apple Pay requirement
+
+## 🛠 **Production Deployment Checklist**
+
+### Before Going Live:
+- [ ] Update `NEXTAUTH_URL` to production domain
+- [ ] Verify Google OAuth redirect URIs include production domain
+- [ ] Add production domain to Google Maps API restrictions
+- [ ] Enable Google Pay in Stripe Dashboard
+- [ ] Complete Apple Pay domain verification
+- [ ] Test all payment methods on production domain
+- [ ] Set up Stripe webhook endpoint
+- [ ] Configure `STRIPE_WEBHOOK_SECRET` environment variable
+- [ ] Test webhook functionality
+- [ ] Enable Stripe live mode (when ready)
+
+### Domain Verification Files:
+- [ ] Apple Pay: `/.well-known/apple-developer-merchantid-domain-association`
+- [ ] Google Pay: Domain added to Stripe Dashboard
+- [ ] SSL Certificate: HTTPS enabled for Apple Pay requirement
+
+## 📞 **Support Resources**
+
+### Documentation:
+- [Stripe Payment Element](https://stripe.com/docs/payments/payment-element)
+- [Google Pay Web](https://developers.google.com/pay/api/web)
+- [Apple Pay Web](https://developer.apple.com/apple-pay/web/)
+
+### Common Issues:
+- **Payment methods not showing**: Check browser compatibility and user setup
+- **Apple Pay domain verification**: Ensure HTTPS and proper file placement
+- **Google Pay merchant verification**: Complete Stripe Dashboard setup
+- **Webhook signature verification**: Ensure `STRIPE_WEBHOOK_SECRET` is set correctly
+
+## 🔍 **Debug Mode**
 
 Enable debug mode by setting in your `.env.local`:
 ```env
@@ -172,16 +256,4 @@ This will show detailed logs in the console for troubleshooting.
 - Regularly rotate your Google OAuth credentials
 - Restrict your API keys to specific domains and APIs
 - Monitor your OAuth and Maps API usage in Google Cloud Console
-- Enable billing alerts to avoid unexpected charges
-
-## 💰 **Billing Information**
-
-### Google Maps API Pricing:
-- **Maps JavaScript API**: $7 per 1,000 requests (first 28,500 free monthly)
-- **Places API**: $17 per 1,000 requests (first 2,500 free monthly)
-- **Free tier**: $200 credit monthly for first-time users
-
-### Monitoring Usage:
-1. Go to Google Cloud Console > "APIs & Services" > "Quotas"
-2. Set up billing alerts
-3. Monitor usage regularly 
+- Regularly rotate your Stripe webhook secret to complete the security implementation. 

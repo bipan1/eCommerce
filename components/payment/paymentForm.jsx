@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import {
     PaymentElement,
+    ExpressCheckoutElement,
     useStripe,
     useElements
 } from "@stripe/react-stripe-js";
-import { Button, Input } from "antd";
+import { Button, Input, Divider } from "antd";
 import { useSelector, useDispatch } from 'react-redux';
 import { useSession } from 'next-auth/react';
 import { axiosApiCall } from "utils/axiosApiCall";
@@ -13,12 +14,13 @@ import { clearCart, clearBag } from "@/redux/features/bag-slice";
 
 const isEmpty = (value) => value === "";
 
-export default function PaymentForm({ setError, error, clientSecret, places, email, fullName, phoneNumber }) {
+export default function PaymentForm({ setError, error, clientSecret, places, email, fullName, phoneNumber, serverAmount }) {
     const stripe = useStripe();
     const elements = useElements();
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [cardholdername, setCardholdername] = useState();
+    const [isExpressPayment, setIsExpressPayment] = useState(false);
     const bag = useSelector((state) => state.bag);
     const { items } = bag;
     const { data: session } = useSession()
@@ -55,6 +57,119 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
             });
         }
     }, [stripe, clientSecret]);
+
+    // Handle Express Checkout (Google Pay)
+    const handleExpressCheckout = async (event) => {
+        console.log('Google Pay express checkout initiated:', event);
+        setIsExpressPayment(true);
+        setIsLoading(true);
+        setMessage("Processing Google Pay payment...");
+
+        try {
+            // Express checkout doesn't need card validation
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                confirmParams: {
+                    // return_url: omitted for express checkout
+                },
+                redirect: 'if_required',
+            });
+
+            if (error) {
+                setIsLoading(false);
+                setIsExpressPayment(false);
+                setMessage(error.message);
+                return;
+            }
+
+            if (paymentIntent.status === "succeeded") {
+                await processOrderAfterPayment(paymentIntent);
+            } else {
+                setIsLoading(false);
+                setIsExpressPayment(false);
+                setMessage("Payment was not successful. Please try again.");
+            }
+        } catch (error) {
+            console.error('Google Pay checkout error:', error);
+            setIsLoading(false);
+            setIsExpressPayment(false);
+            setMessage("Google Pay payment failed. Please try again.");
+        }
+    };
+
+    // Process order after successful payment
+    const processOrderAfterPayment = async (paymentIntent) => {
+        try {
+            setMessage("Payment successful! Creating your order...");
+
+            let addressId;
+            if (session) {
+                const userRes = await axiosApiCall(`/user/${session.user.id}`);
+                addressId = userRes.data.user.addressId;
+            }
+
+            // Format products for API
+            const formattedProducts = items.map(item => ({
+                productId: item.productId || item.id,
+                quantity: item.quantity,
+                price: item.price
+            }));
+
+            // Validate the payment amount matches server calculation
+            const serverAmountInCents = Math.round(serverAmount * 100);
+            if (paymentIntent.amount !== serverAmountInCents) {
+                setIsLoading(false);
+                setMessage("Payment amount validation failed. Please contact support.");
+                return;
+            }
+
+            // Create order with validated data
+            const order = await axiosApiCall('/order', 'POST', {
+                products: formattedProducts,
+                shippingAddressId: addressId,
+                addressData: places,
+                paymentId: paymentIntent.id,
+                paymentMethod: paymentIntent.payment_method,
+                amount: paymentIntent.amount,
+                guestData: {
+                    name: fullName,
+                    email,
+                    phoneNumber
+                }
+            });
+
+            // Clear cart and redirect
+            setMessage("Order created successfully! Redirecting...");
+            
+            try {
+                if (session) {
+                    await dispatch(clearCart()).unwrap();
+                } else {
+                    dispatch(clearBag());
+                }
+            } catch (cartError) {
+                console.warn('Cart clearing failed, but order was successful:', cartError);
+            }
+
+            setTimeout(() => {
+                setIsLoading(false);
+                router.push('/paymentsuccess');
+            }, 1000);
+
+        } catch (error) {
+            console.error('Order creation error:', error);
+            setIsLoading(false);
+            
+            if (error.response) {
+                const errorMessage = error.response.data?.message || 'Failed to create order after payment. Please contact support.';
+                setMessage(errorMessage);
+            } else if (error.request) {
+                setMessage('Network error occurred. Payment may have been processed. Please contact support before retrying.');
+            } else {
+                setMessage('An unexpected error occurred. Please contact support if payment was charged.');
+            }
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -131,57 +246,8 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
                 return;
             }
 
-            // Step 2: Payment successful, now create order
-            setMessage("Payment successful! Creating your order...");
-
-            let addressId;
-            if (session) {
-                const userRes = await axiosApiCall(`/user/${session.user.id}`);
-                addressId = userRes.data.user.addressId;
-            }
-
-            // Format products for API
-            const formattedProducts = items.map(item => ({
-                productId: item.productId || item.id,
-                quantity: item.quantity,
-                price: item.price
-            }));
-
-            // Create order
-            const order = await axiosApiCall('/order', 'POST', {
-                products: formattedProducts,
-                shippingAddressId: addressId,
-                addressData: places,
-                paymentId: paymentIntent.id,
-                paymentMethod: paymentIntent.payment_method,
-                amount: paymentIntent.amount,
-                guestData: {
-                    name: fullName,
-                    email,
-                    phoneNumber
-                }
-            });
-
-            // Step 3: Clear cart and redirect
-            setMessage("Order created successfully! Redirecting...");
-            
-            try {
-                if (session) {
-                    await dispatch(clearCart()).unwrap();
-                } else {
-                    // For guest users, just clear local state
-                    dispatch(clearBag());
-                }
-            } catch (cartError) {
-                console.warn('Cart clearing failed, but order was successful:', cartError);
-                // Don't fail the entire process if cart clearing fails
-            }
-
-            // Small delay to show success message before redirect
-            setTimeout(() => {
-                setIsLoading(false);
-                router.push('/paymentsuccess');
-            }, 1000);
+            // Step 2: Payment successful, process order
+            await processOrderAfterPayment(paymentIntent);
 
         } catch (error) {
             console.error('Payment/Order process error:', error);
@@ -201,6 +267,17 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
             }
         }
     }
+
+    const expressCheckoutOptions = {
+        buttonType: {
+            googlePay: 'buy'
+        },
+        buttonTheme: {
+            googlePay: 'black'
+        },
+        buttonHeight: 48,
+        paymentMethodOrder: ['google_pay']
+    };
 
     const paymentElementOptions = {
         layout: "tabs",
@@ -227,8 +304,30 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
                 .StripeElement iframe {
                     min-height: 200px !important;
                 }
+                .ExpressCheckoutElement {
+                    margin-bottom: 20px !important;
+                }
             `}</style>
             <div className="bg-white pb-6 overflow-visible">
+                {/* Google Pay Section */}
+                <div className="mb-6">
+                    <ExpressCheckoutElement 
+                        options={expressCheckoutOptions}
+                        onConfirm={handleExpressCheckout}
+                        onCancel={() => {
+                            setIsExpressPayment(false);
+                            setIsLoading(false);
+                            setMessage(null);
+                        }}
+                    />
+                </div>
+
+                {/* Divider */}
+                <Divider className="my-6">
+                    <span className="text-gray-500 font-medium">Or pay with card</span>
+                </Divider>
+
+                {/* Traditional Payment Form */}
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full name</label>
                 <Input value={cardholdername} onChange={(e) => setCardholdername(e.target.value)} size="large" type="text" placeholder="Card holder name" className="mb-3" />
                 {error.cardholdername && <p className="mt-2 text-red-500">{error.cardholdername}</p>}
@@ -253,7 +352,7 @@ export default function PaymentForm({ setError, error, clientSecret, places, ema
                     {isLoading ? (
                         <div className="flex items-center justify-center space-x-2">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            <span>Processing...</span>
+                            <span>{isExpressPayment ? 'Processing Google Pay...' : 'Processing...'}</span>
                         </div>
                     ) : (
                         'Complete Order'

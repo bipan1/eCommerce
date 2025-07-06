@@ -2,6 +2,9 @@ import prisma from '@/database'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]/route'
+import Stripe from 'stripe'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 export const dynamic = 'force-dynamic'
 
@@ -42,6 +45,76 @@ export async function POST(req) {
     if (!shippingAddressId && !addressData) {
       return NextResponse.json({ 
         message: 'Shipping address information is required' 
+      }, { status: 400 })
+    }
+
+    // CRITICAL: Verify payment with Stripe before creating order
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentId)
+      
+      // Verify payment succeeded
+      if (paymentIntent.status !== 'succeeded') {
+        return NextResponse.json({ 
+          message: 'Payment has not been completed successfully' 
+        }, { status: 400 })
+      }
+
+      // Verify payment amount matches the order total
+      const expectedAmount = Math.round(amount)
+      if (paymentIntent.amount !== expectedAmount) {
+        return NextResponse.json({ 
+          message: 'Payment amount mismatch detected' 
+        }, { status: 400 })
+      }
+
+      // Check if order already exists for this payment (prevent duplicate orders)
+      const existingOrder = await prisma.order.findFirst({
+        where: {
+          payment: {
+            transactionId: paymentId
+          }
+        }
+      })
+
+      if (existingOrder) {
+        return NextResponse.json({ 
+          message: 'Order already exists for this payment',
+          order: existingOrder
+        }, { status: 409 })
+      }
+
+      // Validate product prices against database
+      for (const product of products) {
+        const dbProduct = await prisma.product.findUnique({
+          where: { id: product.productId }
+        })
+        
+        if (!dbProduct) {
+          return NextResponse.json({ 
+            message: `Product ${product.productId} not found` 
+          }, { status: 400 })
+        }
+
+        const expectedUnitPrice = dbProduct.isSpecial ? dbProduct.specialPrice : dbProduct.price
+        const frontendUnitPrice = parseFloat(product.price)
+        
+        // Compare unit prices (allowing for small floating point differences)
+        if (Math.abs(frontendUnitPrice - parseFloat(expectedUnitPrice)) > 0.01) {
+          console.error(`Price mismatch for product ${product.productId}:`, {
+            frontend: frontendUnitPrice,
+            database: parseFloat(expectedUnitPrice),
+            difference: Math.abs(frontendUnitPrice - parseFloat(expectedUnitPrice))
+          })
+          return NextResponse.json({ 
+            message: `Price mismatch for product ${product.productId}. Expected: $${expectedUnitPrice}, Got: $${frontendUnitPrice}` 
+          }, { status: 400 })
+        }
+      }
+
+    } catch (stripeError) {
+      console.error('Stripe verification error:', stripeError)
+      return NextResponse.json({ 
+        message: 'Payment verification failed' 
       }, { status: 400 })
     }
 
@@ -142,6 +215,16 @@ export async function POST(req) {
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
+
     const orders = await prisma.order.findMany()
     return NextResponse.json({ orders }, { status: 200 })
   } catch (err) {
@@ -152,6 +235,16 @@ export async function GET() {
 
 export async function PATCH(req) {
   try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
+
     const { orderId, status } = await req.json()
     
     // Validate required fields

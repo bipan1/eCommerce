@@ -60,7 +60,7 @@ export default function SpecialsSection() {
     if (isAdding[product.id]) return; // Prevent double-clicking
 
     const quantity = getQuantity(product.id);
-    const price = product.specialPrice || product.price;
+    const price = product.isSpecial ? product.specialPrice : product.price;
 
     if (session) {
       // Logged-in user: use backend synchronization
@@ -176,7 +176,7 @@ export default function SpecialsSection() {
             </div>
           </div>
           <button
-            onClick={() => router.push('/specials')}
+            onClick={() => router.push('/flash-deals')}
             className="inline-flex items-center px-4 py-2 text-sm font-medium text-[#2C7A7B] hover:text-[#FC8181] transition-colors duration-300"
           >
             View All Specials

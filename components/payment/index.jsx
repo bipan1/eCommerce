@@ -5,19 +5,43 @@ import { Elements } from "@stripe/react-stripe-js";
 import { clearBag } from '@/redux/features/bag-slice';
 import PaymentForm from "./paymentForm";
 import { axiosApiCall } from "utils/axiosApiCall";
+import { useSelector } from 'react-redux';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_PUBLISHABLE_KEY);
 
 export default function Payment({ places, error, email, fullName, phoneNumber, subTotal, setError }) {
     const [clientSecret, setClientSecret] = useState("");
+    const [serverAmount, setServerAmount] = useState(null);
+    const bag = useSelector((state) => state.bag);
+    const { items } = bag;
 
     useEffect(() => {
         async function makePaymentIntent() {
-            const { data } = await axiosApiCall('/stripe', 'POST', { amount: subTotal });
-            setClientSecret(data.client_secret)
+            try {
+                const { data } = await axiosApiCall('/stripe', 'POST', { 
+                    cartItems: items 
+                });
+                setClientSecret(data.client_secret);
+                setServerAmount(data.amount);
+                
+                // Verify server amount matches frontend calculation
+                const frontendTotal = subTotal + 8.00; // Add shipping
+                if (Math.abs(data.amount - frontendTotal) > 0.01) {
+                    console.warn('Price mismatch detected:', {
+                        frontend: frontendTotal,
+                        server: data.amount
+                    });
+                }
+            } catch (error) {
+                console.error('Payment intent creation failed:', error);
+                setError({ payment: 'Failed to initialize payment. Please try again.' });
+            }
         }
-        makePaymentIntent();
-    }, []);
+        
+        if (items && items.length > 0) {
+            makePaymentIntent();
+        }
+    }, [items, subTotal]);
 
     const appearance = {
         theme: 'stripe',
@@ -52,18 +76,36 @@ export default function Payment({ places, error, email, fullName, phoneNumber, s
                 backgroundColor: '#2C7A7B',
                 color: '#ffffff',
             },
+            // Enhanced styling for Google Pay button
+            '.ExpressCheckoutElement': {
+                padding: '12px 0',
+            },
+            '.ExpressCheckoutElement--collapsed': {
+                padding: '8px 0',
+            }
         },
     };
+    
     const options = {
         clientSecret,
         appearance,
+        // Focus on Google Pay only
+        paymentMethodOrder: ['google_pay', 'card'],
+        // Configure Google Pay express checkout
+        expressCheckout: {
+            buttonHeight: 48,
+            buttonType: 'default',
+            buttonTheme: 'dark',
+            // Business information for Google Pay
+            businessName: 'Sathiko Pasal'
+        }
     };
 
     return (
         <div className="App">
-            {clientSecret && (
+            {clientSecret && serverAmount && (
                 <Elements options={options} stripe={stripePromise}>
-                    <PaymentForm error={error} setError={setError} phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} clientSecret={clientSecret} />
+                    <PaymentForm error={error} setError={setError} phoneNumber={phoneNumber} places={places} email={email} fullName={fullName} clientSecret={clientSecret} serverAmount={serverAmount} />
                 </Elements>
             )}
         </div>

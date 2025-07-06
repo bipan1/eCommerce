@@ -1,12 +1,23 @@
 import prisma from '@/database'
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]/route'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req) {
-  const data = await req.json()
-
   try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
+
+    const data = await req.json()
     const category = await prisma.subcategory.create({ data })
     return NextResponse.json({ category }, { status: 200 })
   } catch (err) {
@@ -37,8 +48,18 @@ export async function GET() {
 }
 
 export async function DELETE(req) {
-  const { id } = await req.json()
   try {
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated and is admin
+    if (!session || !session.user || !session.user.isAdmin) {
+      return NextResponse.json(
+        { message: 'Unauthorized - Admin access required' },
+        { status: 401 }
+      )
+    }
+
+    const { id } = await req.json()
     const category = await prisma.subcategory.delete({ where: { id } })
     return NextResponse.json(
       { message: 'Category deleted Sucessfully' },

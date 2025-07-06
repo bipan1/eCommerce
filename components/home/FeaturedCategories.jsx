@@ -47,7 +47,7 @@ export default function FeaturedCategories() {
   const featuredCategories = categories?.slice(0, 6) || []; // Show only first 6 categories
 
   return (
-    <div className="py-12 bg-white">
+    <div id="categories-section" className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#2C7A7B]">

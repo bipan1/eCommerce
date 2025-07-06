@@ -31,10 +31,7 @@ export default function Cart() {
             <h2 className="text-lg font-medium text-[#2D3748] mb-1">Your bag is empty</h2>
             <p className="text-sm text-[#4A5568] mb-6 text-center">Looks like you haven't added any items to your bag yet.</p>
             <button
-                onClick={() => {
-                    handleClose();
-                    router.push('/products');
-                }}
+                onClick={handleClose}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-[#2C7A7B] hover:bg-[#285E61] transition-colors duration-300"
             >
                 Start Shopping
@@ -87,10 +84,7 @@ export default function Cart() {
                             Proceed to Checkout
                         </button>
                         <button
-                            onClick={() => {
-                                handleClose();
-                                router.push('/products');
-                            }}
+                            onClick={handleClose}
                             className="w-full flex justify-center items-center px-4 py-2.5 text-sm font-medium rounded-md text-[#2C7A7B] bg-[#F7FAFC] hover:bg-[#E6FFFA] transition-colors duration-300"
                         >
                             Continue Shopping
@@ -108,10 +102,10 @@ export default function Cart() {
             {isBagOpen && (
                 <div className="relative z-[101]" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
                     <div className="fixed inset-0 bg-black bg-opacity-40 transition-opacity" onClick={handleClose}></div>
-                    <div className="fixed inset-0 overflow-hidden">
+                    <div className="fixed inset-0 overflow-hidden" onClick={handleClose}>
                         <div className="absolute inset-0 overflow-hidden">
                             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-2 md:pl-10">
-                                <div className="pointer-events-auto w-screen max-w-md">
+                                <div className="pointer-events-auto w-screen max-w-md" onClick={(e) => e.stopPropagation()}>
                                     <CartContent />
                                 </div>
                             </div>
