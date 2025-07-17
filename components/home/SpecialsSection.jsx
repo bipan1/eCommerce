@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Skeleton, Empty, Avatar, Divider } from 'antd';
 import { ShoppingCartOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { setProducts } from '@/redux/features/products-slice';
-import { addItemToCart } from '@/redux/features/bag-slice';
+import { addItemToCart, addItem } from '@/redux/features/bag-slice';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useNotification } from '../notification/NotificationProvider';
@@ -84,7 +84,7 @@ export default function SpecialsSection() {
       }
     } else {
       // Guest user: use local cart only
-      dispatch(addItemToCart({
+      dispatch(addItem({
         productId: product.id,
         quantity: quantity,
         price: price,

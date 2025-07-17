@@ -157,16 +157,40 @@ const Header = () => {
     }
   }, [searchQuery, router]);
 
-  const handleSuggestionClick = useCallback((product) => {
-    router.push(`/products/${product.id}`);
+  const handleSuggestionClick = useCallback((product, event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const url = `/products/${product.id}`;
+    
     setShowSuggestions(false);
     setSearchQuery('');
+    
+    // Use router.push with error handling
+    try {
+      router.push(url);
+    } catch (error) {
+      console.error('Router push failed, using window.location:', error);
+      window.location.href = url;
+    }
   }, [router]);
 
-  const handleViewAllResults = useCallback(() => {
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  const handleViewAllResults = useCallback((event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const url = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    
     setShowSuggestions(false);
     setSearchQuery('');
+    
+    // Use router.push with error handling
+    try {
+      router.push(url);
+    } catch (error) {
+      console.error('Router push failed, using window.location:', error);
+      window.location.href = url;
+    }
   }, [searchQuery, router]);
 
   const handleTrackOrderClick = () => {
@@ -289,7 +313,7 @@ const Header = () => {
               {suggestions.map((product) => (
                 <button
                   key={product.id}
-                  onClick={() => handleSuggestionClick(product)}
+                  onClick={(event) => handleSuggestionClick(product, event)}
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
                 >
                   {product.image && (
