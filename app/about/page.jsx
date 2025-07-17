@@ -36,7 +36,7 @@ export default function AboutPage() {
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center">
                         <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                            About <span className="text-[#FC8181]">Sathiko Pasal</span>
+                            About <span className="text-[#FC8181]">Sathiko Kirana</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-white/90 mb-8">
                             Your trusted partner for fresh groceries and quality products, delivered with care since 2020
@@ -53,7 +53,7 @@ export default function AboutPage() {
                             <div>
                                 <h2 className="text-4xl font-bold text-[#2C7A7B] mb-6">Our Story</h2>
                                 <p className="text-lg text-gray-600 mb-6">
-                                    Founded in 2020, Sathiko Pasal began as a small family business with a simple mission: 
+                                    Founded in 2020, Sathiko Kirana Pasal began as a small family business with a simple mission: 
                                     to bring fresh, quality groceries directly to your doorstep. What started as a local 
                                     delivery service has grown into a trusted online marketplace serving thousands of families.
                                 </p>
@@ -102,7 +102,7 @@ export default function AboutPage() {
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-bold text-[#2C7A7B] mb-4">Our Values</h2>
                             <p className="text-xl text-gray-600">
-                                These core values guide everything we do at Sathiko Pasal
+                                These core values guide everything we do at Sathiko Kirana Pasal
                             </p>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -128,7 +128,7 @@ export default function AboutPage() {
                     <div className="max-w-4xl mx-auto text-center">
                         <h2 className="text-4xl font-bold mb-6">Ready to Experience the Difference?</h2>
                         <p className="text-xl text-white/90 mb-8">
-                            Join thousands of satisfied customers who trust Sathiko Pasal for their grocery needs
+                            Join thousands of satisfied customers who trust Sathiko Kirana Pasal for their grocery needs
                         </p>
                         <div className="flex flex-wrap justify-center gap-4">
                             <a 

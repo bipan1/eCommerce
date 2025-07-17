@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useNotification } from '../notification/NotificationProvider';
-import { BsFacebook, BsTwitter, BsInstagram, BsLinkedin, BsTruck, BsShield, BsHeadset, BsCreditCard } from 'react-icons/bs';
+import { BsFacebook, BsInstagram, BsTruck, BsShield, BsHeadset, BsCreditCard } from 'react-icons/bs';
+import { FaTiktok } from 'react-icons/fa6';
 import { FaCcVisa, FaCcMastercard, FaCcStripe } from 'react-icons/fa';
+import { SiGooglepay } from 'react-icons/si';
 
 const Footer = () => {
     const { data: session } = useSession();
@@ -30,7 +32,7 @@ const Footer = () => {
                             <BsTruck className="text-2xl text-white/90" />
                             <div>
                                 <h3 className="font-semibold">Free Shipping</h3>
-                                <p className="text-sm text-white/80">On orders over $50</p>
+                                <p className="text-sm text-white/80">On orders over $100</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
@@ -44,7 +46,7 @@ const Footer = () => {
                             <BsHeadset className="text-2xl text-white/90" />
                             <div>
                                 <h3 className="font-semibold">Easy Returns</h3>
-                                <p className="text-sm text-white/80">30 days return policy</p>
+                                <p className="text-sm text-white/80">Easy returns and refunds</p>
                             </div>
                         </div>
                     </div>
@@ -59,7 +61,7 @@ const Footer = () => {
                         <div className="mb-4">
                             <img 
                                 src="/finallogo.png" 
-                                alt="Sathiko Pasal Logo" 
+                                alt="Sathiko Kirana Pasal Logo" 
                                 className="h-24 w-auto object-contain"
                             />
                         </div>
@@ -71,13 +73,10 @@ const Footer = () => {
                                 <BsFacebook className="text-xl" />
                             </a>
                             <a href="#" className="text-white/80 hover:text-white transition-colors">
-                                <BsTwitter className="text-xl" />
-                            </a>
-                            <a href="#" className="text-white/80 hover:text-white transition-colors">
                                 <BsInstagram className="text-xl" />
                             </a>
                             <a href="#" className="text-white/80 hover:text-white transition-colors">
-                                <BsLinkedin className="text-xl" />
+                                <FaTiktok className="text-xl" />
                             </a>
                         </div>
                     </div>
@@ -163,7 +162,7 @@ const Footer = () => {
                 <div className="container mx-auto px-4 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
                         <p className="text-white/80 text-sm">
-                            © {new Date().getFullYear()} Sathiko Pasal. All rights reserved.
+                            © {new Date().getFullYear()} Sathiko Kirana Pasal. All rights reserved.
                         </p>
                         <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
@@ -174,6 +173,7 @@ const Footer = () => {
                                 <FaCcVisa className="h-8 w-8 text-white/90" />
                                 <FaCcMastercard className="h-8 w-8 text-white/90" />
                                 <BsCreditCard className="h-6 w-6 text-white/90" />
+                                <SiGooglepay className="h-10 w-10 text-white/90" />
                             </div>
                         </div>
                     </div>

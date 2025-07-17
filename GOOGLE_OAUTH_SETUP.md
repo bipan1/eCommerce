@@ -80,7 +80,7 @@ STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
 2. Navigate to **Settings** > **Payment methods**
 3. Find **Google Pay** and click **Enable**
 4. Configure settings:
-   - **Merchant name**: "Sathiko Pasal"
+   - **Merchant name**: "Sathiko Kirana Pasal"
    - **Business type**: Select appropriate type
    - **Country**: Australia (matching your AUD currency)
 
@@ -106,7 +106,7 @@ STRIPE_WEBHOOK_SECRET="your-stripe-webhook-secret"
 2. Click **Identifiers** > **+** (Add button)
 3. Select **Merchant IDs** > **Continue**
 4. Enter details:
-   - **Description**: "Sathiko Pasal Merchant ID"
+   - **Description**: "Sathiko Kirana Pasal Merchant ID"
    - **Identifier**: `merchant.com.sathikopasal.payments` (must be unique)
 5. Click **Continue** > **Register**
 

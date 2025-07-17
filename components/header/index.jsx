@@ -368,7 +368,7 @@ const Header = () => {
             <div className="grid grid-cols-4 gap-4 py-2.5">
               <div className="flex items-center justify-center space-x-2 text-sm">
                 <MdOutlineLocalShipping className="text-lg flex-shrink-0" />
-                <span className="whitespace-nowrap">Free Shipping on Orders Over $50</span>
+                <span className="whitespace-nowrap">Free Shipping on Orders Over $100</span>
               </div>
               <div className="flex items-center justify-center space-x-2 text-sm">
                 <BsTruck className="text-lg flex-shrink-0" />
@@ -387,7 +387,7 @@ const Header = () => {
               <div className="flex animate-marquee whitespace-nowrap">
                 <div className="flex items-center space-x-2 mx-4">
                   <MdOutlineLocalShipping className="text-base" />
-                  <span className="text-xs">Free Shipping on Orders Over $50</span>
+                  <span className="text-xs">Free Shipping on Orders Over $100</span>
                 </div>
                 <div className="flex items-center space-x-2 mx-4">
                   <BsShield className="text-base" />
@@ -409,7 +409,7 @@ const Header = () => {
               <Link href="/" className="flex items-center space-x-2">
                 <img 
                   src="/finallogowhite.png" 
-                  alt="Sathiko Pasal Logo" 
+                  alt="Sathiko Kirana Pasal Logo" 
                   className="h-20 w-auto object-contain"
                 />
               </Link>
@@ -501,7 +501,7 @@ const Header = () => {
               <Link href="/" className="flex items-center">
                 <img 
                   src="/finallogowhite.png" 
-                  alt="Sathiko Pasal Logo" 
+                  alt="Sathiko Kirana Pasal Logo" 
                   className="h-16 w-auto object-contain"
                 />
               </Link>
@@ -550,7 +550,7 @@ const Header = () => {
                     <Link href="/" className="flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                       <img 
                         src="/finallogo.png" 
-                        alt="Sathiko Pasal Logo" 
+                        alt="Sathiko Kirana Pasal Logo" 
                         className="h-16 w-auto object-contain"
                       />
                     </Link>

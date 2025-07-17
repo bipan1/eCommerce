@@ -14,8 +14,59 @@ import { NotificationProvider } from '../components/notification/NotificationPro
 import DataInitializer from '../components/DataInitializer'
 
 export const metadata = {
-  title: 'Sathiko Pasal - Online Grocery Store',
-  description: 'Your trusted online grocery store in Nepal',
+  title: 'Sathiko Kirana Pasal - Best Nepali Grocery Store in Melbourne | Authentic Nepali Groceries Online',
+  description: 'Melbourne\'s premier Nepali grocery store. Fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients delivered across Melbourne. Shop online for authentic Nepali groceries with fast delivery.',
+  keywords: 'Nepali grocery store Melbourne, Nepali groceries online, Nepali spices Melbourne, Nepali grocery delivery Melbourne, Nepali food Melbourne, Nepali grocery store Melbourne, online grocery shopping Melbourne, Nepali ingredients Melbourne, Nepali spices Melbourne, grocery delivery Melbourne',
+  authors: [{ name: 'Sathiko Kirana Pasal' }],
+  creator: 'Sathiko Kirana Pasal',
+  publisher: 'Sathiko Kirana Pasal',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://www.sathikokirana.com.au'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Sathiko Kirana Pasal - Best Nepali Grocery Store in Melbourne',
+    description: 'Melbourne\'s premier Nepali grocery store. Fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients delivered across Melbourne.',
+    url: 'https://www.sathikokirana.com.au',
+    siteName: 'Sathiko Kirana Pasal',
+    images: [
+      {
+        url: '/finallogo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sathiko Kirana Pasal - Nepali Grocery Store Melbourne',
+      },
+    ],
+    locale: 'en_AU',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sathiko Kirana Pasal - Best Nepali Grocery Store in Melbourne',
+    description: 'Melbourne\'s premier Nepali grocery store. Fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients delivered across Melbourne.',
+    images: ['/finallogo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+    yahoo: 'your-yahoo-verification-code',
+  },
   icons: {
     icon: [
       {
@@ -64,6 +115,98 @@ export default function RootLayout({ children }) {
         <meta name="msapplication-TileImage" content="/logoheader.png?v=5" />
         <meta name="msapplication-TileColor" content="#2C7A7B" />
         <meta name="theme-color" content="#2C7A7B" />
+        
+        {/* Structured Data for Local Business */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "GroceryStore",
+              "name": "Sathiko Kirana Pasal",
+                             "description": "Melbourne's premier Nepali grocery store offering fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients with fast delivery across Melbourne.",
+              "url": "https://www.sathikokirana.com.au",
+              "logo": "https://www.sathikokirana.com.au/finallogo.png",
+              "image": "https://www.sathikokirana.com.au/finallogo.png",
+              "telephone": "+61-XXX-XXX-XXX",
+              "email": "info@sathikokirana.com.au",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Melbourne",
+                "addressRegion": "VIC",
+                "addressCountry": "AU"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "-37.8136",
+                "longitude": "144.9631"
+              },
+              "openingHours": "Mo-Su 09:00-18:00",
+              "priceRange": "$$",
+                             "servesCuisine": ["Nepali", "South Asian"],
+              "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Nepali and Indian Groceries",
+                                 "itemListElement": [
+                   {
+                     "@type": "Offer",
+                     "itemOffered": {
+                       "@type": "Product",
+                       "name": "Nepali Spices"
+                     }
+                   },
+                   {
+                     "@type": "Offer",
+                     "itemOffered": {
+                       "@type": "Product",
+                       "name": "Nepali Groceries"
+                     }
+                   },
+                   {
+                     "@type": "Offer",
+                     "itemOffered": {
+                       "@type": "Product",
+                       "name": "Rice and Lentils"
+                     }
+                   }
+                 ]
+              },
+              "sameAs": [
+                "https://www.facebook.com/sathikokirana",
+                "https://www.instagram.com/sathikokirana",
+                "https://www.tiktok.com/@sathikokirana"
+              ]
+            })
+          }}
+        />
+        
+        {/* Structured Data for Organization */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Sathiko Kirana Pasal",
+              "url": "https://www.sathikokirana.com.au",
+              "logo": "https://www.sathikokirana.com.au/finallogo.png",
+                             "description": "Melbourne's premier Nepali grocery store offering authentic Nepali groceries with fast delivery.",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Melbourne",
+                "addressRegion": "VIC",
+                "addressCountry": "AU"
+              },
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+61-XXX-XXX-XXX",
+                "contactType": "customer service",
+                "areaServed": "AU",
+                "availableLanguage": "English"
+              }
+            })
+          }}
+        />
       </head>
       <body className="bg-[#FBFAF7]">
         <main>

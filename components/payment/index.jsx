@@ -97,7 +97,7 @@ export default function Payment({ places, error, email, fullName, phoneNumber, s
             buttonType: 'default',
             buttonTheme: 'dark',
             // Business information for Google Pay
-            businessName: 'Sathiko Pasal'
+            businessName: 'Sathiko Kirana Pasal'
         }
     };
 

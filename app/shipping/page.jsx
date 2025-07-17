@@ -65,7 +65,7 @@ export default function ShippingPage() {
         {
             icon: <FaTruck className="text-2xl text-[#2C7A7B]" />,
             title: "Delivery Fee",
-            details: "Free delivery on orders over $50"
+            details: "Free delivery on orders over $100"
         },
         {
             icon: <BsInfoCircle className="text-2xl text-[#2C7A7B]" />,
