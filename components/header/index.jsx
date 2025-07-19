@@ -266,7 +266,7 @@ const Header = () => {
 
   // Optimized SearchBar render
   const renderSearchBar = useCallback((isMobile = false) => (
-    <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-2xl mx-8'}`} ref={searchRef}>
+    <div className={`relative ${isMobile ? 'w-full' : 'flex-1 max-w-2xl mx-4'}`} ref={searchRef}>
       <div className="relative">
         <input
           type="text"
@@ -401,16 +401,16 @@ const Header = () => {
 
       {/* Main Header */}
       <header className={`bg-white shadow-md ${isScrolled ? 'fixed top-0 left-0 w-full z-50' : ''}`}>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-2 lg:px-4">
           {/* Desktop Header */}
           <div className="hidden md:block">
-            <div className="flex items-center justify-between py-4">
+            <div className="flex items-center justify-between py-2">
               {/* Logo */}
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center">
                 <img 
-                  src="/finallogowhite.png" 
+                  src="/finalfinallogo.png" 
                   alt="Sathiko Kirana Pasal Logo" 
-                  className="h-20 w-auto object-contain"
+                  className="h-20 w-auto object-contain brightness-110 contrast-125"
                 />
               </Link>
 
@@ -418,11 +418,11 @@ const Header = () => {
               {renderSearchBar()}
 
               {/* Navigation Icons */}
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-4">
                 {session && (
-                  <div className="hidden lg:block text-right mr-2">
-                    <p className="text-sm text-gray-600">Welcome back,</p>
-                    <p className="text-sm font-semibold text-[#2C7A7B]">{session.user.name}</p>
+                  <div className="hidden lg:block text-right mr-1">
+                    <p className="text-xs text-gray-600">Welcome back,</p>
+                    <p className="text-xs font-semibold text-[#2C7A7B]">{session.user.name}</p>
                   </div>
                 )}
                 
@@ -500,9 +500,9 @@ const Header = () => {
               
               <Link href="/" className="flex items-center">
                 <img 
-                  src="/finallogowhite.png" 
+                  src="/finalfinallogo.png" 
                   alt="Sathiko Kirana Pasal Logo" 
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain brightness-110 contrast-125"
                 />
               </Link>
               
@@ -549,9 +549,9 @@ const Header = () => {
                   <div className="flex justify-between items-center mb-8">
                     <Link href="/" className="flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                       <img 
-                        src="/finallogo.png" 
+                        src="/finalfinallogo.png" 
                         alt="Sathiko Kirana Pasal Logo" 
-                        className="h-16 w-auto object-contain"
+                        className="h-20 w-auto object-contain brightness-110 contrast-125"
                       />
                     </Link>
                     <button 

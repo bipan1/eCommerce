@@ -36,7 +36,7 @@ export const metadata = {
     siteName: 'Sathiko Kirana Pasal',
     images: [
       {
-        url: '/finallogo.png',
+        url: '/headerfinal.png',
         width: 1200,
         height: 630,
         alt: 'Sathiko Kirana Pasal - Nepali Grocery Store Melbourne',
@@ -49,7 +49,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Sathiko Kirana Pasal - Best Nepali Grocery Store in Melbourne',
     description: 'Melbourne\'s premier Nepali grocery store. Fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients delivered across Melbourne.',
-    images: ['/finallogo.png'],
+    images: ['/headerfinal.png'],
   },
   robots: {
     index: true,
@@ -70,22 +70,32 @@ export const metadata = {
   icons: {
     icon: [
       {
-        url: '/logoheader.png',
+        url: '/favicon.ico',
         sizes: 'any',
+        type: 'image/x-icon',
+      },
+      {
+        url: '/headerfinal.png',
+        sizes: '16x16',
         type: 'image/png',
       },
       {
-        url: '/logoheader.png',
+        url: '/headerfinal.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/headerfinal.png',
         sizes: '48x48',
         type: 'image/png',
       },
       {
-        url: '/logoheader.png',
+        url: '/headerfinal.png',
         sizes: '96x96',
         type: 'image/png',
       },
       {
-        url: '/logoheader.png',
+        url: '/headerfinal.png',
         sizes: '144x144',
         type: 'image/png',
       },
@@ -93,7 +103,7 @@ export const metadata = {
     shortcut: '/favicon.ico',
     apple: [
       {
-        url: '/logoheader.png',
+        url: '/headerfinal.png',
         sizes: '180x180',
         type: 'image/png',
       },
@@ -105,14 +115,32 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/logoheader.png?v=5" type="image/png" />
-        <link rel="icon" type="image/png" sizes="48x48" href="/logoheader.png?v=5" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/logoheader.png?v=5" />
-        <link rel="icon" type="image/png" sizes="144x144" href="/logoheader.png?v=5" />
-        <link rel="shortcut icon" href="/favicon.ico?v=5" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/logoheader.png?v=5" />
+        <link rel="icon" href="/favicon.ico?v=9" type="image/x-icon" />
+        <link rel="icon" href="/headerfinal.png?v=9" type="image/png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/headerfinal.png?v=9" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/headerfinal.png?v=9" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/headerfinal.png?v=9" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/headerfinal.png?v=9" />
+        <link rel="icon" type="image/png" sizes="144x144" href="/headerfinal.png?v=9" />
+        <link rel="shortcut icon" href="/favicon.ico?v=9" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/headerfinal.png?v=9" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="msapplication-TileImage" content="/logoheader.png?v=5" />
+        <meta name="msapplication-TileImage" content="/headerfinal.png?v=9" />
+        <meta name="msapplication-TileColor" content="#2C7A7B" />
+        <meta name="theme-color" content="#2C7A7B" />
+        
+        {/* Google Search Console verification */}
+        <meta name="google-site-verification" content="your-google-verification-code" />
+        
+        {/* Additional favicon formats for better browser support */}
+        <link rel="icon" type="image/svg+xml" href="/headerfinal.png?v=9" />
+        
+        {/* Additional meta tags for better Google indexing */}
+        <meta property="og:image" content="https://www.sathikokirana.com.au/headerfinal.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Sathiko Kirana Pasal - Nepali Grocery Store Melbourne" />
+        <meta name="twitter:image" content="https://www.sathikokirana.com.au/headerfinal.png" />
         <meta name="msapplication-TileColor" content="#2C7A7B" />
         <meta name="theme-color" content="#2C7A7B" />
         
@@ -126,8 +154,8 @@ export default function RootLayout({ children }) {
               "name": "Sathiko Kirana Pasal",
                              "description": "Melbourne's premier Nepali grocery store offering fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients with fast delivery across Melbourne.",
               "url": "https://www.sathikokirana.com.au",
-              "logo": "https://www.sathikokirana.com.au/finallogo.png",
-              "image": "https://www.sathikokirana.com.au/finallogo.png",
+              "logo": "https://www.sathikokirana.com.au/headerfinal.png",
+              "image": "https://www.sathikokirana.com.au/headerfinal.png",
               "telephone": "+61-XXX-XXX-XXX",
               "email": "info@sathikokirana.com.au",
               "address": {
@@ -189,7 +217,7 @@ export default function RootLayout({ children }) {
               "@type": "Organization",
               "name": "Sathiko Kirana Pasal",
               "url": "https://www.sathikokirana.com.au",
-              "logo": "https://www.sathikokirana.com.au/finallogo.png",
+              "logo": "https://www.sathikokirana.com.au/headerfinal.png",
                              "description": "Melbourne's premier Nepali grocery store offering authentic Nepali groceries with fast delivery.",
               "address": {
                 "@type": "PostalAddress",

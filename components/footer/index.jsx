@@ -60,9 +60,9 @@ const Footer = () => {
                     <div>
                         <div className="mb-4">
                             <img 
-                                src="/finallogo.png" 
+                                src="/finalfinallogo.png" 
                                 alt="Sathiko Kirana Pasal Logo" 
-                                className="h-24 w-auto object-contain"
+                                className="h-20 w-auto object-contain brightness-110 contrast-125"
                             />
                         </div>
                         <p className="text-white/80 mb-4">
