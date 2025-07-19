@@ -75,12 +75,12 @@ export const metadata = {
         type: 'image/x-icon',
       },
       {
-        url: '/headerfinal.png',
+        url: '/favicon-16x16.png',
         sizes: '16x16',
         type: 'image/png',
       },
       {
-        url: '/headerfinal.png',
+        url: '/favicon-32x32.png',
         sizes: '32x32',
         type: 'image/png',
       },
@@ -103,8 +103,18 @@ export const metadata = {
     shortcut: '/favicon.ico',
     apple: [
       {
-        url: '/headerfinal.png',
+        url: '/apple-touch-icon.png',
         sizes: '180x180',
+        type: 'image/png',
+      },
+      {
+        url: '/android-chrome-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/android-chrome-512x512.png',
+        sizes: '512x512',
         type: 'image/png',
       },
     ],
@@ -115,15 +125,16 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico?v=9" type="image/x-icon" />
-        <link rel="icon" href="/headerfinal.png?v=9" type="image/png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/headerfinal.png?v=9" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/headerfinal.png?v=9" />
-        <link rel="icon" type="image/png" sizes="48x48" href="/headerfinal.png?v=9" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/headerfinal.png?v=9" />
-        <link rel="icon" type="image/png" sizes="144x144" href="/headerfinal.png?v=9" />
-        <link rel="shortcut icon" href="/favicon.ico?v=9" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/headerfinal.png?v=9" />
+        <link rel="icon" href="/favicon.ico?v=10" type="image/x-icon" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=10" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=10" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/headerfinal.png?v=10" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/headerfinal.png?v=10" />
+        <link rel="icon" type="image/png" sizes="144x144" href="/headerfinal.png?v=10" />
+        <link rel="shortcut icon" href="/favicon.ico?v=10" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=10" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/android-chrome-192x192.png?v=10" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/android-chrome-512x512.png?v=10" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="msapplication-TileImage" content="/headerfinal.png?v=9" />
         <meta name="msapplication-TileColor" content="#2C7A7B" />
