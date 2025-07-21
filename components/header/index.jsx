@@ -93,7 +93,16 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setShowSuggestions(false);
+        // Check if click is on a dropdown suggestion (Link element)
+        const clickedElement = event.target.closest('a[href]');
+        if (clickedElement && clickedElement.href.includes('/products/') || clickedElement && clickedElement.href.includes('/search?q=')) {
+          // Delay closing to allow navigation to complete
+          setTimeout(() => {
+            setShowSuggestions(false);
+          }, 100);
+        } else {
+          setShowSuggestions(false);
+        }
       }
     };
 
@@ -171,7 +180,11 @@ const Header = () => {
       router.push(url);
     } catch (error) {
       console.error('Router push failed, using window.location:', error);
-      window.location.href = url;
+      try {
+        window.location.href = url;
+      } catch (e) {
+        console.error('Both router.push and window.location.href failed:', e);
+      }
     }
   }, [router]);
 
@@ -189,7 +202,11 @@ const Header = () => {
       router.push(url);
     } catch (error) {
       console.error('Router push failed, using window.location:', error);
-      window.location.href = url;
+      try {
+        window.location.href = url;
+      } catch (e) {
+        console.error('Both router.push and window.location.href failed:', e);
+      }
     }
   }, [searchQuery, router]);
 
@@ -302,7 +319,7 @@ const Header = () => {
 
       {/* Search Suggestions */}
       {(showSuggestions || searchLoading) && (
-        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100 max-h-96 overflow-y-auto">
+        <div className="absolute z-[9999] w-full mt-1 bg-white rounded-lg shadow-lg border border-gray-100 max-h-96 overflow-y-auto pointer-events-auto">
           {searchLoading ? (
             <div className="flex items-center justify-center py-4">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#2C7A7B]"></div>
@@ -311,9 +328,9 @@ const Header = () => {
           ) : suggestions.length > 0 ? (
             <>
               {suggestions.map((product) => (
-                <button
+                <Link
                   key={product.id}
-                  onClick={(event) => handleSuggestionClick(product, event)}
+                  href={`/products/${product.id}`}
                   className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors flex items-center space-x-3 border-b border-gray-100 last:border-b-0"
                 >
                   {product.image && (
@@ -335,15 +352,15 @@ const Header = () => {
                   <div className="text-sm font-medium text-[#2C7A7B]">
                     ${product.price}
                   </div>
-                </button>
+                </Link>
               ))}
               <div className="p-2 bg-gray-50 border-t border-gray-100">
-                <button
-                  onClick={handleViewAllResults}
-                  className="w-full text-center text-sm text-[#2C7A7B] hover:text-[#FC8181] font-medium py-1"
+                <Link
+                  href={`/search?q=${encodeURIComponent(searchQuery.trim())}`}
+                  className="w-full block text-center text-sm text-[#2C7A7B] hover:text-[#FC8181] font-medium py-1"
                 >
                   View all results
-                </button>
+                </Link>
               </div>
             </>
           ) : searchQuery.length > 1 && !searchLoading ? (
@@ -415,7 +432,7 @@ const Header = () => {
               </Link>
 
               {/* Search Bar */}
-              {renderSearchBar()}
+              {renderSearchBar(false)}
 
               {/* Navigation Icons */}
               <div className="flex items-center space-x-4">
