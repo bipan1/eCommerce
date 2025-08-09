@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { axiosApiCall } from '@/utils/axiosApiCall'
+import { cartStorage } from '@/utils/cartStorage'
 
 // Async thunks for cart operations
 export const fetchCart = createAsyncThunk('bag/fetchCart', async (_, { rejectWithValue }) => {
@@ -50,6 +51,25 @@ export const clearCart = createAsyncThunk('bag/clearCart', async (_, { rejectWit
     return rejectWithValue(error.response?.data?.message || 'Failed to clear cart')
   }
 })
+
+// Action to load guest cart from localStorage
+export const loadGuestCart = createAsyncThunk('bag/loadGuestCart', async (_, { rejectWithValue }) => {
+  try {
+    const guestCart = cartStorage.loadGuestCart()
+    return guestCart
+  } catch (error) {
+    return rejectWithValue('Failed to load guest cart')
+  }
+})
+
+// Helper function to save guest cart to localStorage
+const saveGuestCartToStorage = (state) => {
+  // We'll only save for guest users - this will be called when needed
+  cartStorage.saveGuestCart({
+    items: state.items,
+    numberOfItems: state.numberOfItems
+  })
+}
 
 const initialState = {
   numberOfItems: 0,
@@ -128,6 +148,10 @@ export const bag = createSlice({
     },
     clearError: (state) => {
       state.error = null
+    },
+    // Save guest cart to localStorage (called manually for guest users)
+    saveGuestCart: (state) => {
+      saveGuestCartToStorage(state)
     },
   },
   extraReducers: (builder) => {
@@ -220,6 +244,20 @@ export const bag = createSlice({
         state.loading = false
         state.error = action.payload
       })
+      // Load guest cart from localStorage
+      .addCase(loadGuestCart.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(loadGuestCart.fulfilled, (state, action) => {
+        state.loading = false
+        state.items = action.payload.items
+        state.numberOfItems = action.payload.numberOfItems
+      })
+      .addCase(loadGuestCart.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
   },
 })
 
@@ -234,6 +272,7 @@ export const {
   openSideBar,
   closeSideBar,
   clearError,
+  saveGuestCart,
 } = bag.actions
 
 export default bag.reducer

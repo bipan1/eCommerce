@@ -102,12 +102,12 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex items-center justify-between">
                                 <p className="text-sm font-medium text-gray-900">Shipping</p>
-                                <p className="text-sm font-semibold text-gray-900">$8.00</p>
+                                <p className="text-sm font-semibold text-gray-900">{subTotal > 100 ? 'Free' : '$8.00'}</p>
                             </div>
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                             <p className="text-base font-medium text-gray-900">Total</p>
-                            <p className="text-lg md:text-xl font-semibold text-gray-900">${convertToFloat(subTotal + 8.00)}</p>
+                            <p className="text-lg md:text-xl font-semibold text-gray-900">${convertToFloat(subTotal + (subTotal > 100 ? 0 : 8.00))}</p>
                         </div>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]/route'
 import Stripe from 'stripe'
+import { sendOrderReceiptEmail } from '@/utils/emailService'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
@@ -178,6 +179,77 @@ export async function POST(req) {
 
       return order
     })
+
+    // After successful order creation, send receipt email
+    try {
+      // Determine customer email and name
+      const customerEmail = session ? session.user.email : guestData.email;
+      const customerName = session ? session.user.name : guestData.name;
+      const isGuest = !session;
+
+      // Get address data for email
+      let deliveryAddress;
+      if (shippingAddressId) {
+        // Fetch address from database
+        const address = await prisma.address.findUnique({
+          where: { id: shippingAddressId }
+        });
+        deliveryAddress = address;
+      } else {
+        // Use provided address data
+        deliveryAddress = addressData;
+      }
+
+      // Prepare order data for email
+      // Enrich products with name and image so the email template can render them
+      const productIds = products.map((product) => product.productId)
+      const dbProducts = await prisma.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, name: true, image: true },
+      })
+
+      const emailProducts = products.map((product) => {
+        const db = dbProducts.find((p) => p.id === product.productId)
+        const rawImage = db?.image || ''
+        const imageUrl = rawImage
+          ? (rawImage.startsWith('http') ? rawImage : `https://www.sathikokirana.com.au${rawImage}`)
+          : 'https://www.sathikokirana.com.au/images/placeholder.png'
+
+        return {
+          ...product,
+          name: db?.name || `Product ${product.productId}`,
+          image: imageUrl,
+        }
+      })
+
+      const emailOrderData = {
+        products: emailProducts,
+        address: deliveryAddress,
+      }
+
+      // Generate order number for display
+      const orderNumber = `#SP-${result.id}`;
+
+      // Send receipt email
+      const emailResult = await sendOrderReceiptEmail({
+        customerEmail,
+        customerName,
+        orderNumber,
+        orderData: emailOrderData,
+        isGuest
+      });
+
+      if (emailResult.success) {
+        console.log('Order receipt email sent successfully:', emailResult.emailId);
+      } else {
+        console.error('Failed to send order receipt email:', emailResult.error);
+        // Don't fail the order if email fails - just log the error
+      }
+
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      // Don't fail the order if email fails - just log the error
+    }
 
     return NextResponse.json({ 
       order: result,

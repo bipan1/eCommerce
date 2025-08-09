@@ -15,12 +15,17 @@ export default function Cart() {
     const dispatch = useDispatch();
     const { items: cartItems, isBagOpen } = useSelector((state) => state.bag);
     const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const { showNotification } = useNotification();
 
     const handleClose = () => {
         dispatch(closeBag());
     };
 
     const handleCheckout = () => {
+        if (subtotal < 50) {
+            showNotification('Minimum order is $50', 'error');
+            return;
+        }
         dispatch(closeBag());
         router.push('/checkout');
     };
@@ -95,7 +100,7 @@ export default function Cart() {
         </div>
     );
 
-    const { showNotification } = useNotification();
+    
 
     return (
         <>

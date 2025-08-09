@@ -4,6 +4,7 @@ import NextAuthProvider from '../providers/next-auth-provider'
 import ReduxProvider from '../providers/redux-providers'
 import Cart from '../components/cart'
 import CartHydration from '../components/cart/CartHydration'
+import GuestCartPersistence from '../components/cart/GuestCartPersistence'
 import AntdStyledComponentsRegistry from '../components/antdStyleRegistry'
 import Footer from 'components/footer'
 import 'react-responsive-carousel/lib/styles/carousel.min.css'
@@ -255,6 +256,7 @@ export default function RootLayout({ children }) {
                 <NotificationProvider>
                   <DataInitializer />
                   <CartHydration />
+                  <GuestCartPersistence />
                   <Header />
                   <div>{children}</div>
                   <Footer />

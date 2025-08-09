@@ -42,8 +42,8 @@ export async function POST(req) {
       calculatedTotal += parseFloat(price) * item.quantity
     }
 
-    // Add shipping fee
-    const shippingFee = 8.00
+    // Add shipping fee with free delivery for orders over $100
+    const shippingFee = calculatedTotal > 100 ? 0.00 : 8.00
     const totalAmount = calculatedTotal + shippingFee
 
     // Create simplified cart summary for metadata (within 500 character limit)

@@ -24,8 +24,8 @@ export default function Payment({ places, error, email, fullName, phoneNumber, s
                 setClientSecret(data.client_secret);
                 setServerAmount(data.amount);
                 
-                // Verify server amount matches frontend calculation
-                const frontendTotal = subTotal + 8.00; // Add shipping
+                // Verify server amount matches frontend calculation (free shipping > $100)
+                const frontendTotal = subTotal + (subTotal > 100 ? 0 : 8.00);
                 if (Math.abs(data.amount - frontendTotal) > 0.01) {
                     console.warn('Price mismatch detected:', {
                         frontend: frontendTotal,
