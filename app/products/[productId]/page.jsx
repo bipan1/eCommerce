@@ -78,7 +78,40 @@ export default function ProductDetails({ params }) {
     }
 
 
+    if (!product) {
+        return (
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+                <h1 className="text-2xl font-semibold text-[#2C7A7B] mb-2">Product not found</h1>
+                <p className="text-[#4A5568] mb-6">The product you are looking for may have been removed or is temporarily unavailable.</p>
+                <button onClick={() => router.push('/categories')} className="px-5 py-2 rounded-lg bg-[#2C7A7B] text-white hover:bg-[#FC8181] transition">Browse categories</button>
+            </div>
+        )
+    }
+
     return <>
+        {/* Product JSON-LD for SEO */}
+        {product && (
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        '@context': 'https://schema.org',
+                        '@type': 'Product',
+                        name: product.name,
+                        image: [product.image],
+                        description: product.description,
+                        brand: { '@type': 'Brand', name: 'Sathiko Kirana Pasal' },
+                        offers: {
+                            '@type': 'Offer',
+                            priceCurrency: 'AUD',
+                            price: String(product.isSpecial ? product.specialPrice : product.price),
+                            availability: product.outofStock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+                            url: `https://www.sathikokirana.com.au/products/${product.id}`,
+                        }
+                    })
+                }}
+            />
+        )}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Page Header with Back Button */}
             <div className="mb-8 flex items-center justify-between">
