@@ -1,4 +1,3 @@
-'use server'
 import prisma from '@/database'
 
 export async function generateMetadata({ params }) {
