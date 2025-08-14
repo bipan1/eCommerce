@@ -1,5 +1,6 @@
 const SibApiV3Sdk = require('@getbrevo/brevo');
 import { getOrderReceiptEmailHTML } from './orderReceiptTemplate'
+import { generateOrderReceiptPdf } from './generateOrderReceiptPdf'
 
 // Initialize Brevo API client
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
@@ -44,6 +45,18 @@ export const sendOrderReceiptEmail = async ({
       isGuest
     });
 
+    // Generate PDF receipt attachment
+    let attachments = []
+    try {
+      const pdfBuffer = await generateOrderReceiptPdf(htmlContent)
+      attachments.push({
+        name: `Receipt-${orderNum.replace('#','')}.pdf`,
+        content: pdfBuffer.toString('base64')
+      })
+    } catch (pdfError) {
+      console.warn('PDF generation failed, sending email without attachment:', pdfError?.message || pdfError)
+    }
+
     // Create email data for Brevo
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.sender = {
@@ -72,6 +85,11 @@ export const sendOrderReceiptEmail = async ({
       Best regards,
       The Sathiko Pasal Team
     `;
+
+    // Attach PDF if available
+    if (attachments.length > 0) {
+      sendSmtpEmail.attachment = attachments
+    }
 
     // Send email using Brevo
     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);

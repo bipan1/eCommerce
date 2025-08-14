@@ -4,6 +4,8 @@
 
 ### **Primary Keywords:**
 - "Nepali grocery store Melbourne"
+- "Nepali grocery shop"
+- "Nepali grocery shop Melbourne"
 - "Nepali groceries online Melbourne"
 - "Nepali spices Melbourne"
 - "Nepali grocery delivery Melbourne"
@@ -16,6 +18,10 @@
 
 ### **Long-tail Keywords:**
 - "best Nepali grocery store Melbourne"
+- "Nepali grocery shop near me"
+- "Nepali mart Melbourne"
+- "Nepali supermarket Melbourne"
+- "Nepali kirana shop"
 - "authentic Nepali groceries Melbourne"
 - "Nepali spices and ingredients Melbourne"
 - "Nepali grocery delivery western suburbs Melbourne"
@@ -49,7 +55,7 @@
 - ✅ Target keyword in title: "Best Nepali Grocery Store Melbourne"
 - ✅ Local SEO focus: Melbourne, VIC, Australia
 - ✅ Service area coverage: Western suburbs
-- ✅ Product categories: Nepali spices, Indian groceries, rice, lentils
+- ✅ Product categories: Nepali spices, rice, lentils
 
 ### **Category Pages:**
 - Create dedicated pages for:
@@ -90,7 +96,7 @@
 ### **Local Citations:**
 - Submit to local business directories
 - Get listed on Melbourne food blogs
-- Partner with local Nepali/Indian communities
+- Partner with local Nepali communities
 - Register with Australian business directories
 
 ## 🔍 **Google Ranking Factors**
@@ -281,4 +287,4 @@
 4. **Local Events:** Cover Melbourne food festivals and events
 5. **Weather-Based Content:** Create content for Melbourne's seasons
 
-This comprehensive SEO strategy will help Sathiko Kirana Pasal rank higher in Google for Nepali and Indian grocery searches in Melbourne, driving more organic traffic and increasing sales. 
+This comprehensive SEO strategy will help Sathiko Kirana Pasal rank higher in Google for Nepali grocery searches in Melbourne, driving more organic traffic and increasing sales.

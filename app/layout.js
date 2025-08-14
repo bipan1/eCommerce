@@ -17,7 +17,7 @@ import DataInitializer from '../components/DataInitializer'
 export const metadata = {
   title: 'Sathiko Kirana Pasal - Best Nepali Grocery Store in Melbourne | Authentic Nepali Groceries Online',
   description: 'Melbourne\'s premier Nepali grocery store. Fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients delivered across Melbourne. Shop online for authentic Nepali groceries with fast delivery.',
-  keywords: 'Nepali grocery store Melbourne, Nepali groceries online, Nepali spices Melbourne, Nepali grocery delivery Melbourne, Nepali food Melbourne, Nepali grocery store Melbourne, online grocery shopping Melbourne, Nepali ingredients Melbourne, Nepali spices Melbourne, grocery delivery Melbourne',
+  keywords: 'Nepali grocery store Melbourne, Nepali grocery shop, Nepali grocery shop Melbourne, Nepali groceries online, Nepali groceries Melbourne, Nepali grocery near me, Nepali mart Melbourne, Nepali supermarket Melbourne, Nepali kirana shop, Kirana Pasal Melbourne, Sathiko Kirana Pasal, authentic Nepali spices, Nepali rice, Nepali lentils, Nepali ingredients, online grocery shopping Melbourne, grocery delivery Melbourne',
   authors: [{ name: 'Sathiko Kirana Pasal' }],
   creator: 'Sathiko Kirana Pasal',
   publisher: 'Sathiko Kirana Pasal',
@@ -164,7 +164,7 @@ export default function RootLayout({ children }) {
               "@context": "https://schema.org",
               "@type": "GroceryStore",
               "name": "Sathiko Kirana Pasal",
-                             "description": "Melbourne's premier Nepali grocery store offering fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients with fast delivery across Melbourne.",
+              "description": "Melbourne's premier Nepali grocery store offering fresh Nepali groceries, authentic spices, rice, lentils, and traditional ingredients with fast delivery across Melbourne.",
               "url": "https://www.sathikokirana.com.au",
               "logo": "https://www.sathikokirana.com.au/headerfinal.png",
               "image": "https://www.sathikokirana.com.au/headerfinal.png",
@@ -183,11 +183,11 @@ export default function RootLayout({ children }) {
               },
               "openingHours": "Mo-Su 09:00-18:00",
               "priceRange": "$$",
-                             "servesCuisine": ["Nepali", "South Asian"],
+              "servesCuisine": ["Nepali"],
               "hasOfferCatalog": {
                 "@type": "OfferCatalog",
-                "name": "Nepali and Indian Groceries",
-                                 "itemListElement": [
+                "name": "Nepali Groceries",
+                "itemListElement": [
                    {
                      "@type": "Offer",
                      "itemOffered": {
@@ -199,7 +199,7 @@ export default function RootLayout({ children }) {
                      "@type": "Offer",
                      "itemOffered": {
                        "@type": "Product",
-                       "name": "Nepali Groceries"
+                        "name": "Nepali Groceries"
                      }
                    },
                    {
@@ -230,7 +230,7 @@ export default function RootLayout({ children }) {
               "name": "Sathiko Kirana Pasal",
               "url": "https://www.sathikokirana.com.au",
               "logo": "https://www.sathikokirana.com.au/headerfinal.png",
-                             "description": "Melbourne's premier Nepali grocery store offering authentic Nepali groceries with fast delivery.",
+              "description": "Melbourne's premier Nepali grocery store offering authentic Nepali groceries with fast delivery.",
               "address": {
                 "@type": "PostalAddress",
                 "addressLocality": "Melbourne",
